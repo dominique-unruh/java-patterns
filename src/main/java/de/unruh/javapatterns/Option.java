@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 public interface Option<T> {
     boolean nonEmpty();
     T get();
+    // TODO hashCode, equals()
 }
 final class Some<T> implements Option<T> {
     private final T value;

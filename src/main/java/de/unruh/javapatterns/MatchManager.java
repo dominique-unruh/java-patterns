@@ -9,7 +9,6 @@ public final class MatchManager {
     // Making this package private
     MatchManager() {}
 
-    // TODO add support for atomically trying a block of code (in PatternMatchReject is thrown, should revert all assignments
     Deque<Capture<?>> captured = new ArrayDeque<>(10);
 
     <T> void assigned(Capture<T> x) {
