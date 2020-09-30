@@ -533,10 +533,10 @@ public class Patterns {
         };
     }
 
-    public static <T,U> Pattern<T> Instance(Class<U> clazz, Pattern<? super U> pattern) {
-        return new Pattern<T>() {
+    public static <U> Pattern<Object> Instance(Class<U> clazz, Pattern<? super U> pattern) {
+        return new Pattern<>() {
             @Override
-            public void apply(MatchManager mgr, T value) throws PatternMatchReject {
+            public void apply(MatchManager mgr, Object value) throws PatternMatchReject {
                 U castValue = null;
                 try {
                     castValue = clazz.cast(value);

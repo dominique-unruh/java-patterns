@@ -24,7 +24,7 @@ final public class Capture<T> extends Pattern<T> {
     public T v() {
 //        out.println("Reading "+name+" "+value+" "+assigned);
         if (!assigned)
-            throw new RuntimeException("Reading undefined capture variable " + name); // TODO: specific exception type
+            throw new InvalidPatternMatch("Reading undefined capture variable " + name);
         return value;
     }
 
@@ -32,7 +32,7 @@ final public class Capture<T> extends Pattern<T> {
     public void apply(MatchManager mgr, T value) {
 //        out.println("Assigning "+name+" "+value+" "+assigned);
         if (assigned)
-            throw new RuntimeException("Re-assigned " + name + " in pattern match"); // TODO: specific exception type
+            throw new InvalidPatternMatch("Re-assigned " + name + " in pattern match");
         mgr.assigned(this);
         assigned = true;
         this.value = value;

@@ -17,7 +17,13 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.0")
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 test {
+//    executable "/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java"
     useJUnitPlatform()
 }
 

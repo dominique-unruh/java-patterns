@@ -62,7 +62,7 @@ class PatternsTest {
         assertNull(result);
     }
 
-    @SuppressWarnings("rawtypes")
+//    @SuppressWarnings("rawtypes")
     @Test
     void instance() throws Exception {
         // TODO: Can we type make this type check with Capture<None<String>>?
