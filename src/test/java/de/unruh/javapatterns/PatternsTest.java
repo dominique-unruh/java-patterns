@@ -2,7 +2,10 @@ package de.unruh.javapatterns;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.Callable;
+
 import static de.unruh.javapatterns.Patterns.*;
+import static de.unruh.javapatterns.Match.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PatternsTest {
@@ -62,16 +65,13 @@ class PatternsTest {
         assertNull(result);
     }
 
-//    @SuppressWarnings("rawtypes")
     @Test
     void instance() throws Exception {
-        // TODO: Can we type make this type check with Capture<None<String>>?
         Capture<PatternResultNone<String>> x = new Capture<>("x");
-        // TODO: Avoid "return null"
         match(new PatternResultNone<String>(),
-                Instance(PatternResultSome.class, Any), () -> {fail(); return null;},
+                Instance(PatternResultSome.class, Any), () -> fail(),
                 new Instance<PatternResultNone<String>>(x) {}, () ->
-                        {assertEquals(new PatternResultNone<>(), x.v()); return null;});
+                        assertEquals(new PatternResultNone<>(), x.v()));
     }
 
     @Test
