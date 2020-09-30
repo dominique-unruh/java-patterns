@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class PatternsTest {
 
     @Test
-    void is() throws Exception {
+    void is() throws MatchException {
         String result = match(123,
                 Is(234), () -> "first",
                 Is(123), () -> "second",

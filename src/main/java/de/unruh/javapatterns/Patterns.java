@@ -1,21 +1,20 @@
 package de.unruh.javapatterns;
 
 import java.util.StringJoiner;
-import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 
 // DOCUMENT, mention (somewhere): can access captures already in match, can fail match in action
-// TODO: Can we handle exceptions better? (Avoid "throws Exception" clause)
 // TODO split into several classes, and one to inherit all importable functions
 public class Patterns {
-    public static <T, X> Case<T, X> withCase(Pattern<? super T> pattern, Callable<? extends X> action) {
+    public static <T, X, E extends Throwable> Case <T, X, E> 
+    withCase(Pattern<? super T> pattern, MatchAction<? extends X, E> action) {
         return new Case<>(pattern, action);
     }
 
     @SafeVarargs
-    public static <T, X> X match(T value, Case<T, X>... cases) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Case<T, X, E>... cases) throws E, MatchException {
         MatchManager mgr = new MatchManager();
-        for (Case<T, X> cas : cases) {
+        for (Case<T, X, E> cas : cases) {
             PatternResult<X> result = cas.apply(mgr, value);
             if (result.nonEmpty())
                 return result.get();
@@ -23,155 +22,155 @@ public class Patterns {
         throw new MatchException(value);
     }
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1) throws E, MatchException {
         return match(value, withCase(pattern1, action1));
     }
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2));
     }
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3));
     }
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4));
     }
 
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5));
     }
 
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5,
-                                 Pattern<? super T> pattern6, Callable<? extends X> action6) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5,
+                                 Pattern<? super T> pattern6, MatchAction<? extends X, E> action6) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6));
     }
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5,
-                                 Pattern<? super T> pattern6, Callable<? extends X> action6,
-                                 Pattern<? super T> pattern7, Callable<? extends X> action7) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5,
+                                 Pattern<? super T> pattern6, MatchAction<? extends X, E> action6,
+                                 Pattern<? super T> pattern7, MatchAction<? extends X, E> action7) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6),
                 withCase(pattern7, action7));
     }
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5,
-                                 Pattern<? super T> pattern6, Callable<? extends X> action6,
-                                 Pattern<? super T> pattern7, Callable<? extends X> action7,
-                                 Pattern<? super T> pattern8, Callable<? extends X> action8) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5,
+                                 Pattern<? super T> pattern6, MatchAction<? extends X, E> action6,
+                                 Pattern<? super T> pattern7, MatchAction<? extends X, E> action7,
+                                 Pattern<? super T> pattern8, MatchAction<? extends X, E> action8) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6),
                 withCase(pattern7, action7), withCase(pattern8, action8));
     }
 
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5,
-                                 Pattern<? super T> pattern6, Callable<? extends X> action6,
-                                 Pattern<? super T> pattern7, Callable<? extends X> action7,
-                                 Pattern<? super T> pattern8, Callable<? extends X> action8,
-                                 Pattern<? super T> pattern9, Callable<? extends X> action9) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5,
+                                 Pattern<? super T> pattern6, MatchAction<? extends X, E> action6,
+                                 Pattern<? super T> pattern7, MatchAction<? extends X, E> action7,
+                                 Pattern<? super T> pattern8, MatchAction<? extends X, E> action8,
+                                 Pattern<? super T> pattern9, MatchAction<? extends X, E> action9) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6),
                 withCase(pattern7, action7), withCase(pattern8, action8), withCase(pattern9, action9));
     }
 
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5,
-                                 Pattern<? super T> pattern6, Callable<? extends X> action6,
-                                 Pattern<? super T> pattern7, Callable<? extends X> action7,
-                                 Pattern<? super T> pattern8, Callable<? extends X> action8,
-                                 Pattern<? super T> pattern9, Callable<? extends X> action9,
-                                 Pattern<? super T> pattern10, Callable<? extends X> action10) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5,
+                                 Pattern<? super T> pattern6, MatchAction<? extends X, E> action6,
+                                 Pattern<? super T> pattern7, MatchAction<? extends X, E> action7,
+                                 Pattern<? super T> pattern8, MatchAction<? extends X, E> action8,
+                                 Pattern<? super T> pattern9, MatchAction<? extends X, E> action9,
+                                 Pattern<? super T> pattern10, MatchAction<? extends X, E> action10) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6),
                 withCase(pattern7, action7), withCase(pattern8, action8), withCase(pattern9, action9),
                 withCase(pattern10, action10));
     }
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5,
-                                 Pattern<? super T> pattern6, Callable<? extends X> action6,
-                                 Pattern<? super T> pattern7, Callable<? extends X> action7,
-                                 Pattern<? super T> pattern8, Callable<? extends X> action8,
-                                 Pattern<? super T> pattern9, Callable<? extends X> action9,
-                                 Pattern<? super T> pattern10, Callable<? extends X> action10,
-                                 Pattern<? super T> pattern11, Callable<? extends X> action11) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5,
+                                 Pattern<? super T> pattern6, MatchAction<? extends X, E> action6,
+                                 Pattern<? super T> pattern7, MatchAction<? extends X, E> action7,
+                                 Pattern<? super T> pattern8, MatchAction<? extends X, E> action8,
+                                 Pattern<? super T> pattern9, MatchAction<? extends X, E> action9,
+                                 Pattern<? super T> pattern10, MatchAction<? extends X, E> action10,
+                                 Pattern<? super T> pattern11, MatchAction<? extends X, E> action11) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6),
                 withCase(pattern7, action7), withCase(pattern8, action8), withCase(pattern9, action9),
                 withCase(pattern10, action10), withCase(pattern11, action11));
     }
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5,
-                                 Pattern<? super T> pattern6, Callable<? extends X> action6,
-                                 Pattern<? super T> pattern7, Callable<? extends X> action7,
-                                 Pattern<? super T> pattern8, Callable<? extends X> action8,
-                                 Pattern<? super T> pattern9, Callable<? extends X> action9,
-                                 Pattern<? super T> pattern10, Callable<? extends X> action10,
-                                 Pattern<? super T> pattern11, Callable<? extends X> action11,
-                                 Pattern<? super T> pattern12, Callable<? extends X> action12) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5,
+                                 Pattern<? super T> pattern6, MatchAction<? extends X, E> action6,
+                                 Pattern<? super T> pattern7, MatchAction<? extends X, E> action7,
+                                 Pattern<? super T> pattern8, MatchAction<? extends X, E> action8,
+                                 Pattern<? super T> pattern9, MatchAction<? extends X, E> action9,
+                                 Pattern<? super T> pattern10, MatchAction<? extends X, E> action10,
+                                 Pattern<? super T> pattern11, MatchAction<? extends X, E> action11,
+                                 Pattern<? super T> pattern12, MatchAction<? extends X, E> action12) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6),
                 withCase(pattern7, action7), withCase(pattern8, action8), withCase(pattern9, action9),
                 withCase(pattern10, action10), withCase(pattern11, action11), withCase(pattern12, action12));
     }
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5,
-                                 Pattern<? super T> pattern6, Callable<? extends X> action6,
-                                 Pattern<? super T> pattern7, Callable<? extends X> action7,
-                                 Pattern<? super T> pattern8, Callable<? extends X> action8,
-                                 Pattern<? super T> pattern9, Callable<? extends X> action9,
-                                 Pattern<? super T> pattern10, Callable<? extends X> action10,
-                                 Pattern<? super T> pattern11, Callable<? extends X> action11,
-                                 Pattern<? super T> pattern12, Callable<? extends X> action12,
-                                 Pattern<? super T> pattern13, Callable<? extends X> action13) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5,
+                                 Pattern<? super T> pattern6, MatchAction<? extends X, E> action6,
+                                 Pattern<? super T> pattern7, MatchAction<? extends X, E> action7,
+                                 Pattern<? super T> pattern8, MatchAction<? extends X, E> action8,
+                                 Pattern<? super T> pattern9, MatchAction<? extends X, E> action9,
+                                 Pattern<? super T> pattern10, MatchAction<? extends X, E> action10,
+                                 Pattern<? super T> pattern11, MatchAction<? extends X, E> action11,
+                                 Pattern<? super T> pattern12, MatchAction<? extends X, E> action12,
+                                 Pattern<? super T> pattern13, MatchAction<? extends X, E> action13) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6),
                 withCase(pattern7, action7), withCase(pattern8, action8), withCase(pattern9, action9),
@@ -180,20 +179,20 @@ public class Patterns {
     }
 
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5,
-                                 Pattern<? super T> pattern6, Callable<? extends X> action6,
-                                 Pattern<? super T> pattern7, Callable<? extends X> action7,
-                                 Pattern<? super T> pattern8, Callable<? extends X> action8,
-                                 Pattern<? super T> pattern9, Callable<? extends X> action9,
-                                 Pattern<? super T> pattern10, Callable<? extends X> action10,
-                                 Pattern<? super T> pattern11, Callable<? extends X> action11,
-                                 Pattern<? super T> pattern12, Callable<? extends X> action12,
-                                 Pattern<? super T> pattern13, Callable<? extends X> action13,
-                                 Pattern<? super T> pattern14, Callable<? extends X> action14) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5,
+                                 Pattern<? super T> pattern6, MatchAction<? extends X, E> action6,
+                                 Pattern<? super T> pattern7, MatchAction<? extends X, E> action7,
+                                 Pattern<? super T> pattern8, MatchAction<? extends X, E> action8,
+                                 Pattern<? super T> pattern9, MatchAction<? extends X, E> action9,
+                                 Pattern<? super T> pattern10, MatchAction<? extends X, E> action10,
+                                 Pattern<? super T> pattern11, MatchAction<? extends X, E> action11,
+                                 Pattern<? super T> pattern12, MatchAction<? extends X, E> action12,
+                                 Pattern<? super T> pattern13, MatchAction<? extends X, E> action13,
+                                 Pattern<? super T> pattern14, MatchAction<? extends X, E> action14) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6),
                 withCase(pattern7, action7), withCase(pattern8, action8), withCase(pattern9, action9),
@@ -202,21 +201,21 @@ public class Patterns {
     }
 
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5,
-                                 Pattern<? super T> pattern6, Callable<? extends X> action6,
-                                 Pattern<? super T> pattern7, Callable<? extends X> action7,
-                                 Pattern<? super T> pattern8, Callable<? extends X> action8,
-                                 Pattern<? super T> pattern9, Callable<? extends X> action9,
-                                 Pattern<? super T> pattern10, Callable<? extends X> action10,
-                                 Pattern<? super T> pattern11, Callable<? extends X> action11,
-                                 Pattern<? super T> pattern12, Callable<? extends X> action12,
-                                 Pattern<? super T> pattern13, Callable<? extends X> action13,
-                                 Pattern<? super T> pattern14, Callable<? extends X> action14,
-                                 Pattern<? super T> pattern15, Callable<? extends X> action15) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5,
+                                 Pattern<? super T> pattern6, MatchAction<? extends X, E> action6,
+                                 Pattern<? super T> pattern7, MatchAction<? extends X, E> action7,
+                                 Pattern<? super T> pattern8, MatchAction<? extends X, E> action8,
+                                 Pattern<? super T> pattern9, MatchAction<? extends X, E> action9,
+                                 Pattern<? super T> pattern10, MatchAction<? extends X, E> action10,
+                                 Pattern<? super T> pattern11, MatchAction<? extends X, E> action11,
+                                 Pattern<? super T> pattern12, MatchAction<? extends X, E> action12,
+                                 Pattern<? super T> pattern13, MatchAction<? extends X, E> action13,
+                                 Pattern<? super T> pattern14, MatchAction<? extends X, E> action14,
+                                 Pattern<? super T> pattern15, MatchAction<? extends X, E> action15) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6),
                 withCase(pattern7, action7), withCase(pattern8, action8), withCase(pattern9, action9),
@@ -224,22 +223,22 @@ public class Patterns {
                 withCase(pattern13, action13), withCase(pattern14, action14), withCase(pattern15, action15));
     }
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5,
-                                 Pattern<? super T> pattern6, Callable<? extends X> action6,
-                                 Pattern<? super T> pattern7, Callable<? extends X> action7,
-                                 Pattern<? super T> pattern8, Callable<? extends X> action8,
-                                 Pattern<? super T> pattern9, Callable<? extends X> action9,
-                                 Pattern<? super T> pattern10, Callable<? extends X> action10,
-                                 Pattern<? super T> pattern11, Callable<? extends X> action11,
-                                 Pattern<? super T> pattern12, Callable<? extends X> action12,
-                                 Pattern<? super T> pattern13, Callable<? extends X> action13,
-                                 Pattern<? super T> pattern14, Callable<? extends X> action14,
-                                 Pattern<? super T> pattern15, Callable<? extends X> action15,
-                                 Pattern<? super T> pattern16, Callable<? extends X> action16) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5,
+                                 Pattern<? super T> pattern6, MatchAction<? extends X, E> action6,
+                                 Pattern<? super T> pattern7, MatchAction<? extends X, E> action7,
+                                 Pattern<? super T> pattern8, MatchAction<? extends X, E> action8,
+                                 Pattern<? super T> pattern9, MatchAction<? extends X, E> action9,
+                                 Pattern<? super T> pattern10, MatchAction<? extends X, E> action10,
+                                 Pattern<? super T> pattern11, MatchAction<? extends X, E> action11,
+                                 Pattern<? super T> pattern12, MatchAction<? extends X, E> action12,
+                                 Pattern<? super T> pattern13, MatchAction<? extends X, E> action13,
+                                 Pattern<? super T> pattern14, MatchAction<? extends X, E> action14,
+                                 Pattern<? super T> pattern15, MatchAction<? extends X, E> action15,
+                                 Pattern<? super T> pattern16, MatchAction<? extends X, E> action16) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6),
                 withCase(pattern7, action7), withCase(pattern8, action8), withCase(pattern9, action9),
@@ -248,23 +247,23 @@ public class Patterns {
                 withCase(pattern16, action16));
     }
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5,
-                                 Pattern<? super T> pattern6, Callable<? extends X> action6,
-                                 Pattern<? super T> pattern7, Callable<? extends X> action7,
-                                 Pattern<? super T> pattern8, Callable<? extends X> action8,
-                                 Pattern<? super T> pattern9, Callable<? extends X> action9,
-                                 Pattern<? super T> pattern10, Callable<? extends X> action10,
-                                 Pattern<? super T> pattern11, Callable<? extends X> action11,
-                                 Pattern<? super T> pattern12, Callable<? extends X> action12,
-                                 Pattern<? super T> pattern13, Callable<? extends X> action13,
-                                 Pattern<? super T> pattern14, Callable<? extends X> action14,
-                                 Pattern<? super T> pattern15, Callable<? extends X> action15,
-                                 Pattern<? super T> pattern16, Callable<? extends X> action16,
-                                 Pattern<? super T> pattern17, Callable<? extends X> action17) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5,
+                                 Pattern<? super T> pattern6, MatchAction<? extends X, E> action6,
+                                 Pattern<? super T> pattern7, MatchAction<? extends X, E> action7,
+                                 Pattern<? super T> pattern8, MatchAction<? extends X, E> action8,
+                                 Pattern<? super T> pattern9, MatchAction<? extends X, E> action9,
+                                 Pattern<? super T> pattern10, MatchAction<? extends X, E> action10,
+                                 Pattern<? super T> pattern11, MatchAction<? extends X, E> action11,
+                                 Pattern<? super T> pattern12, MatchAction<? extends X, E> action12,
+                                 Pattern<? super T> pattern13, MatchAction<? extends X, E> action13,
+                                 Pattern<? super T> pattern14, MatchAction<? extends X, E> action14,
+                                 Pattern<? super T> pattern15, MatchAction<? extends X, E> action15,
+                                 Pattern<? super T> pattern16, MatchAction<? extends X, E> action16,
+                                 Pattern<? super T> pattern17, MatchAction<? extends X, E> action17) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6),
                 withCase(pattern7, action7), withCase(pattern8, action8), withCase(pattern9, action9),
@@ -273,24 +272,24 @@ public class Patterns {
                 withCase(pattern16, action16), withCase(pattern17, action17));
     }
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5,
-                                 Pattern<? super T> pattern6, Callable<? extends X> action6,
-                                 Pattern<? super T> pattern7, Callable<? extends X> action7,
-                                 Pattern<? super T> pattern8, Callable<? extends X> action8,
-                                 Pattern<? super T> pattern9, Callable<? extends X> action9,
-                                 Pattern<? super T> pattern10, Callable<? extends X> action10,
-                                 Pattern<? super T> pattern11, Callable<? extends X> action11,
-                                 Pattern<? super T> pattern12, Callable<? extends X> action12,
-                                 Pattern<? super T> pattern13, Callable<? extends X> action13,
-                                 Pattern<? super T> pattern14, Callable<? extends X> action14,
-                                 Pattern<? super T> pattern15, Callable<? extends X> action15,
-                                 Pattern<? super T> pattern16, Callable<? extends X> action16,
-                                 Pattern<? super T> pattern17, Callable<? extends X> action17,
-                                 Pattern<? super T> pattern18, Callable<? extends X> action18) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5,
+                                 Pattern<? super T> pattern6, MatchAction<? extends X, E> action6,
+                                 Pattern<? super T> pattern7, MatchAction<? extends X, E> action7,
+                                 Pattern<? super T> pattern8, MatchAction<? extends X, E> action8,
+                                 Pattern<? super T> pattern9, MatchAction<? extends X, E> action9,
+                                 Pattern<? super T> pattern10, MatchAction<? extends X, E> action10,
+                                 Pattern<? super T> pattern11, MatchAction<? extends X, E> action11,
+                                 Pattern<? super T> pattern12, MatchAction<? extends X, E> action12,
+                                 Pattern<? super T> pattern13, MatchAction<? extends X, E> action13,
+                                 Pattern<? super T> pattern14, MatchAction<? extends X, E> action14,
+                                 Pattern<? super T> pattern15, MatchAction<? extends X, E> action15,
+                                 Pattern<? super T> pattern16, MatchAction<? extends X, E> action16,
+                                 Pattern<? super T> pattern17, MatchAction<? extends X, E> action17,
+                                 Pattern<? super T> pattern18, MatchAction<? extends X, E> action18) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6),
                 withCase(pattern7, action7), withCase(pattern8, action8), withCase(pattern9, action9),
@@ -300,25 +299,25 @@ public class Patterns {
     }
 
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5,
-                                 Pattern<? super T> pattern6, Callable<? extends X> action6,
-                                 Pattern<? super T> pattern7, Callable<? extends X> action7,
-                                 Pattern<? super T> pattern8, Callable<? extends X> action8,
-                                 Pattern<? super T> pattern9, Callable<? extends X> action9,
-                                 Pattern<? super T> pattern10, Callable<? extends X> action10,
-                                 Pattern<? super T> pattern11, Callable<? extends X> action11,
-                                 Pattern<? super T> pattern12, Callable<? extends X> action12,
-                                 Pattern<? super T> pattern13, Callable<? extends X> action13,
-                                 Pattern<? super T> pattern14, Callable<? extends X> action14,
-                                 Pattern<? super T> pattern15, Callable<? extends X> action15,
-                                 Pattern<? super T> pattern16, Callable<? extends X> action16,
-                                 Pattern<? super T> pattern17, Callable<? extends X> action17,
-                                 Pattern<? super T> pattern18, Callable<? extends X> action18,
-                                 Pattern<? super T> pattern19, Callable<? extends X> action19) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5,
+                                 Pattern<? super T> pattern6, MatchAction<? extends X, E> action6,
+                                 Pattern<? super T> pattern7, MatchAction<? extends X, E> action7,
+                                 Pattern<? super T> pattern8, MatchAction<? extends X, E> action8,
+                                 Pattern<? super T> pattern9, MatchAction<? extends X, E> action9,
+                                 Pattern<? super T> pattern10, MatchAction<? extends X, E> action10,
+                                 Pattern<? super T> pattern11, MatchAction<? extends X, E> action11,
+                                 Pattern<? super T> pattern12, MatchAction<? extends X, E> action12,
+                                 Pattern<? super T> pattern13, MatchAction<? extends X, E> action13,
+                                 Pattern<? super T> pattern14, MatchAction<? extends X, E> action14,
+                                 Pattern<? super T> pattern15, MatchAction<? extends X, E> action15,
+                                 Pattern<? super T> pattern16, MatchAction<? extends X, E> action16,
+                                 Pattern<? super T> pattern17, MatchAction<? extends X, E> action17,
+                                 Pattern<? super T> pattern18, MatchAction<? extends X, E> action18,
+                                 Pattern<? super T> pattern19, MatchAction<? extends X, E> action19) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6),
                 withCase(pattern7, action7), withCase(pattern8, action8), withCase(pattern9, action9),
@@ -328,26 +327,26 @@ public class Patterns {
                 withCase(pattern19, action19));
     }
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5,
-                                 Pattern<? super T> pattern6, Callable<? extends X> action6,
-                                 Pattern<? super T> pattern7, Callable<? extends X> action7,
-                                 Pattern<? super T> pattern8, Callable<? extends X> action8,
-                                 Pattern<? super T> pattern9, Callable<? extends X> action9,
-                                 Pattern<? super T> pattern10, Callable<? extends X> action10,
-                                 Pattern<? super T> pattern11, Callable<? extends X> action11,
-                                 Pattern<? super T> pattern12, Callable<? extends X> action12,
-                                 Pattern<? super T> pattern13, Callable<? extends X> action13,
-                                 Pattern<? super T> pattern14, Callable<? extends X> action14,
-                                 Pattern<? super T> pattern15, Callable<? extends X> action15,
-                                 Pattern<? super T> pattern16, Callable<? extends X> action16,
-                                 Pattern<? super T> pattern17, Callable<? extends X> action17,
-                                 Pattern<? super T> pattern18, Callable<? extends X> action18,
-                                 Pattern<? super T> pattern19, Callable<? extends X> action19,
-                                 Pattern<? super T> pattern20, Callable<? extends X> action20) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5,
+                                 Pattern<? super T> pattern6, MatchAction<? extends X, E> action6,
+                                 Pattern<? super T> pattern7, MatchAction<? extends X, E> action7,
+                                 Pattern<? super T> pattern8, MatchAction<? extends X, E> action8,
+                                 Pattern<? super T> pattern9, MatchAction<? extends X, E> action9,
+                                 Pattern<? super T> pattern10, MatchAction<? extends X, E> action10,
+                                 Pattern<? super T> pattern11, MatchAction<? extends X, E> action11,
+                                 Pattern<? super T> pattern12, MatchAction<? extends X, E> action12,
+                                 Pattern<? super T> pattern13, MatchAction<? extends X, E> action13,
+                                 Pattern<? super T> pattern14, MatchAction<? extends X, E> action14,
+                                 Pattern<? super T> pattern15, MatchAction<? extends X, E> action15,
+                                 Pattern<? super T> pattern16, MatchAction<? extends X, E> action16,
+                                 Pattern<? super T> pattern17, MatchAction<? extends X, E> action17,
+                                 Pattern<? super T> pattern18, MatchAction<? extends X, E> action18,
+                                 Pattern<? super T> pattern19, MatchAction<? extends X, E> action19,
+                                 Pattern<? super T> pattern20, MatchAction<? extends X, E> action20) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6),
                 withCase(pattern7, action7), withCase(pattern8, action8), withCase(pattern9, action9),
@@ -358,27 +357,27 @@ public class Patterns {
     }
 
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5,
-                                 Pattern<? super T> pattern6, Callable<? extends X> action6,
-                                 Pattern<? super T> pattern7, Callable<? extends X> action7,
-                                 Pattern<? super T> pattern8, Callable<? extends X> action8,
-                                 Pattern<? super T> pattern9, Callable<? extends X> action9,
-                                 Pattern<? super T> pattern10, Callable<? extends X> action10,
-                                 Pattern<? super T> pattern11, Callable<? extends X> action11,
-                                 Pattern<? super T> pattern12, Callable<? extends X> action12,
-                                 Pattern<? super T> pattern13, Callable<? extends X> action13,
-                                 Pattern<? super T> pattern14, Callable<? extends X> action14,
-                                 Pattern<? super T> pattern15, Callable<? extends X> action15,
-                                 Pattern<? super T> pattern16, Callable<? extends X> action16,
-                                 Pattern<? super T> pattern17, Callable<? extends X> action17,
-                                 Pattern<? super T> pattern18, Callable<? extends X> action18,
-                                 Pattern<? super T> pattern19, Callable<? extends X> action19,
-                                 Pattern<? super T> pattern20, Callable<? extends X> action20,
-                                 Pattern<? super T> pattern21, Callable<? extends X> action21) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5,
+                                 Pattern<? super T> pattern6, MatchAction<? extends X, E> action6,
+                                 Pattern<? super T> pattern7, MatchAction<? extends X, E> action7,
+                                 Pattern<? super T> pattern8, MatchAction<? extends X, E> action8,
+                                 Pattern<? super T> pattern9, MatchAction<? extends X, E> action9,
+                                 Pattern<? super T> pattern10, MatchAction<? extends X, E> action10,
+                                 Pattern<? super T> pattern11, MatchAction<? extends X, E> action11,
+                                 Pattern<? super T> pattern12, MatchAction<? extends X, E> action12,
+                                 Pattern<? super T> pattern13, MatchAction<? extends X, E> action13,
+                                 Pattern<? super T> pattern14, MatchAction<? extends X, E> action14,
+                                 Pattern<? super T> pattern15, MatchAction<? extends X, E> action15,
+                                 Pattern<? super T> pattern16, MatchAction<? extends X, E> action16,
+                                 Pattern<? super T> pattern17, MatchAction<? extends X, E> action17,
+                                 Pattern<? super T> pattern18, MatchAction<? extends X, E> action18,
+                                 Pattern<? super T> pattern19, MatchAction<? extends X, E> action19,
+                                 Pattern<? super T> pattern20, MatchAction<? extends X, E> action20,
+                                 Pattern<? super T> pattern21, MatchAction<? extends X, E> action21) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6),
                 withCase(pattern7, action7), withCase(pattern8, action8), withCase(pattern9, action9),
@@ -388,28 +387,28 @@ public class Patterns {
                 withCase(pattern19, action19), withCase(pattern20, action20), withCase(pattern21, action21));
     }
 
-    public static <T, X> X match(T value, Pattern<? super T> pattern1, Callable<? extends X> action1,
-                                 Pattern<? super T> pattern2, Callable<? extends X> action2,
-                                 Pattern<? super T> pattern3, Callable<? extends X> action3,
-                                 Pattern<? super T> pattern4, Callable<? extends X> action4,
-                                 Pattern<? super T> pattern5, Callable<? extends X> action5,
-                                 Pattern<? super T> pattern6, Callable<? extends X> action6,
-                                 Pattern<? super T> pattern7, Callable<? extends X> action7,
-                                 Pattern<? super T> pattern8, Callable<? extends X> action8,
-                                 Pattern<? super T> pattern9, Callable<? extends X> action9,
-                                 Pattern<? super T> pattern10, Callable<? extends X> action10,
-                                 Pattern<? super T> pattern11, Callable<? extends X> action11,
-                                 Pattern<? super T> pattern12, Callable<? extends X> action12,
-                                 Pattern<? super T> pattern13, Callable<? extends X> action13,
-                                 Pattern<? super T> pattern14, Callable<? extends X> action14,
-                                 Pattern<? super T> pattern15, Callable<? extends X> action15,
-                                 Pattern<? super T> pattern16, Callable<? extends X> action16,
-                                 Pattern<? super T> pattern17, Callable<? extends X> action17,
-                                 Pattern<? super T> pattern18, Callable<? extends X> action18,
-                                 Pattern<? super T> pattern19, Callable<? extends X> action19,
-                                 Pattern<? super T> pattern20, Callable<? extends X> action20,
-                                 Pattern<? super T> pattern21, Callable<? extends X> action21,
-                                 Pattern<? super T> pattern22, Callable<? extends X> action22) throws Exception {
+    public static <T, X, E extends Throwable> X match(T value, Pattern<? super T> pattern1, MatchAction<? extends X, E> action1,
+                                 Pattern<? super T> pattern2, MatchAction<? extends X, E> action2,
+                                 Pattern<? super T> pattern3, MatchAction<? extends X, E> action3,
+                                 Pattern<? super T> pattern4, MatchAction<? extends X, E> action4,
+                                 Pattern<? super T> pattern5, MatchAction<? extends X, E> action5,
+                                 Pattern<? super T> pattern6, MatchAction<? extends X, E> action6,
+                                 Pattern<? super T> pattern7, MatchAction<? extends X, E> action7,
+                                 Pattern<? super T> pattern8, MatchAction<? extends X, E> action8,
+                                 Pattern<? super T> pattern9, MatchAction<? extends X, E> action9,
+                                 Pattern<? super T> pattern10, MatchAction<? extends X, E> action10,
+                                 Pattern<? super T> pattern11, MatchAction<? extends X, E> action11,
+                                 Pattern<? super T> pattern12, MatchAction<? extends X, E> action12,
+                                 Pattern<? super T> pattern13, MatchAction<? extends X, E> action13,
+                                 Pattern<? super T> pattern14, MatchAction<? extends X, E> action14,
+                                 Pattern<? super T> pattern15, MatchAction<? extends X, E> action15,
+                                 Pattern<? super T> pattern16, MatchAction<? extends X, E> action16,
+                                 Pattern<? super T> pattern17, MatchAction<? extends X, E> action17,
+                                 Pattern<? super T> pattern18, MatchAction<? extends X, E> action18,
+                                 Pattern<? super T> pattern19, MatchAction<? extends X, E> action19,
+                                 Pattern<? super T> pattern20, MatchAction<? extends X, E> action20,
+                                 Pattern<? super T> pattern21, MatchAction<? extends X, E> action21,
+                                 Pattern<? super T> pattern22, MatchAction<? extends X, E> action22) throws E, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3),
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6),
                 withCase(pattern7, action7), withCase(pattern8, action8), withCase(pattern9, action9),

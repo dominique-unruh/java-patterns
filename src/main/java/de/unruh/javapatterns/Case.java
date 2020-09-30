@@ -2,16 +2,16 @@ package de.unruh.javapatterns;
 
 import java.util.concurrent.Callable;
 
-public class Case<In, Return> {
+public class Case<In, Return, Exn extends Throwable> {
     private final Pattern<? super In> pattern;
-    private final Callable<? extends Return> action;
+    private final MatchAction<? extends Return, Exn> action;
 
-    public Case(Pattern<? super In> pattern, Callable<? extends Return> action) {
+    public Case(Pattern<? super In> pattern, MatchAction<? extends Return, Exn> action) {
         this.pattern = pattern;
         this.action = action;
     }
 
-    PatternResult<Return> apply(MatchManager mgr, In t) throws Exception {
+    PatternResult<Return> apply(MatchManager mgr, In t) throws Exn {
 //              out.println("Starting case");
         try {
             pattern.apply(mgr, t);
