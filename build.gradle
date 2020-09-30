@@ -1,12 +1,11 @@
 plugins {
-    id 'java'
-    id 'maven'
+    id 'java-library'
+    id 'maven-publish'
     id 'signing'
 }
 
 group 'de.unruh'
 version 'master-SNAPSHOT'
-archivesBaseName = "java-patterns"
 
 repositories {
     mavenCentral()
@@ -23,17 +22,30 @@ java {
 }
 
 test {
-//    executable "/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java"
     useJUnitPlatform()
 }
 
-uploadArchives {
+// Potentially useful: https://sasbury.github.io/notes/2019/gradle_travis_sonatype.html
+
+publishing {
+    publications {
+       javaPatterns(MavenPublication) {
+           from components.java
+       }
+    }
+
     repositories {
-        mavenDeployer {
-//            repository(url: "file://localhost/tmp/myRepo/")
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: "unruh", password: project.properties.ossrhPassword)
+        maven {
+            name = 'sonatype-snapshot'
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+            credentials {
+                username "unruh"
+                password project.properties.ossrhPassword
             }
         }
     }
+}
+
+signing {
+    sign publishing.publications.javaPatterns
 }
