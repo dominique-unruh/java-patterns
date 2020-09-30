@@ -11,15 +11,15 @@ public class Case<In, Return> {
         this.action = action;
     }
 
-    Option<Return> apply(MatchManager mgr, In t) throws Exception {
+    PatternResult<Return> apply(MatchManager mgr, In t) throws Exception {
 //              out.println("Starting case");
         try {
             pattern.apply(mgr, t);
             // PatternMatchReject here will also work to try the next match
-            return new Some<>(action.call());
+            return new PatternResultSome<>(action.call());
         } catch (PatternMatchReject e) {
 //                  out.println("Case "+pattern+" fail: "+t);
-            return new None<>();
+            return new PatternResultNone<>();
         } finally {
             mgr.clearCaptured();
         }

@@ -3,14 +3,14 @@ package de.unruh.javapatterns;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public interface Option<T> {
+interface PatternResult<T> {
     boolean nonEmpty();
     T get();
 }
-final class Some<T> implements Option<T> {
+final class PatternResultSome<T> implements PatternResult<T> {
     private final T value;
 
-    public Some(T value) {
+    public PatternResultSome(T value) {
         this.value = value;
     }
 
@@ -28,7 +28,7 @@ final class Some<T> implements Option<T> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Some<?> some = (Some<?>) o;
+        PatternResultSome<?> some = (PatternResultSome<?>) o;
         return Objects.equals(value, some.value);
     }
 
@@ -37,7 +37,7 @@ final class Some<T> implements Option<T> {
         return Objects.hash(value);
     }
 }
-final class None<T> implements Option<T> {
+final class PatternResultNone<T> implements PatternResult<T> {
     @Override
     public boolean nonEmpty() {
         return false;
@@ -55,6 +55,6 @@ final class None<T> implements Option<T> {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof None;
+        return obj instanceof PatternResultNone;
     }
 }

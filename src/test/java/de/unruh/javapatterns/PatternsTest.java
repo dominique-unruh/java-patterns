@@ -66,11 +66,11 @@ class PatternsTest {
     @Test
     void instance() throws Exception {
         // TODO: Can we type make this type check with Capture<None<String>>?
-        Capture<None> x = new Capture<>("x");
+        Capture<PatternResultNone> x = new Capture<>("x");
         // TODO: Avoid "return null"
-        match(new None<String>(),
-                Instance(Some.class, Any), () -> {fail(); return null;},
-                Instance(None.class, x), () -> {assertEquals(new None<>(), x.v()); return null;});
+        match(new PatternResultNone<String>(),
+                Instance(PatternResultSome.class, Any), () -> {fail(); return null;},
+                Instance(PatternResultNone.class, x), () -> {assertEquals(new PatternResultNone<>(), x.v()); return null;});
     }
 
     @Test

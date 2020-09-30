@@ -16,7 +16,7 @@ public class Patterns {
     public static <T, X> X match(T value, Case<T, X>... cases) throws Exception {
         MatchManager mgr = new MatchManager();
         for (Case<T, X> cas : cases) {
-            Option<X> result = cas.apply(mgr, value);
+            PatternResult<X> result = cas.apply(mgr, value);
             if (result.nonEmpty())
                 return result.get();
         }
