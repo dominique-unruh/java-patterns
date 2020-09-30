@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 
 // DOCUMENT, mention (somewhere): can access captures already in match, can fail match in action
 // TODO: Can we handle exceptions better? (Avoid "throws Exception" clause)
-// TODO: Test cases
+// TODO split into several classes, and one to inherit all importable functions
 public class Patterns {
     public static <T, X> Case<T, X> withCase(Pattern<? super T> pattern, Callable<? extends X> action) {
         return new Case<>(pattern, action);
@@ -435,8 +435,22 @@ public class Patterns {
         };
     }
 
+    public static <T> Pattern<T> Is(PatternSupplier<T> expected) {
+        return new Pattern<>() {
+            @Override
+            public void apply(MatchManager mgr, T value) throws PatternMatchReject {
+                if (!expected.get().equals(value)) reject();
+            }
+
+            @Override
+            public String toString() {
+                return "=" + expected;
+            }
+        };
+    }
+
     public static <T> Pattern<T> Is(Capture<T> expected) {
-        return Is(expected.v());
+        return Is(expected::v);
     }
 
     public static final Pattern<Object> Any = new Pattern<>() {

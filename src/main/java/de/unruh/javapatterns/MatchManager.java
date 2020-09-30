@@ -21,16 +21,16 @@ public final class MatchManager {
         captured.clear();
     }
 
-    public boolean excursion(MatchExcursion excursion) {
-        return excursion(() -> { excursion.run(); return true; }, x -> true, false);
+    public boolean excursion(PatternRunnable runnable) {
+        return excursion(() -> { runnable.run(); return true; }, x -> true, false);
     }
 
 
-    public <T> T excursion(MatchExcursionResult<T> excursion, Predicate<T> shouldReset, T failValue) {
+    public <T> T excursion(PatternSupplier<T> excursion, Predicate<T> shouldReset, T failValue) {
         int size = captured.size();
         T result = failValue;
         try {
-            result = excursion.run();
+            result = excursion.get();
             if (shouldReset.test(result)) throw new PatternMatchReject();
         } catch (PatternMatchReject e) {
             while (captured.size() > size) {
@@ -39,13 +39,5 @@ public final class MatchManager {
             }
         }
         return result;
-    }
-
-    public interface MatchExcursion {
-        void run() throws PatternMatchReject;
-    }
-
-    public interface MatchExcursionResult<T> {
-        T run() throws PatternMatchReject;
     }
 }
