@@ -1,5 +1,7 @@
 package de.unruh.javapatterns;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
 
@@ -538,6 +540,7 @@ public class Patterns {
             public void apply(MatchManager mgr, Object value) throws PatternMatchReject {
                 U castValue = null;
                 try {
+                    // TODO: use clazz.isInstance to avoid creation of ClassCastException (stack trace construction)
                     castValue = clazz.cast(value);
                 } catch (ClassCastException e) {
                     reject();
@@ -550,6 +553,39 @@ public class Patterns {
                 return "Instance("+clazz.getSimpleName()+","+pattern+")";
             }
         };
+    }
+
+    public abstract static class Instance<U> extends Pattern<U> {
+        private final Pattern<Object> instancePattern;
+        private final Pattern<? super U> pattern;
+        private final Type typeU;
+        @SuppressWarnings("unchecked")
+        public Instance(Pattern<? super U> pattern) {
+            // Based on https://stackoverflow.com/a/64138964/2646248, https://www.baeldung.com/java-super-type-tokens
+            if (getClass().getSuperclass() != Instance.class)
+                throw new InvalidPatternMatch("A subclass of a subclass of "+Instance.class+" was created. This is not the intended use.");
+            Type superclass = getClass().getGenericSuperclass();
+            typeU = ((ParameterizedType) superclass).getActualTypeArguments()[0];
+            Class<U> clazz;
+            if (typeU instanceof ParameterizedType)
+                clazz = (Class<U>) ((ParameterizedType) typeU).getRawType();
+            else if (typeU instanceof Class)
+                clazz = (Class<U>) typeU;
+            else
+                throw new InvalidPatternMatch("Type parameter of "+Instance.class.getName()+" must be a class, not "+typeU+" "+typeU.getClass());
+            instancePattern = Instance(clazz, pattern);
+            this.pattern = pattern;
+        };
+
+        @Override
+        public void apply(MatchManager mgr, U value) throws PatternMatchReject {
+            instancePattern.apply(mgr, value);
+        }
+
+        @Override
+        public String toString() {
+            return "("+pattern+" : "+typeU+")";
+        }
     }
 
     public static <T> Pattern<T> Pred(Predicate<? super T> predicate) {
