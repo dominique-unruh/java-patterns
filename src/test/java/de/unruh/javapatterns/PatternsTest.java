@@ -2,8 +2,6 @@ package de.unruh.javapatterns;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.Callable;
-
 import static de.unruh.javapatterns.Patterns.*;
 import static de.unruh.javapatterns.Match.*;
 import static org.junit.jupiter.api.Assertions.*;
