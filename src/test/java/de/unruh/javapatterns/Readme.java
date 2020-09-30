@@ -43,17 +43,6 @@ public class Readme {
     Term Number(int i) { return new Number(i); }
     Term Variable(String name) { return new Variable(name); }
 
-    public class Pair<T,U> {
-        final T t;
-        final U u;
-        Pair(T t, U u) {
-            this.t = t;
-            this.u = u;
-        }
-    }
-
-    <T,U> Pair<T,U> Pair(T t, U u) { return new Pair<>(t,u); }
-
     Pattern<Term> Plus(Pattern<? super Term> patternA, Pattern<? super Term> patternB) {
         return new Pattern<>() {
             @Override public void apply(MatchManager mgr, Term term) throws PatternMatchReject {
@@ -130,18 +119,6 @@ public class Readme {
         };
     }
 
-    <T,U> Pattern<Pair<T,U>> Pair(Pattern<? super T> patternT, Pattern<? super U> patternU) {
-        return new Pattern<>() {
-            @Override public void apply(MatchManager mgr, Pair<T,U> pair) throws PatternMatchReject {
-                patternT.apply(mgr, pair.t);
-                patternU.apply(mgr, pair.u);
-            }
-            @Override public String toString() {
-                return "("+patternT+","+patternU+")";
-            }
-        };
-    }
-
     boolean equal(Term t1, Term t2) throws MatchException {
         Capture<Term> a1 = new Capture<>("a1");
         Capture<Term> a2 = new Capture<>("a2");
@@ -153,14 +130,20 @@ public class Readme {
         Capture<String> x2 = new Capture<>("x2");
 
         return match(
-                Pair(t1, t2),
+                new Term[] { t1, t2 },
 
-                Pair(Plus(a1, b1), Plus(a2, b2)), () -> equal(a1.v(), a2.v()) && equal(b1.v(), b2.v()),
-                Pair(Minus(a1, b1), Minus(a2, b2)), () -> equal(a1.v(), a2.v()) && equal(b1.v(), b2.v()),
-                Pair(Times(a1, b1), Times(a2, b2)), () -> equal(a1.v(), a2.v()) && equal(b1.v(), b2.v()),
-                Pair(Divide(a1, b1), Divide(a2, b2)), () -> equal(a1.v(), a2.v()) && equal(b1.v(), b2.v()),
-                Pair(Number(i1), Number(i2)), () -> i1.v().equals(i2.v()),
-                Pair(Variable(x1), Variable(x2)), () -> x1.v().equals(x2.v()),
+                Array(Plus(a1, b1), Plus(a2, b2)), ()
+                        -> equal(a1.v(), a2.v()) && equal(b1.v(), b2.v()),
+                Array(Minus(a1, b1), Minus(a2, b2)), ()
+                        -> equal(a1.v(), a2.v()) && equal(b1.v(), b2.v()),
+                Array(Times(a1, b1), Times(a2, b2)), ()
+                        -> equal(a1.v(), a2.v()) && equal(b1.v(), b2.v()),
+                Array(Divide(a1, b1), Divide(a2, b2)), ()
+                        -> equal(a1.v(), a2.v()) && equal(b1.v(), b2.v()),
+                Array(Number(i1), Number(i2)), ()
+                        -> i1.v().equals(i2.v()),
+                Array(Variable(x1), Variable(x2)), ()
+                        -> x1.v().equals(x2.v()),
                 Any, () -> false
         );
     };
