@@ -4,12 +4,16 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 interface PatternResult<T> {
+    // TODO implement isEmpty instead
+    @org.jetbrains.annotations.Contract(pure = true)
     boolean nonEmpty();
+    @org.jetbrains.annotations.Contract(pure = true)
     T get();
 }
 final class PatternResultSome<T> implements PatternResult<T> {
     private final T value;
 
+    @org.jetbrains.annotations.Contract(pure = true)
     public PatternResultSome(T value) {
         this.value = value;
     }

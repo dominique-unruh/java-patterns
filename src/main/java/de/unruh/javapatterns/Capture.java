@@ -1,5 +1,8 @@
 package de.unruh.javapatterns;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 // DOCUMENT
 final public class Capture<T> extends Pattern<T> {
     private final String name;
@@ -9,7 +12,8 @@ final public class Capture<T> extends Pattern<T> {
         return name;
     }
 
-    public Capture(String name) {
+    @org.jetbrains.annotations.Contract(pure = true)
+    public Capture(@NotNull String name) {
         this.name = name;
     }
 
@@ -21,6 +25,7 @@ final public class Capture<T> extends Pattern<T> {
         assigned = false;
     }
 
+    @org.jetbrains.annotations.Contract(pure = true)
     public T v() {
 //        out.println("Reading "+name+" "+value+" "+assigned);
         if (!assigned)
@@ -29,7 +34,7 @@ final public class Capture<T> extends Pattern<T> {
     }
 
     @Override
-    public void apply(MatchManager mgr, T value) {
+    public void apply(@NotNull MatchManager mgr, @Nullable T value) {
 //        out.println("Assigning "+name+" "+value+" "+assigned);
         if (assigned)
             throw new InvalidPatternMatch("Re-assigned " + name + " in pattern match");

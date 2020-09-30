@@ -1,5 +1,6 @@
 package de.unruh.javapatterns;
 
+// TODO Add Contract/NotNull/Nullable
 public final class Match {
     /** Make this class uninstantiable */
     @org.jetbrains.annotations.Contract(pure = true)
