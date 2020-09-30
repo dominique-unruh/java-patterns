@@ -127,14 +127,10 @@ public final class Patterns {
         return new Pattern<>() {
             @Override
             public void apply(MatchManager mgr, Object value) throws PatternMatchReject {
-                U castValue = null;
-                try {
-                    // TODO: use clazz.isInstance to avoid creation of ClassCastException (stack trace construction)
-                    castValue = clazz.cast(value);
-                } catch (ClassCastException e) {
-                    reject();
-                }
-                pattern.apply(mgr,castValue);
+                if (!clazz.isInstance(value)) reject();
+                //noinspection unchecked
+                pattern.apply(mgr, (U)value);
+                // we could use Class.cast(value) instead of (U)value, but that probably just duplicates the dynamic type check
             }
 
             @Override
