@@ -1,7 +1,11 @@
 package de.unruh.javapatterns;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
 
@@ -11,11 +15,13 @@ public final class Patterns {
     @org.jetbrains.annotations.Contract(pure = true)
     private Patterns() {}
 
-    public static <T> Pattern<T> Is(T expected) {
+    @NotNull
+    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    public static <T> Pattern<T> Is(@Nullable T expected) {
         return new Pattern<>() {
             @Override
             public void apply(MatchManager mgr, T value) throws PatternMatchReject {
-                if (!expected.equals(value)) reject();
+                if (!Objects.equals(expected,value)) reject();
             }
 
             @Override
@@ -25,11 +31,13 @@ public final class Patterns {
         };
     }
 
-    public static <T> Pattern<T> Is(PatternSupplier<T> expected) {
+    @NotNull
+    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    public static <T> Pattern<T> Is(@NotNull PatternSupplier<T> expected) {
         return new Pattern<>() {
             @Override
             public void apply(MatchManager mgr, T value) throws PatternMatchReject {
-                if (!expected.get().equals(value)) reject();
+                if (!Objects.equals(expected.get(), value)) reject();
             }
 
             @Override
@@ -39,10 +47,13 @@ public final class Patterns {
         };
     }
 
-    public static <T> Pattern<T> Is(Capture<T> expected) {
+    @NotNull
+    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    public static <T> Pattern<T> Is(@NotNull Capture<T> expected) {
         return Is(expected::v);
     }
 
+    @NotNull
     public static final Pattern<Object> Any = new Pattern<>() {
         @Override
         public void apply(MatchManager mgr, Object value) {
@@ -54,6 +65,7 @@ public final class Patterns {
         }
     };
 
+    @NotNull
     public static final Pattern<Object> Null = new Pattern<>() {
         @Override
         public void apply(MatchManager mgr, Object value) throws PatternMatchReject {
@@ -66,7 +78,9 @@ public final class Patterns {
         }
     };
 
-    public static <T> Pattern<T> NotNull(Pattern<? super T> pattern) {
+    @NotNull
+    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    public static <T> Pattern<T> NotNull(@NotNull Pattern<? super T> pattern) {
         return new Pattern<>() {
             @Override
             public void apply(MatchManager mgr, T value) throws PatternMatchReject {
@@ -81,8 +95,10 @@ public final class Patterns {
         };
     }
 
+    @NotNull
+    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
     @SafeVarargs
-    public static <T> Pattern<T> And(Pattern<? super T>... patterns) {
+    public static <T> Pattern<T> And(@NotNull Pattern<? super T>... patterns) {
         return new Pattern<>() {
             @Override
             public void apply(MatchManager mgr, T value) throws PatternMatchReject {
@@ -100,8 +116,10 @@ public final class Patterns {
         };
     }
 
+    @NotNull
+    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
     @SafeVarargs
-    public static <T> Pattern<T> Or(Pattern<? super T>... patterns) {
+    public static <T> Pattern<T> Or(@NotNull Pattern<? super T>... patterns) {
         return new Pattern<T>() {
             @Override
             public void apply(MatchManager mgr, T value) throws PatternMatchReject {
@@ -123,7 +141,9 @@ public final class Patterns {
         };
     }
 
-    public static <U> Pattern<Object> Instance(Class<U> clazz, Pattern<? super U> pattern) {
+    @NotNull
+    @org.jetbrains.annotations.Contract(pure = true, value = "_, _ -> new")
+    public static <U> Pattern<Object> Instance(@NotNull Class<U> clazz, @NotNull Pattern<? super U> pattern) {
         return new Pattern<>() {
             @Override
             public void apply(MatchManager mgr, Object value) throws PatternMatchReject {
@@ -145,7 +165,8 @@ public final class Patterns {
         private final Pattern<? super U> pattern;
         private final Type typeU;
         @SuppressWarnings("unchecked")
-        public Instance(Pattern<? super U> pattern) {
+        @org.jetbrains.annotations.Contract(pure = true)
+        public Instance(@NotNull Pattern<? super U> pattern) {
             // Based on https://stackoverflow.com/a/64138964/2646248, https://www.baeldung.com/java-super-type-tokens
             if (getClass().getSuperclass() != Instance.class)
                 throw new InvalidPatternMatch("A subclass of a subclass of "+Instance.class+" was created. This is not the intended use.");
@@ -173,7 +194,9 @@ public final class Patterns {
         }
     }
 
-    public static <T> Pattern<T> Pred(Predicate<? super T> predicate) {
+    @NotNull
+    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    public static <T> Pattern<T> Pred(@NotNull Predicate<? super T> predicate) {
         return new Pattern<T>() {
             @Override
             public void apply(MatchManager mgr, T value) throws PatternMatchReject {
@@ -187,7 +210,9 @@ public final class Patterns {
         };
     }
 
-    public static <T> Pattern<T> NoMatch(Pattern<? super T> pattern) {
+    @NotNull
+    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    public static <T> Pattern<T> NoMatch(@NotNull Pattern<? super T> pattern) {
         return new Pattern<T>() {
             @Override
             public void apply(MatchManager mgr, T value) throws PatternMatchReject {
@@ -202,8 +227,10 @@ public final class Patterns {
         };
     }
 
+    @NotNull
+    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
     @SafeVarargs
-    public static <T> Pattern<T[]> Array(Pattern<? super T> ... patterns) {
+    public static <T> Pattern<T[]> Array(@NotNull Pattern<? super T> ... patterns) {
         return new Pattern<T[]>() {
             @Override
             public void apply(MatchManager mgr, T[] value) throws PatternMatchReject {
