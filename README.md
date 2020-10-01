@@ -4,7 +4,74 @@
 [![Javadoc](https://javadoc.io/badge2/de.unruh/java-patterns/javadoc.svg)](https://javadoc.io/doc/de.unruh/java-patterns/latest/de/unruh/javapatterns/index.html)
 [![Gitter chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/dominique-unruh/java-patterns?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Library for functional pattern matching in Java
+## What is this library for?
+
+This library provides support for functional pattern matching in Java.
+ 
+In many functional languages, 
+it is possible to explore the structure of a term easily and recursively using pattern matches. 
+For example, if we have a term `term = Plus(Minus(a,b),c)`(assuming some reasonable definitions of
+`Plus`, `Minus` and a suitable setup), in [Scala](https://www.scala-lang.org/) we can find
+`a`, `b`, and `c` using the following code:
+```Scala
+term match {
+  case Plus(Minus(x, y), z) => doSomething(x, y, z)
+  case _ => doSomethingElse()
+}
+```
+How do we do the same in Java? Since Java does not support functional pattern matching, we need
+to write something like:
+```Java
+if (term instanceof Plus) {
+  Plus plus = (Plus)term;
+  Term xy = plus.a;
+  Term z = plus.b;
+  if (xy instanceof Minus) {
+    Minus minus = (Minus)xy;
+    Term x = minus.a;
+    Term y = minus.b;
+    doSomething(x,y,z);
+  } else
+    doSomethingElse();
+} else
+  doSomethingElse();
+```
+This is definintely harder to read. Also note the duplication of `doSomethingElse()` which would
+become even more drastic if we had a more complex pattern. And if the pattern match had more than 
+two cases, the nesting of `if`'s and `else`s would become even more complex and lead to even more 
+duplication. (The duplication can be avoided using clever use of `break`s to simulate `goto`s,
+but the code stays very hard to read. See the following implementation of a simple 
+[`replace` function](https://github.com/dominique-unruh/scala-isabelle/blob/14e3b85af0825359af82f559a6a59337a336363c/src/test/scala/de/unruh/isabelle/JavaExample.java#L22)
+in Java, ~50 lines long even using `break`s, to implement a five line
+[`Scala` function](https://github.com/dominique-unruh/scala-isabelle/blob/14e3b85af0825359af82f559a6a59337a336363c/src/test/scala/de/unruh/isabelle/Example.scala#L32)).
+
+This library solves this problem. Using it, we can write the pattern match in Java as:
+```Java
+match(term,
+  Plus(Minus(x, y), z), () -> doSomething(x, y, z),
+  Any, () -> doSomethingElse())
+``` 
+While there is still unnecessary syntactic noise (the `() ->`, for example)), the structure of the
+code is now the same as in Scala. (And the implementation of the abovementioned `replace` function
+can be [similarly improved](TODO link).)
+
+## Notable features
+
+TODO
+
+## Comparison with other approaches
+
+TODO Java patterns
+
+TODO Vavr patterns
+
+## Prerequisites
+
+TODO
+
+## Installation
+
+TODO
 
 ## Example
 
