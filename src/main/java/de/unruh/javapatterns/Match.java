@@ -1,5 +1,6 @@
 package de.unruh.javapatterns;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class Match {
     /** Make this class uninstantiable */
-    @org.jetbrains.annotations.Contract(pure = true)
+    @Contract(pure = true)
     private Match() {}
 
     /** Constructs a {@link Case} object from a pattern and lambda expression.
@@ -41,7 +42,7 @@ public final class Match {
      * @param <Exn> Exceptions that the action might throw ({@link PatternMatchReject} does not need to be
      *             declared here even if {@link Pattern#reject()} is used.)
      * @param <Return> Return type of the action */
-    @org.jetbrains.annotations.Contract(pure = true, value = "_, _ -> new")
+    @Contract(pure = true, value = "_, _ -> new")
     public static <In, Return, Exn extends Throwable> Case <In, Return, Exn>
     withCase(@NotNull Pattern<? super In> pattern, @NotNull MatchSupplier<? extends Return, Exn> action) {
         return new Case<>(pattern, action);
@@ -55,7 +56,7 @@ public final class Match {
      * @param <Exn> Exceptions that the action might throw ({@link PatternMatchReject} does not need to be
      *             declared here even if {@link Pattern#reject()} is used.)
      */
-    @org.jetbrains.annotations.Contract(pure = true, value = "_, _ -> new")
+    @Contract(pure = true, value = "_, _ -> new")
     public static <In, Exn extends Throwable> Case <In, Void, Exn>
     withCase(@NotNull Pattern<? super In> pattern, @NotNull MatchRunnable<Exn> action) {
         return new Case<>(pattern, () -> { action.run(); return null; } );

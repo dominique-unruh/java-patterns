@@ -1,5 +1,6 @@
 package de.unruh.javapatterns;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,7 +45,7 @@ final public class Capture<T> extends Pattern<T> {
      *             (printing patterns, error messages). It is recommended
      *             that this is the name of the variable holds this capture.
      */
-    @org.jetbrains.annotations.Contract(pure = true)
+    @Contract(pure = true)
     public Capture(@NotNull String name) {
         this.name = name;
     }
@@ -60,7 +61,7 @@ final public class Capture<T> extends Pattern<T> {
     /** The current value of the capture.
      * @throws InvalidPatternMatch if the capture has not been assigned in the current pattern
      */
-    @org.jetbrains.annotations.Contract(pure = true)
+    @Contract(pure = true)
     public T v() {
 //        out.println("Reading "+name+" "+value+" "+assigned);
         if (!assigned)

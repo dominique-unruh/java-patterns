@@ -1,5 +1,6 @@
 package de.unruh.javapatterns;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,11 +14,11 @@ import java.util.function.Predicate;
 // DOCUMENT, mention (somewhere): can access captures already in match, can fail match in action
 // TODO can we create a merged class for static import from Patterns and Match?
 public final class Patterns {
-    @org.jetbrains.annotations.Contract(pure = true)
+    @Contract(pure = true)
     private Patterns() {}
 
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    @Contract(pure = true, value = "_ -> new")
     public static <T> Pattern<T> Is(@Nullable T expected) {
         return new Pattern<>() {
             @Override
@@ -33,7 +34,7 @@ public final class Patterns {
     }
 
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    @Contract(pure = true, value = "_ -> new")
     public static <T> Pattern<T> Is(@NotNull PatternSupplier<T> expected) {
         return new Pattern<>() {
             @Override
@@ -49,7 +50,7 @@ public final class Patterns {
     }
 
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    @Contract(pure = true, value = "_ -> new")
     public static <T> Pattern<T> Is(@NotNull Capture<T> expected) {
         return Is(expected::v);
     }
@@ -80,7 +81,7 @@ public final class Patterns {
     };
 
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    @Contract(pure = true, value = "_ -> new")
     public static <T> Pattern<T> NotNull(@NotNull Pattern<? super T> pattern) {
         return new Pattern<>() {
             @Override
@@ -97,7 +98,7 @@ public final class Patterns {
     }
 
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    @Contract(pure = true, value = "_ -> new")
     @SafeVarargs
     public static <T> Pattern<T> And(@NotNull Pattern<? super T>... patterns) {
         return new Pattern<>() {
@@ -118,7 +119,7 @@ public final class Patterns {
     }
 
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    @Contract(pure = true, value = "_ -> new")
     @SafeVarargs
     public static <T> Pattern<T> Or(@NotNull Pattern<? super T>... patterns) {
         return new Pattern<T>() {
@@ -143,7 +144,7 @@ public final class Patterns {
     }
 
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_, _ -> new")
+    @Contract(pure = true, value = "_, _ -> new")
     public static <U> Pattern<Object> Instance(@NotNull Class<U> clazz, @NotNull Pattern<? super U> pattern) {
         return new Pattern<>() {
             @Override
@@ -166,7 +167,7 @@ public final class Patterns {
         private final Pattern<? super U> pattern;
         private final Type typeU;
         @SuppressWarnings("unchecked")
-        @org.jetbrains.annotations.Contract(pure = true)
+        @Contract(pure = true)
         public Instance(@NotNull Pattern<? super U> pattern) {
             // Based on https://stackoverflow.com/a/64138964/2646248, https://www.baeldung.com/java-super-type-tokens
             if (getClass().getSuperclass() != Instance.class)
@@ -196,7 +197,7 @@ public final class Patterns {
     }
 
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    @Contract(pure = true, value = "_ -> new")
     public static <T> Pattern<T> Pred(@NotNull Predicate<? super T> predicate) {
         return new Pattern<T>() {
             @Override
@@ -212,7 +213,7 @@ public final class Patterns {
     }
 
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    @Contract(pure = true, value = "_ -> new")
     public static <T> Pattern<T> NoMatch(@NotNull Pattern<? super T> pattern) {
         return new Pattern<T>() {
             @Override
@@ -229,7 +230,7 @@ public final class Patterns {
     }
 
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    @Contract(pure = true, value = "_ -> new")
     @SafeVarargs
     public static <T> Pattern<T[]> Array(@NotNull Pattern<? super T> ... patterns) {
         return new Pattern<T[]>() {

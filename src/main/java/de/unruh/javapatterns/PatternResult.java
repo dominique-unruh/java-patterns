@@ -1,20 +1,22 @@
 package de.unruh.javapatterns;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
 // DOCUMENT
 interface PatternResult<T> {
-    @org.jetbrains.annotations.Contract(pure = true)
+    @Contract(pure = true)
     boolean isEmpty();
-    @org.jetbrains.annotations.Contract(pure = true)
+    @Contract(pure = true)
     T get();
 }
 
 final class PatternResultSome<T> implements PatternResult<T> {
     private final T value;
 
-    @org.jetbrains.annotations.Contract(pure = true)
+    @Contract(pure = true)
     public PatternResultSome(T value) {
         this.value = value;
     }

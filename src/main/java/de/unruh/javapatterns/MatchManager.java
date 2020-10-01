@@ -1,5 +1,6 @@
 package de.unruh.javapatterns;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,7 +11,7 @@ import java.util.function.Predicate;
 // DOCUMENT
 public final class MatchManager {
     // Making this package private
-    @org.jetbrains.annotations.Contract(pure = true)
+    @Contract(pure = true)
     MatchManager() {}
 
     @NotNull
