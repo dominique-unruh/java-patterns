@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * Captures need to be declared before the pattern match with a given type, e.g.,
  * <pre>
- * Capture&lt;String> x = new Capture<>("x");
+ * Capture&lt;String> x = new Capture&lt;>("x");
  * ...
  * match(value, ... patterns using x ...)
  * </pre>

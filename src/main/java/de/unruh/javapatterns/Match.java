@@ -25,7 +25,8 @@ import org.jetbrains.annotations.Nullable;
  * <pre>
  * result = match(value, pattern1, action1, pattern2, action2, ...)
  * </pre>
- * with at most 22 pattern/action pairs.
+ * with at most 22 pattern/action pairs. (This is enabled via a large number of helper functions in this class,
+ * all called {@code match}. These helper functions are elided from this API documentation to keep things readable.)
  */
 public final class Match {
     /** Make this class uninstantiable */
@@ -86,23 +87,27 @@ public final class Match {
         throw new MatchException(value);
     }
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value,
                                                       @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1) throws Exn, MatchException {
         return match(value, withCase(pattern1, action1));
     }
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value,
                                                       @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2) throws Exn, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2));
     }
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3) throws Exn, MatchException {
         return match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3));
     }
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -112,6 +117,7 @@ public final class Match {
     }
 
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -122,6 +128,7 @@ public final class Match {
     }
 
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -132,6 +139,7 @@ public final class Match {
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6));
     }
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -144,6 +152,7 @@ public final class Match {
                 withCase(pattern7, action7));
     }
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -158,6 +167,7 @@ public final class Match {
     }
 
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -173,6 +183,7 @@ public final class Match {
     }
 
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -189,6 +200,7 @@ public final class Match {
                 withCase(pattern10, action10));
     }
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -206,6 +218,7 @@ public final class Match {
                 withCase(pattern10, action10), withCase(pattern11, action11));
     }
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -224,6 +237,7 @@ public final class Match {
                 withCase(pattern10, action10), withCase(pattern11, action11), withCase(pattern12, action12));
     }
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -245,6 +259,7 @@ public final class Match {
     }
 
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -267,6 +282,7 @@ public final class Match {
     }
 
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -289,6 +305,7 @@ public final class Match {
                 withCase(pattern13, action13), withCase(pattern14, action14), withCase(pattern15, action15));
     }
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -313,6 +330,7 @@ public final class Match {
                 withCase(pattern16, action16));
     }
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -338,6 +356,7 @@ public final class Match {
                 withCase(pattern16, action16), withCase(pattern17, action17));
     }
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -365,6 +384,7 @@ public final class Match {
     }
 
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -393,6 +413,7 @@ public final class Match {
                 withCase(pattern19, action19));
     }
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -423,6 +444,7 @@ public final class Match {
     }
 
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -453,6 +475,7 @@ public final class Match {
                 withCase(pattern19, action19), withCase(pattern20, action20), withCase(pattern21, action21));
     }
 
+    /** @hidden */
     public static <In, Return, Exn extends Throwable> Return match(@Nullable In value, @NotNull Pattern<? super In> pattern1, @NotNull MatchSupplier<? extends Return, Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, @NotNull MatchSupplier<? extends Return, Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, @NotNull MatchSupplier<? extends Return, Exn> action3,
@@ -498,21 +521,25 @@ public final class Match {
 
 
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1) throws Exn, MatchException {
         match(value, withCase(pattern1, action1));
     }
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2) throws Exn, MatchException {
         match(value, withCase(pattern1, action1), withCase(pattern2, action2));
     }
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3) throws Exn, MatchException {
         match(value, withCase(pattern1, action1), withCase(pattern2, action2), withCase(pattern3, action3));
     }
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -522,6 +549,7 @@ public final class Match {
     }
 
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -532,6 +560,7 @@ public final class Match {
     }
 
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -542,6 +571,7 @@ public final class Match {
                 withCase(pattern4, action4), withCase(pattern5, action5), withCase(pattern6, action6));
     }
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -554,6 +584,7 @@ public final class Match {
                 withCase(pattern7, action7));
     }
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -568,6 +599,7 @@ public final class Match {
     }
 
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -583,6 +615,7 @@ public final class Match {
     }
 
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -599,6 +632,7 @@ public final class Match {
                 withCase(pattern10, action10));
     }
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -616,6 +650,7 @@ public final class Match {
                 withCase(pattern10, action10), withCase(pattern11, action11));
     }
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -634,6 +669,7 @@ public final class Match {
                 withCase(pattern10, action10), withCase(pattern11, action11), withCase(pattern12, action12));
     }
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -655,6 +691,7 @@ public final class Match {
     }
 
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -677,6 +714,7 @@ public final class Match {
     }
 
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -699,6 +737,7 @@ public final class Match {
                 withCase(pattern13, action13), withCase(pattern14, action14), withCase(pattern15, action15));
     }
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -723,6 +762,7 @@ public final class Match {
                 withCase(pattern16, action16));
     }
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -748,6 +788,7 @@ public final class Match {
                 withCase(pattern16, action16), withCase(pattern17, action17));
     }
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -775,6 +816,7 @@ public final class Match {
     }
 
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -803,6 +845,7 @@ public final class Match {
                 withCase(pattern19, action19));
     }
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -833,6 +876,7 @@ public final class Match {
     }
 
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
@@ -863,6 +907,7 @@ public final class Match {
                 withCase(pattern19, action19), withCase(pattern20, action20), withCase(pattern21, action21));
     }
 
+    /** @hidden */
     public static <In, Exn extends Throwable> void match(@Nullable In value, @NotNull Pattern<? super In> pattern1, MatchRunnable<Exn> action1,
                                                       @NotNull Pattern<? super In> pattern2, MatchRunnable<Exn> action2,
                                                       @NotNull Pattern<? super In> pattern3, MatchRunnable<Exn> action3,
