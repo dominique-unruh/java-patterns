@@ -21,6 +21,7 @@ term match {
 ```
 How do we do the same in Java? Since Java does not support functional pattern matching, we need
 to write something like:
+TODO(add&explain the setup of x,y,z)
 ```Java
 if (term instanceof Plus) {
   Plus plus = (Plus)term;
@@ -61,9 +62,42 @@ TODO
 
 ## Comparison with other approaches
 
-TODO Java patterns
+### Java 14 pattern matching
 
-TODO Vavr patterns
+Java 14 has a preview feature supporting a limited form of 
+[pattern matching](https://docs.oracle.com/en/java/javase/14/language/pattern-matching-instanceof-operator.html).
+The only supported pattern is a type test (`instanceof`). Using that approach, the above example becomes
+```Java
+if (term instanceof Plus plus && term.a instanceof Minus minus)
+  doSomething(minus.a, minus.b, plus.b);
+else
+  doSomethingElse();
+```
+
+**Pros:**
+* Needs no extra library.
+* No need to declare capture variables (like `Capture<...> x = new Capture<>(...)` in this library).
+* Compared to plain Java, the code is much cleaner and avoids code repetitions.
+
+**Cons:**
+* The pattern match needs to be unfolded. That is, to match a term of the shape `Plus(Minus(x, y), z)`
+  we cannot write a pattern of the same nested structure `Plus(Minus(x, y), z)`, instead we have
+  a sequence of accesses (like `minus.a`) interspersed with matches (like `instanceof Minus minus`),
+  and we need to use a number of auxiliary variables (like `plus`, `minus`) that are not needed in 
+  the action (`doSomething(...)`).
+* The pattern match is restricted to dynamic type checks. This works fine for the datatype in 
+  our example but will fail if the patterns do not follow the inheritance structure. (E.g.,
+  if we want a pattern `BinaryOp(x,y)` that should match both `Plus` and `Minus`.)
+
+### Vavr
+
+http://blog.vavr.io/pattern-matching-essentials/
+
+https://github.com/vavr-io/vavr-match
+
+https://www.vavr.io/vavr-docs/#_pattern_matching
+
+TODO
 
 ## Prerequisites
 
