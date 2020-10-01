@@ -20,11 +20,28 @@ dependencies {
 java {
     withJavadocJar()
     withSourcesJar()
+
+}
+
+// TODO: Can we go for an earlier version (at least <=8) if we add type annotations everywhere (keep tests Java 9)
+compileJava {
+    options.release = 9
 }
 
 test {
     useJUnitPlatform()
 }
+
+/* Put this into ~/.gradle/gradle.properties for publishing to work:
+
+signing.keyId=4BA66FE2
+signing.password=******************
+signing.secretKeyRingFile=/home/unruh/.gnupg/secring.gpg
+
+ossrhUsername=unruh
+ossrhPassword=******************
+
+*/
 
 // Potentially useful: https://sasbury.github.io/notes/2019/gradle_travis_sonatype.html
 
