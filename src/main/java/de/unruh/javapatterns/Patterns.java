@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
 
+// DOCUMENT priority
 // DOCUMENT, mention (somewhere): can access captures already in match, can fail match in action
 // TODO can we create a merged class for static import from Patterns and Match?
 public final class Patterns {

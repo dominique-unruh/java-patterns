@@ -3,10 +3,12 @@ package de.unruh.javapatterns;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-// DOCUMENT
+// DOCUMENT PRIORITY
+// TODO: Should this be an interface?
 public abstract class Pattern<T> {
     public abstract void apply(@NotNull MatchManager mgr, @Nullable T value) throws PatternMatchReject;
 
+    // TODO: keep?
     @org.jetbrains.annotations.Contract(pure = true, value = "-> this")
     public final <U extends T> Pattern<U> contravariance() {
         //noinspection unchecked
