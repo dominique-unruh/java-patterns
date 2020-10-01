@@ -15,33 +15,37 @@ public class Readme {
         public final Term a, b;
         Plus(Term a, Term b) { this.a = a; this.b = b; }
         public String toString() { return "Plus("+a+","+b+")"; } }
+    Term Plus(Term a, Term b) { return new Plus(a,b); }
+
     public class Minus implements Term {
         public final Term a, b;
         Minus(Term a, Term b) { this.a = a; this.b = b; }
         public String toString() { return "Minus("+a+","+b+")"; } }
+    Term Minus(Term a, Term b) { return new Minus(a,b); }
+
     public class Times implements Term {
         public final Term a, b;
         Times(Term a, Term b) { this.a = a; this.b = b; }
         public String toString() { return "Times("+a+","+b+")"; } }
+    Term Times(Term a, Term b) { return new Times(a,b); }
+
     public class Divide implements Term {
         public final Term a, b;
         Divide(Term a, Term b) { this.a = a; this.b = b; }
         public String toString() { return "Divide("+a+","+b+")"; } }
+    Term Divide(Term a, Term b) { return new Divide(a,b); }
+
     public class Variable implements Term {
         public final String name;
         Variable(String name) { this.name = name; }
         public String toString() { return name; } }
+    Term Variable(String name) { return new Variable(name); }
+
     public class Number implements Term {
         public final int value;
         Number(int value) { this.value = value; }
         public String toString() { return Integer.toString(value); } }
-
-    Term Plus(Term a, Term b) { return new Plus(a,b); }
-    Term Minus(Term a, Term b) { return new Minus(a,b); }
-    Term Times(Term a, Term b) { return new Times(a,b); }
-    Term Divide(Term a, Term b) { return new Divide(a,b); }
     Term Number(int i) { return new Number(i); }
-    Term Variable(String name) { return new Variable(name); }
 
     Pattern<Term> Plus(Pattern<? super Term> patternA, Pattern<? super Term> patternB) {
         return new Pattern<>() {
@@ -187,7 +191,6 @@ public class Readme {
 
     Term simplify(Term term) throws MatchException {
        Term simplified = simplify1(term);
-//       out.println(term+" -> "+simplified);
        if (equal(simplified, term))
            return term;
        else
