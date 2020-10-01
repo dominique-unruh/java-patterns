@@ -128,7 +128,7 @@ public final class Patterns {
                 if (patterns.length == 0) reject();
                 for (int i=0; i<patterns.length-1; i++) {
                     Pattern<? super T> pattern = patterns[i];
-                    if (mgr.excursion(() -> pattern.apply(mgr, value))) return;
+                    if (mgr.protectedBlock(() -> pattern.apply(mgr, value))) return;
                 }
                 patterns[patterns.length-1].apply(mgr, value);
             }
@@ -218,7 +218,7 @@ public final class Patterns {
         return new Pattern<T>() {
             @Override
             protected void apply(@NotNull MatchManager mgr, @Nullable T value) throws PatternMatchReject {
-                boolean matched = mgr.excursion(() -> pattern.apply(mgr, value));
+                boolean matched = mgr.protectedBlock(() -> pattern.apply(mgr, value));
                 if (matched) reject();
             }
 

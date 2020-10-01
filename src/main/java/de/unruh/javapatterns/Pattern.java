@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
  * <li>It can invoke the {@link #apply apply} function of other patterns on the values obtained by analyzing {@code value}. (Typically, those would be given as arguments
  *     when constructing this pattern.) If any of the subpatterns fail, the this pattern fails, too (unless this is
  *     caught via a protected block (see below).</li>
- * <li>It can invoke {@code mgr}.{@link MatchManager#excursion excursion} to execute a protected block of actions (see below).</li>
+ * <li>It can invoke {@code mgr}.{@link MatchManager#protectedBlock excursion} to execute a protected block of actions (see below).</li>
  * </ul>
  * Some important notes:
  * <ul>
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
  *     capture variables already and it would be undefined which capture variables would be assigned
  *     and which not. Instead, if we want to apply a subpattern but not fail if the subpattern fails,
  *     we need to execute the pattern in a protected block by invoking
- *     <code>mgr.{@link MatchManager#excursion(PatternRunnable) excursion}}(...)</code>. This
+ *     <code>mgr.{@link MatchManager#protectedBlock(PatternRunnable) excursion}}(...)</code>. This
  *     protected block then returns {@code false} if the subpattern(s) in {@code ...} fail.
  *     </li>
  * <li>When invoking patterns that were passed as arguments when constructing this pattern,

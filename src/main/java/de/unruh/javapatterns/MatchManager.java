@@ -27,13 +27,22 @@ public final class MatchManager {
         captured.clear();
     }
 
-    // TODO: rename to protectedBlock
-    public boolean excursion(@NotNull PatternRunnable runnable) {
-        return excursion(() -> { runnable.run(); return true; }, x -> true, false);
+    // DOCUMENT PRIORITY
+    public boolean protectedBlock(@NotNull PatternRunnable block) {
+        int size = captured.size();
+        try {
+            block.run();
+        } catch (PatternMatchReject e) {
+            while (captured.size() > size) {
+                Capture<?> capture = captured.pop();
+                capture.clear();
+            }
+            return false;
+        }
+        return true;
     }
 
-    // TODO: remove
-    @Nullable
+/*    @Nullable
     public <T> T excursion(@NotNull PatternSupplier<T> excursion, @NotNull Predicate<T> shouldReset, @Nullable T failValue) {
         int size = captured.size();
         T result = failValue;
@@ -47,5 +56,5 @@ public final class MatchManager {
             }
         }
         return result;
-    }
+    }*/
 }

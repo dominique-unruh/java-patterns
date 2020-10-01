@@ -69,7 +69,6 @@ final public class Capture<T> extends Pattern<T> {
         return value;
     }
 
-    // TODO Make protected?
     @Override
     protected void apply(@NotNull MatchManager mgr, @NotNull T value) {
         if (assigned)
