@@ -25,6 +25,10 @@ java {
 
 // TODO: Can we go for an earlier version (at least <=8) if we add type annotations everywhere (keep tests Java 9)
 compileJava {
+    options.release = 8
+}
+
+compileTestJava {
     options.release = 9
 }
 
