@@ -21,7 +21,6 @@ term match {
 ```
 How do we do the same in Java? Since Java does not support functional pattern matching, we need
 to write something like:
-TODO(add&explain the setup of x,y,z)
 ```Java
 if (term instanceof Plus) {
   Plus plus = (Plus)term;
@@ -47,18 +46,34 @@ in Java, ~50 lines long even using `break`s, to implement a five line
 [`Scala` function](https://github.com/dominique-unruh/scala-isabelle/blob/14e3b85af0825359af82f559a6a59337a336363c/src/test/scala/de/unruh/isabelle/Example.scala#L32)).
 
 This library solves this problem. Using it, we can write the pattern match in Java as:
+TODO(add&explain the setup of x,y,z)
 ```Java
 match(term,
-  Plus(Minus(x, y), z), () -> doSomething(x, y, z),
+  Plus(Minus(x, y), z), () -> doSomething(x.v(), y.v(), z.v()),
   Any, () -> doSomethingElse())
 ``` 
 While there is still unnecessary syntactic noise (the `() ->`, for example)), the structure of the
 code is now the same as in Scala. (And the implementation of the abovementioned `replace` function
-can be [similarly improved](TODO link).)
+can be [similarly improved](https://github.com/dominique-unruh/scala-isabelle/blob/f6fd2433444a0c2232baebb4a91d5e96c9d8f3a5/src/test/scala/de/unruh/isabelle/experiments/JavaPatterns.java#L68).)
 
 ## Notable features
 
 TODO
+
+Draft:
+
+Pros:
+* Late match failures
+* Reading captures inside pattern matches
+* Or-patterns and backtracking support
+* User designed patterns (arbitrary matcher functions)
+* User designed patterns can arguments in liberal ways
+
+
+Cons:
+* Need to declare all captured variables
+* Syntax not as clean as with compiler support
+* Some checks only at runtime (accessing a capture that was not bound)
 
 ## Comparison with other approaches
 
