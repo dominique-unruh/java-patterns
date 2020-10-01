@@ -70,7 +70,7 @@ final public class Capture<T> extends Pattern<T> {
 
     // TODO Make protected?
     @Override
-    public void apply(@NotNull MatchManager mgr, @Nullable T value) {
+    protected void apply(@NotNull MatchManager mgr, @Nullable T value) {
         if (assigned)
             throw new InvalidPatternMatch("Re-assigned " + name + " in pattern match");
         mgr.assigned(this);

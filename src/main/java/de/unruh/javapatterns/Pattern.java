@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 // DOCUMENT PRIORITY
 // TODO: Should this be an interface?
 public abstract class Pattern<T> {
-    public abstract void apply(@NotNull MatchManager mgr, @Nullable T value) throws PatternMatchReject;
+    protected abstract void apply(@NotNull MatchManager mgr, @Nullable T value) throws PatternMatchReject;
 
     // TODO: keep?
     @org.jetbrains.annotations.Contract(pure = true, value = "-> this")
