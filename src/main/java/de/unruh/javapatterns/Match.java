@@ -3,6 +3,7 @@ package de.unruh.javapatterns;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+// DOCUMENT
 public final class Match {
     /** Make this class uninstantiable */
     @org.jetbrains.annotations.Contract(pure = true)
@@ -25,7 +26,7 @@ public final class Match {
         MatchManager mgr = new MatchManager();
         for (Case<T, X, E> cas : cases) {
             PatternResult<X> result = cas.apply(mgr, value);
-            if (result.nonEmpty())
+            if (!result.isEmpty())
                 return result.get();
         }
         throw new MatchException(value);

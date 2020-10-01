@@ -3,13 +3,14 @@ package de.unruh.javapatterns;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
+// DOCUMENT
 interface PatternResult<T> {
-    // TODO implement isEmpty instead
     @org.jetbrains.annotations.Contract(pure = true)
-    boolean nonEmpty();
+    boolean isEmpty();
     @org.jetbrains.annotations.Contract(pure = true)
     T get();
 }
+
 final class PatternResultSome<T> implements PatternResult<T> {
     private final T value;
 
@@ -19,8 +20,8 @@ final class PatternResultSome<T> implements PatternResult<T> {
     }
 
     @Override
-    public boolean nonEmpty() {
-        return true;
+    public boolean isEmpty() {
+        return false;
     }
 
     @Override
@@ -41,10 +42,11 @@ final class PatternResultSome<T> implements PatternResult<T> {
         return Objects.hash(value);
     }
 }
+
 final class PatternResultNone<T> implements PatternResult<T> {
     @Override
-    public boolean nonEmpty() {
-        return false;
+    public boolean isEmpty() {
+        return true;
     }
 
     @Override

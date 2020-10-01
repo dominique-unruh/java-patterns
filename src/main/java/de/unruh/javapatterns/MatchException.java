@@ -2,6 +2,7 @@ package de.unruh.javapatterns;
 
 import org.jetbrains.annotations.Nullable;
 
+// DOCUMENT
 public class MatchException extends Exception {
     @Nullable
     public final Object value;

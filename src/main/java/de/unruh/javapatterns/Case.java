@@ -3,6 +3,7 @@ package de.unruh.javapatterns;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+// DOCUMENT
 public class Case<In, Return, Exn extends Throwable> {
     private final Pattern<? super In> pattern;
     private final MatchSupplier<? extends Return, Exn> action;
