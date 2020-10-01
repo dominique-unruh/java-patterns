@@ -49,7 +49,7 @@ public class Readme {
 
     Pattern<Term> Plus(Pattern<? super Term> patternA, Pattern<? super Term> patternB) {
         return new Pattern<>() {
-            @Override protected void apply(MatchManager mgr, Term term) throws PatternMatchReject {
+            @Override protected void apply(@org.jetbrains.annotations.NotNull MatchManager mgr, @org.jetbrains.annotations.Nullable Term term) throws PatternMatchReject {
                 if (!(term instanceof Plus)) reject();
                 patternA.apply(mgr, ((Plus)term).a);
                 patternB.apply(mgr, ((Plus)term).b);
@@ -62,7 +62,7 @@ public class Readme {
 
     Pattern<Term> Minus(Pattern<? super Term> patternA, Pattern<? super Term> patternB) {
         return new Pattern<>() {
-            @Override protected void apply(MatchManager mgr, Term term) throws PatternMatchReject {
+            @Override protected void apply(@org.jetbrains.annotations.NotNull MatchManager mgr, @org.jetbrains.annotations.Nullable Term term) throws PatternMatchReject {
                 if (!(term instanceof Minus)) reject();
                 patternA.apply(mgr, ((Minus)term).a);
                 patternB.apply(mgr, ((Minus)term).b);
@@ -75,7 +75,7 @@ public class Readme {
 
     Pattern<Term> Times(Pattern<? super Term> patternA, Pattern<? super Term> patternB) {
         return new Pattern<>() {
-            @Override protected void apply(MatchManager mgr, Term term) throws PatternMatchReject {
+            @Override protected void apply(@org.jetbrains.annotations.NotNull MatchManager mgr, @org.jetbrains.annotations.Nullable Term term) throws PatternMatchReject {
                 if (!(term instanceof Times)) reject();
                 patternA.apply(mgr, ((Times)term).a);
                 patternB.apply(mgr, ((Times)term).b);
@@ -88,7 +88,7 @@ public class Readme {
 
     Pattern<Term> Divide(Pattern<? super Term> patternA, Pattern<? super Term> patternB) {
         return new Pattern<>() {
-            @Override protected void apply(MatchManager mgr, Term term) throws PatternMatchReject {
+            @Override protected void apply(@org.jetbrains.annotations.NotNull MatchManager mgr, @org.jetbrains.annotations.Nullable Term term) throws PatternMatchReject {
                 if (!(term instanceof Divide)) reject();
                 patternA.apply(mgr, ((Divide)term).a);
                 patternB.apply(mgr, ((Divide)term).b);
@@ -101,7 +101,7 @@ public class Readme {
 
     Pattern<Term> Variable(Pattern<? super String> pattern) {
         return new Pattern<>() {
-            @Override protected void apply(MatchManager mgr, Term term) throws PatternMatchReject {
+            @Override protected void apply(@org.jetbrains.annotations.NotNull MatchManager mgr, @org.jetbrains.annotations.Nullable Term term) throws PatternMatchReject {
                 if (!(term instanceof Variable)) reject();
                 pattern.apply(mgr, ((Variable)term).name);
             }
@@ -113,7 +113,7 @@ public class Readme {
 
     Pattern<Term> Number(Pattern<? super Integer> pattern) {
         return new Pattern<>() {
-            @Override protected void apply(MatchManager mgr, Term term) throws PatternMatchReject {
+            @Override protected void apply(@org.jetbrains.annotations.NotNull MatchManager mgr, @org.jetbrains.annotations.Nullable Term term) throws PatternMatchReject {
                 if (!(term instanceof Number)) reject();
                 pattern.apply(mgr, ((Number)term).value);
             }
