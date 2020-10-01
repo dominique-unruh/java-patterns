@@ -5,7 +5,6 @@ import org.jetbrains.annotations.Contract;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-// DOCUMENT
 interface PatternResult<T> {
     @Contract(pure = true)
     boolean isEmpty();

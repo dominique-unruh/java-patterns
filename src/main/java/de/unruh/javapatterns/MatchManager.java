@@ -8,7 +8,6 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.function.Predicate;
 
-// DOCUMENT
 public final class MatchManager {
     // Making this package private
     @Contract(pure = true)

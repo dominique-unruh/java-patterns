@@ -2,7 +2,6 @@ package de.unruh.javapatterns;
 
 import org.jetbrains.annotations.Contract;
 
-// DOCUMENT
 public final class PatternMatchReject extends Exception {
     @Override
     @Contract(pure = true, value = "-> this")
