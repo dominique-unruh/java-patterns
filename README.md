@@ -13,6 +13,7 @@
 - __[Prerequisites](#prerequisites)__
 - __[Installation](#installation)__
 - __[Example](#example)__
+- __[Further reading](#further-reading)__
 <!-- /toc -->
 
 ## What is this library for?
@@ -315,4 +316,8 @@ out.println(simplify(term));
 
 ## Further reading
 
-[//]: # (TODO)
+For further information, see the API doc. See Match for instructions how to do pattern
+matches, Patterns for the predefined patterns, and Pattern for instructions how to define 
+own patterns.
+
+[//]: # (TODO add links)

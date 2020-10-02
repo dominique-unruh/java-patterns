@@ -20,7 +20,6 @@ import java.util.function.Supplier;
  * Throughout the documentation of the patterns in this class, we refer to the value that
  * is matched against the pattern simply the "matched value".
  */
-// TODO Make a test case for each pattern
 public final class Patterns {
     @Contract(pure = true)
     private Patterns() {}
