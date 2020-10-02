@@ -3,6 +3,8 @@ plugins {
     id 'maven-publish'
     id 'signing'
     id "com.github.blueboxware.tocme" version "1.2" // For TOC in README
+    id 'io.codearte.nexus-staging' version '0.22.0' // For Sonatype publishing
+    id "de.marcphilipp.nexus-publish" version "0.4.0" // For Sonatype publishing
 }
 
 group 'de.unruh'
@@ -41,7 +43,29 @@ tocme {
     doc(file("README.md"))
 }
 
-/* Put this into ~/.gradle/gradle.properties for publishing to work:
+/*
+
+===== Steps when releasing a release/release candidate: =====
+
+ - git checkout release-candidate
+ - If this is the first RC for a new release, reset release-candidate to master
+ - Update CHANGELOG.md if needed
+ - Set correct date (today) for this version in CHANGELOG.md (only for releases)
+ - Edit version in README.md
+ - git commit (to be able to cherry pick those into master)
+ - Set version in version.sbt
+ - git commit
+ - ./gradlew clean
+ - ./gradlew test
+ - ./gradlew publish closeAndReleaseRepository (errors might be found here: https://oss.sonatype.org/#stagingRepositories)
+ - git tag vXXX (XXX is the version)
+ - git push origin vXXX
+ - git push
+ - git checkout master
+ - Cherry pick commit with edits to CHANGELOG.md and README.md
+ - Check (a while later): https://mvnrepository.com/artifact/de.unruh/scala-isabelle
+
+===== Put this into ~/.gradle/gradle.properties for publishing to work: =====
 
 signing.keyId=4BA66FE2
 signing.password=******************
@@ -50,7 +74,13 @@ signing.secretKeyRingFile=/home/unruh/.gnupg/secring.gpg
 ossrhUsername=unruh
 ossrhPassword=******************
 
+===== And if needed, run: =====
+
+cd ~/.gnupg/
+gpg --export-secret-keys -o secring.gpg
+
 */
+
 
 // Potentially useful: https://sasbury.github.io/notes/2019/gradle_travis_sonatype.html
 
@@ -58,21 +88,42 @@ publishing {
     publications {
        javaPatterns(MavenPublication) {
            from components.java
+           pom {
+               name = 'java-patterns'
+               description = "Functional pattern matching in Java"
+               url = "https://github.com/dominique-unruh/java-patterns"
+               licenses {
+                   license {
+                       name = "MIT"
+                       url = "https://raw.githubusercontent.com/dominique-unruh/java-patterns/655c7cc5c71eb9ea0fcfee0ae797269e61845d8a/LICENSE"
+                   }
+               }
+               developers {
+                   developer {
+                       id = "unruh"
+                       name = "Dominique Unruh"
+                       email = "dominique@unruh.de"
+                       url = "https://www.ut.ee/~unruh/"
+                   }
+               }
+               scm { url = "https://github.com/dominique-unruh/java-patterns" }
+           }
        }
-    }
-
-    repositories {
-        maven {
-            name = 'sonatype-snapshot'
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-            credentials {
-                username "unruh"
-                password project.properties.ossrhPassword
-            }
-        }
     }
 }
 
 signing {
     sign publishing.publications.javaPatterns
+}
+
+nexusStaging {
+    packageGroup = group
+    username = "unruh"
+    password = project.properties.ossrhPassword
+}
+
+nexusPublishing {
+    repositories {
+        sonatype()
+    }
 }
