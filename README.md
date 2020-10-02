@@ -4,6 +4,17 @@
 [![Javadoc](https://javadoc.io/badge2/de.unruh/java-patterns/javadoc.svg)](https://javadoc.io/doc/de.unruh/java-patterns/latest/de/unruh/javapatterns/index.html)
 [![Gitter chat](https://img.shields.io/badge/gitter-chat-brightgreen.svg)](https://gitter.im/dominique-unruh/java-patterns?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+<!-- toc -->
+- __[What is this library for?](#what-is-this-library-for)__
+- __[Notable features](#notable-features)__
+- __[Comparison with other approaches](#comparison-with-other-approaches)__
+  - __[Java 14 pattern matching](#java-14-pattern-matching)__
+  - __[Vavr](#vavr)__
+- __[Prerequisites](#prerequisites)__
+- __[Installation](#installation)__
+- __[Example](#example)__
+<!-- /toc -->
+
 ## What is this library for?
 
 This library provides support for functional pattern matching in Java.

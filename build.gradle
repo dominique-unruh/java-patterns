@@ -2,6 +2,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'signing'
+    id "com.github.blueboxware.tocme" version "1.2" // For TOC in README
 }
 
 group 'de.unruh'
@@ -37,6 +38,10 @@ compileTestJava {
 
 test {
     useJUnitPlatform()
+}
+
+tocme {
+    doc(file("README.md"))
 }
 
 /* Put this into ~/.gradle/gradle.properties for publishing to work:
