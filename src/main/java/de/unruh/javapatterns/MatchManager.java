@@ -8,6 +8,10 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.function.Predicate;
 
+/** Manages the state of captured variables in a pattern match. <p>
+ *
+ * This class should never be used outside of {@link Pattern#apply}, see there.
+ */
 public final class MatchManager {
     // Making this package private
     @Contract(pure = true)
@@ -26,7 +30,19 @@ public final class MatchManager {
         captured.clear();
     }
 
-    // DOCUMENT PRIORITY
+    /** Executes a proctected block during a pattern match.<p>
+     *
+     * {@code block} is executed. If {@code block} executes successfully,
+     * {@code protectedBlock} returns {@code true}. If {@code block} throws
+     * a {@link PatternMatchReject} exception (by calling {@link Pattern#reject()})
+     * then {@code protectedBlock} returns {@code false} and resets all
+     * captured variables to their state at the beginning of the invocation.
+     *
+     * @param block a lambda expression of the form {@code () -> ...}. The code
+     *              to be executed.
+     * @return {@code true} if {@code block} succeeded, {@code false} if
+     *         {@code block} threw a {@link PatternMatchReject} exception
+     */
     public boolean protectedBlock(@NotNull PatternRunnable block) {
         int size = captured.size();
         try {

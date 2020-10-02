@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 /** One case in a pattern match. Consists of a pattern and an action that has to happen
  * in case of a successful match. See {@link Match}. An instance of this class is
  * created using {@link Match#withCase(Pattern, MatchSupplier)}.
+ *
  * @param <In> Type of the value that is pattern matched
  * @param <Return> Return value of the action
  * @param <Exn> Exception that the action may throw. (The action is additionally allowed to
