@@ -15,6 +15,7 @@ import static java.lang.System.out;
 public class Readme {
 
     interface Term {}
+
     public class Plus implements Term {
         public final Term a, b;
         Plus(Term a, Term b) { this.a = a; this.b = b; }
@@ -60,7 +61,7 @@ public class Readme {
                 patternB.apply(mgr, ((Plus)term).b);
             }
             @Override public String toString() {
-                return "Plus("+patternA+","+patternB+")";
+                return "Plus(" + patternA + "," + patternB + ")";
             }
         };
     }
@@ -74,7 +75,7 @@ public class Readme {
                 patternB.apply(mgr, ((Minus)term).b);
             }
             @Override public String toString() {
-                return "Minus("+patternA+","+patternB+")";
+                return "Minus(" + patternA + "," + patternB + ")";
             }
         };
     }
@@ -88,7 +89,7 @@ public class Readme {
                 patternB.apply(mgr, ((Times)term).b);
             }
             @Override public String toString() {
-                return "Times("+patternA+","+patternB+")";
+                return "Times(" + patternA + "," + patternB + ")";
             }
         };
     }
@@ -102,7 +103,7 @@ public class Readme {
                 patternB.apply(mgr, ((Divide)term).b);
             }
             @Override public String toString() {
-                return "Divide("+patternA+","+patternB+")";
+                return "Divide(" + patternA + "," + patternB + ")";
             }
         };
     }
@@ -115,7 +116,7 @@ public class Readme {
                 pattern.apply(mgr, ((Variable)term).name);
             }
             @Override public String toString() {
-                return "Variable("+pattern+")";
+                return "Variable(" + pattern + ")";
             }
         };
     }
@@ -134,14 +135,14 @@ public class Readme {
     }
 
     boolean equal(Term t1, Term t2) throws MatchException {
-        Capture<Term> a1 = capture("a1");
-        Capture<Term> a2 = capture("a2");
-        Capture<Term> b1 = capture("b1");
-        Capture<Term> b2 = capture("b2");
-        Capture<Integer> i1 = capture("i1");
-        Capture<Integer> i2 = capture("i2");
-        Capture<String> x1 = capture("x1");
-        Capture<String> x2 = capture("x2");
+        Capture<Term> a1 = capture("a1"),
+                      a2 = capture("a2"),
+                      b1 = capture("b1"),
+                      b2 = capture("b2");
+        Capture<Integer> i1 = capture("i1"),
+                         i2 = capture("i2");
+        Capture<String> x1 = capture("x1"),
+                        x2 = capture("x2");
 
         return match(
                 new Term[] { t1, t2 },
@@ -162,15 +163,15 @@ public class Readme {
         );
     };
 
-    Term simplify1(Term t) throws MatchException {
-        Capture<Term> a = capture("a");
-        Capture<Term> b = capture("b");
-        Capture<Term> c = capture("c");
-        Capture<Integer> i = capture("i");
-        Capture<Integer> j = capture("j");
+    Term simplify1(Term term) throws MatchException {
+        Capture<Term> a = capture("a"),
+                      b = capture("b"),
+                      c = capture("c");
+        Capture<Integer> i = capture("i"),
+                         j = capture("j");
         Capture<String> x = capture("x");
 
-        return match(t,
+        return match(term,
                 Plus(a, Number(Is(0))), () -> a.v(),
                 Plus(Number(Is(0)), a), () -> a.v(),
                 Minus(a, Number(Is(0))), () -> a.v(),
@@ -195,7 +196,7 @@ public class Readme {
                 Times(a, b), () -> Times(simplify1(a.v()), simplify1(b.v())),
                 Minus(a, b), () -> Minus(simplify1(a.v()), simplify1(b.v())),
                 Divide(a, b), () -> Divide(simplify1(a.v()), simplify1(b.v())),
-                Any, () -> t
+                Any, () -> term
         );
     }
 
@@ -210,7 +211,7 @@ public class Readme {
     @Test
     void readmeExample() throws MatchException {
 
-        Term term = new Times(new Minus(new Number(1), new Number(2)), new Plus(new Variable("x"), new Variable("x")));
+        Term term = Times(Minus(Number(1), Number(2)), Plus(Variable("x"), Variable("x")));
 
         out.println(term);
         // ==> Times(Minus(1,2),Plus(x,x))
