@@ -150,12 +150,8 @@ else
 
 ### Vavr
 
-TODO
-
-https://github.com/vavr-io/vavr-match
-
-https://www.vavr.io/vavr-docs/#_pattern_matching
-
+The [vavr library](https://www.vavr.io/) also has support for [pattern matching in Java](https://www.vavr.io/vavr-docs/#_pattern_matching).
+For example, we could match a term with the following syntax:
 ```Java
 Match(term).of(
   Case( $Plus( $Minus($(),$()), $() ), 
@@ -164,15 +160,24 @@ Match(term).of(
         () -> doSomethingElse())   
 )
 ```
-Note about `xy`.
+Here `$()` matches anything, and patterns `$Plus` and `$Minus` can be user-defined.
+Note, however, that we did not write `doSomething(x,y,z)` here but `doSomething(xy,z)`.
+This is because vavr does a deep match (i.e., it ensures that there is a `Minus` as the first argument 
+to `Plus`), but only the arguments to the toplevel pattern `$Plus` are bound to variables and
+available to the match action (according to [Section 3.6.2](https://www.vavr.io/vavr-docs/#_patterns) in
+the docs). If we want to gets `x` and `y`, we need to pattern match `xy` again. This makes it difficult to
+use vavr for nested terms. 
 
-TODO
+**Pros:**
 
-* Pros: User defined patterns
-* Pros: No need to declare capture variables
-* Cons: Pattern/name binding loose
-* Cons: requires annotation processor
-* Cons: cannot capture more deeply
+* Support for user defined patterns. (Similar to those in Scala, but not as flexible as in our library.)
+* No need to explicitly declare capture variables. (In our library, we need to declare them using
+  `Capture<T> x = capture("x")`.)
+
+**Cons:**
+
+* Not possible to capture matched values that are deeply embedded in a pattern.
+* Requires to use a special annotation processor for defining new patterns.
 
 ## Prerequisites
 
@@ -188,6 +193,8 @@ The library is available on Maven Central as de.unruh.java-patterns.
 
 
 ## Example
+
+[//]: # (TODO)
 
 ```Java
 interface Term {}

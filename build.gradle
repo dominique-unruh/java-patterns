@@ -8,8 +8,6 @@ plugins {
 group 'de.unruh'
 version 'master-SNAPSHOT'
 
-// TODO: Make sure we compile for a reasonably old JVM version
-
 repositories {
     mavenCentral()
 }
@@ -27,7 +25,6 @@ java {
 
 }
 
-// TODO: Can we go for an earlier version (at least <=8) if we add type annotations everywhere (keep tests Java 9)
 compileJava {
     options.release = 8
 }
