@@ -13,6 +13,9 @@
 - __[Prerequisites](#prerequisites)__
 - __[Installation](#installation)__
 - __[Example](#example)__
+  - __[Defining the datatype](#defining-the-datatype)__
+  - __[Defining the patterns](#defining-the-patterns)__
+  - __[Implementing the simplifier](#implementing-the-simplifier)__
 - __[Further reading](#further-reading)__
 <!-- /toc -->
 
