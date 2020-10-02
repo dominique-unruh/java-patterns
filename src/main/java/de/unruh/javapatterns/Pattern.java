@@ -4,8 +4,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-// DOCUMENT: Reference API doc of Pattern and Match, and Capture from README and from package object. Reference README from package object.
-
 /** A pattern that matches a value and assigns values to capture variables ({@link Capture}).
  *
  * When implementing a pattern, the central method is {@link #apply apply} which takes a value {@code value} (and a {@link MatchManager} @{code mgr}) and performs
