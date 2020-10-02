@@ -34,13 +34,13 @@ import org.jetbrains.annotations.Nullable;
  *     it is recommended to do so in the order were given. This is to ensure that captures are assigned
  *     in the right order. For example, if two patterns {@code p1} and {@code p2} are given,
  *     and {@code p1} assigns a capture {@code x}, then {@code p2} may already read its assigned value.
- *     (E.g., <code>{@link Patterns#Array Array}(x, {@link Patterns#Is(Object) Is}(x.{@link Capture#v() v()})</code>
+ *     (E.g., <code>{@link Patterns#Array Array}(x, {@link Patterns#Is(Capture) Is}(x))</code>
  *     will work but
- *     <code>{@link Patterns#Array Array}({@link Patterns#Is(Object) Is}(x.{@link Capture#v() v()}, x)</code>
+ *     <code>{@link Patterns#Array Array}({@link Patterns#Is(Capture) Is}(x), x)</code>
  *     will not.) If the patterns are invoked in a different order, this should be documented clearly. </li>
  * <li>If a patten fails, it does not matter at which point it does it. E.g.,
- *     <code>subpattern.{@link #apply apply}(...); if (...) {@link #reject()}</code> and
- *     <code>if (...) {@link #reject()}; subpattern.{@link #apply apply}(...)</code> are equivalent.
+ *     "<code>subpattern.{@link #apply apply}(...); if (...) {@link #reject()}</code>" and
+ *     "<code>if (...) {@link #reject()}; subpattern.{@link #apply apply}(...)</code>" are equivalent.
  *     (Unless the subpattern has any additional side-effects besides assigning captures.)
  *     All captures that were assigned by this pattern or subpatterns will be reset upon failure.</li>
  * <li>Patterns should not have any side-effects.</li>
@@ -48,6 +48,8 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param <T> The type of the value that is pattern-matched
  */
+// DOCUMENT: Mention that arguments should be Pattern<? super XXX>
+// DOCUMENT: Give example
 public abstract class Pattern<T> {
     /** Performs the pattern match. See the {@link Pattern class documentation}.<p>
      *
@@ -87,5 +89,16 @@ public abstract class Pattern<T> {
     @Contract(pure = true, value = "-> fail")
     public static void reject() throws PatternMatchReject {
         throw new PatternMatchReject();
+    }
+
+    /** Creates a new capture variable.
+     * @param name Name of the capture. Used only for informative purposes
+     *             (printing patterns, error messages). It is recommended
+     *             that this is the name of the variable holds this capture.
+     */
+    @NotNull
+    @Contract(pure = true, value = "_ -> new")
+    public static <T> Capture<T> capture(@NotNull String name) {
+        return new Capture<T>(name);
     }
 }

@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * Captures need to be declared before the pattern match with a given type, e.g.,
  * <pre>
- * Capture&lt;String> x = new Capture&lt;>("x");
+ * Capture&lt;String&gt; x = {@link Pattern#capture Capture}("x");
  * ...
  * match(value, ... patterns using x ...)
  * </pre>
@@ -46,6 +46,7 @@ final public class Capture<T> extends Pattern<T> {
     }
 
     private T value;
+    // TODO: Create public method for checking this
     private boolean assigned = false;
 
     void clear() {

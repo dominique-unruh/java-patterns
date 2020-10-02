@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import static de.unruh.javapatterns.Pattern.capture;
 import static de.unruh.javapatterns.Patterns.*;
 import static de.unruh.javapatterns.Match.*;
 
@@ -133,14 +134,14 @@ public class Readme {
     }
 
     boolean equal(Term t1, Term t2) throws MatchException {
-        Capture<Term> a1 = Capture("a1");
-        Capture<Term> a2 = Capture("a2");
-        Capture<Term> b1 = Capture("b1");
-        Capture<Term> b2 = Capture("b2");
-        Capture<Integer> i1 = Capture("i1");
-        Capture<Integer> i2 = Capture("i2");
-        Capture<String> x1 = Capture("x1");
-        Capture<String> x2 = Capture("x2");
+        Capture<Term> a1 = capture("a1");
+        Capture<Term> a2 = capture("a2");
+        Capture<Term> b1 = capture("b1");
+        Capture<Term> b2 = capture("b2");
+        Capture<Integer> i1 = capture("i1");
+        Capture<Integer> i2 = capture("i2");
+        Capture<String> x1 = capture("x1");
+        Capture<String> x2 = capture("x2");
 
         return match(
                 new Term[] { t1, t2 },
@@ -162,12 +163,12 @@ public class Readme {
     };
 
     Term simplify1(Term t) throws MatchException {
-        Capture<Term> a = Capture("a");
-        Capture<Term> b = Capture("b");
-        Capture<Term> c = Capture("c");
-        Capture<Integer> i = Capture("i");
-        Capture<Integer> j = Capture("j");
-        Capture<String> x = Capture("x");
+        Capture<Term> a = capture("a");
+        Capture<Term> b = capture("b");
+        Capture<Term> c = capture("c");
+        Capture<Integer> i = capture("i");
+        Capture<Integer> j = capture("j");
+        Capture<String> x = capture("x");
 
         return match(t,
                 Plus(a, Number(Is(0))), () -> a.v(),

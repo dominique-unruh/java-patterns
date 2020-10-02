@@ -6,28 +6,32 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
 
 // DOCUMENT priority
+// DOCUMENT tell that "the matched value" refers to what is matched
 // TODO: check whether we want to rename anything before release
 public final class Patterns {
     @Contract(pure = true)
     private Patterns() {}
 
-
-    /** Creates a new capture variable.
-     * @param name Name of the capture. Used only for informative purposes
-     *             (printing patterns, error messages). It is recommended
-     *             that this is the name of the variable holds this capture.
+    /** Pattern that matches if the matched value equals {@code expected}.<p>
+     *
+     * Equality is tested using {@link Objects#equals}.
+     * If a different equality test is required, use {@link #Is(Predicate)}.<p>
+     *
+     * Since {@code expected} is executed during pattern construction,
+     * {@code expected} cannot depend on the value of capture variables.
+     * Use {@link #Is(PatternSupplier)} if delayed execution is desired. (Or {@link #Is(Capture)}
+     * to match a single captured value.)
+     *
+     * @param expected the value that the matched value is compared to
+     * @param <T> type of the matched value
+     * @return the pattern
      */
-    @NotNull
-    @Contract(pure = true, value = "_ -> new")
-    public static <T> Capture<T> Capture(@NotNull String name) {
-        return new Capture<T>(name);
-    }
-
     @NotNull
     @Contract(pure = true, value = "_ -> new")
     public static <T> Pattern<T> Is(@Nullable T expected) {
@@ -44,8 +48,18 @@ public final class Patterns {
         };
     }
 
+    /** Pattern that matches if the matched value equals the value computed by {@code expected}.<p>
+     *
+     * Equality is tested using {@link Objects#equals}.
+     * If a different equality test is required, use {@link #Is(Predicate)}.<p>
+     *
+     * @param expected lambda expression computing the expected value
+     * @param <T> type of the matched value
+     * @return the pattern
+     */
     @NotNull
     @Contract(pure = true, value = "_ -> new")
+    // TODO Use Supplier instead of PatternSupplier
     public static <T> Pattern<T> Is(@NotNull PatternSupplier<T> expected) {
         return new Pattern<>() {
             @Override
@@ -60,12 +74,45 @@ public final class Patterns {
         };
     }
 
+    /** Pattern that matches if the matched value equals the value in the captured variable
+     * {@code expected}.<p>
+     *
+     * Equality is tested using {@link Objects#equals}.
+     * If a different equality test is required, use {@link #Is(Predicate)}.<p>
+     *
+     * @param expected lambda expression computing the expected value
+     * @param <T> type of the matched value
+     * @return the pattern
+     */
     @NotNull
     @Contract(pure = true, value = "_ -> new")
     public static <T> Pattern<T> Is(@NotNull Capture<T> expected) {
         return Is(expected::v);
     }
 
+    /** Pattern that matches if the matched value satisfies a predicate.<p>
+     *
+     * @param predicate lambda expression testing whether the matched value should be accepted
+     * @param <T> type of the matched value
+     * @return the pattern
+     */
+    @NotNull
+    @Contract(pure = true, value = "_ -> new")
+    public static <T> Pattern<T> Is(@NotNull Predicate<? super T> predicate) {
+        return new Pattern<T>() {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable T value) throws PatternMatchReject {
+                if (!predicate.test(value)) reject();
+            }
+
+            @Override
+            public String toString() {
+                return "Pred(...)";
+            }
+        };
+    }
+
+    /** Pattern that matches everything (including {@code null}). */
     @NotNull
     public static final Pattern<Object> Any = new Pattern<>() {
         @Override
@@ -78,6 +125,7 @@ public final class Patterns {
         }
     };
 
+    /** Pattern that matches only {@code null}. */
     @NotNull
     public static final Pattern<Object> Null = new Pattern<>() {
         @Override
@@ -91,6 +139,19 @@ public final class Patterns {
         }
     };
 
+    /** Pattern that matches non-null values.<p>
+     *
+     * This pattern succeeds if the matched value is not {@code null},
+     * and the subpattern {@code pattern} matches the matched value.<p>
+     *
+     * Typical use cases would be <code>NotNull({@link #Any})</code> or <code>NotNull(x)</code>
+     * for a capture variable {@code x}. Both forms would match any non-null value, and the latter
+     * assigns it to the capture {@code x}.
+     *
+     * @param pattern the subpattern that also needs to match the matched value
+     * @param <T> type of the matched value
+     * @return the pattern that matched only non-null values
+     **/
     @NotNull
     @Contract(pure = true, value = "_ -> new")
     public static <T> Pattern<T> NotNull(@NotNull Pattern<@NotNull ? super T> pattern) {
@@ -108,6 +169,17 @@ public final class Patterns {
         };
     }
 
+    /** Pattern that combined several subpatterns that all need to be match.<p>
+     *
+     * This pattern matches if all subpatterns in {@code patterns} match the matched value.<p>
+     *
+     * All captures assigned by the subpatterns will be assigned by this pattern.
+     * Consequently, the subpatterns must not assign the same captures.
+     *
+     * @param patterns subpatterns that all should match
+     * @param <T> type of the matched value
+     * @return the combined pattern
+     */
     @NotNull
     @Contract(pure = true, value = "_ -> new")
     @SafeVarargs
@@ -129,6 +201,17 @@ public final class Patterns {
         };
     }
 
+    /** Pattern that combined several subpatterns of which one needs to match.<p>
+     *
+     * This pattern matches if at least one subpattern in {@code patterns} matches the matched value.<p>
+     *
+     * Only the captures assigned by the first matching subpattern will be assigned by this pattern.
+     * Consequently, the subpatterns are allowed to assign the same values.
+     *
+     * @param patterns subpatterns that all should match
+     * @param <T> type of the matched value
+     * @return the combined pattern
+     */
     @NotNull
     @Contract(pure = true, value = "_ -> new")
     @SafeVarargs
@@ -154,6 +237,25 @@ public final class Patterns {
         };
     }
 
+    /** Pattern that matches if the matched value has a specific type.<p>
+     *
+     * This pattern matches if the matched value has type {@code clazz} (runtime type check)
+     * and the subpattern {@code pattern} matches as well.<p>
+     *
+     * Example: <code>Instance(String.class, x)</code> will match a string and assign it to the capture {@code x}
+     * which can be of type <code>{@link Capture}&lt;String&gt;</code>.<p>
+     *
+     * If the type we want to check is a generic type, this pattern is somewhat problematic:
+     * For example, if we have a capture {@code x} of type <code>{@link Capture}&lt;{@link List}&lt;String&gt;&gt;</code>,
+     * then <code>Instance({@link List List}.class, x)</code> will not type check because it expects {@code x}
+     * to match values of raw type {@link List}, not of type {@link List}{@literal <String>}. See {@link Instance Instance}
+     * for a variant of this pattern suitable for that case.
+     *
+     * @param clazz class tag for type {@code U}
+     * @param pattern the subpattern that also need to match the matched value after being type cast
+     * @param <U> the type that the matched value should have
+     * @return the type checking pattern
+     */
     @NotNull
     @Contract(pure = true, value = "_, _ -> new")
     public static <U> Pattern<Object> Instance(@NotNull Class<U> clazz, @NotNull Pattern<? super U> pattern) {
@@ -173,6 +275,7 @@ public final class Patterns {
         };
     }
 
+    // DOCUMENT
     public abstract static class Instance<U> extends Pattern<U> {
         private final Pattern<Object> instancePattern;
         private final Pattern<? super U> pattern;
@@ -207,22 +310,7 @@ public final class Patterns {
         }
     }
 
-    @NotNull
-    @Contract(pure = true, value = "_ -> new")
-    public static <T> Pattern<T> Pred(@NotNull Predicate<? super T> predicate) {
-        return new Pattern<T>() {
-            @Override
-            public void apply(@NotNull MatchManager mgr, @Nullable T value) throws PatternMatchReject {
-                if (!predicate.test(value)) reject();
-            }
-
-            @Override
-            public String toString() {
-                return "Pred(...)";
-            }
-        };
-    }
-
+    // DOCUMENT
     @NotNull
     @Contract(pure = true, value = "_ -> new")
     public static <T> Pattern<T> NoMatch(@NotNull Pattern<? super T> pattern) {
@@ -240,6 +328,7 @@ public final class Patterns {
         };
     }
 
+    // DOCUMENT
     @NotNull
     @Contract(pure = true, value = "_ -> new")
     @SafeVarargs

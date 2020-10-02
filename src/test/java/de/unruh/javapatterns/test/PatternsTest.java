@@ -2,10 +2,11 @@ package de.unruh.javapatterns.test;
 
 import de.unruh.javapatterns.Capture;
 import de.unruh.javapatterns.MatchException;
+import de.unruh.javapatterns.Pattern;
+import de.unruh.javapatterns.Patterns;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
+import static de.unruh.javapatterns.Pattern.capture;
 import static de.unruh.javapatterns.Patterns.*;
 import static de.unruh.javapatterns.Match.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,7 +24,7 @@ class PatternsTest {
 
     @Test
     void isCapture() throws Exception {
-        Capture<String> x = Capture("x");
+        Capture<String> x = capture("x");
 
         int result = match(new String[] { "1","1" },
                 Array(x,Is(x)), () -> 1,
@@ -51,8 +52,8 @@ class PatternsTest {
 
     @Test
     void and() throws Exception {
-        Capture<String> x = Capture("x");
-        Capture<String> y = Capture("y");
+        Capture<String> x = capture("x");
+        Capture<String> y = capture("y");
         String result = match("hello",
                 And(NotNull(x), y), () -> x.v()+y.v());
         assertEquals("hellohello", result);
@@ -61,7 +62,7 @@ class PatternsTest {
     @SuppressWarnings("Convert2MethodRef")
     @Test
     void or() throws Exception {
-        Capture<String> x = Capture("x");
+        Capture<String> x = capture("x");
         String result = match(null,
                 Or(NotNull(x), x), () -> x.v());
         assertNull(result);
@@ -75,7 +76,7 @@ class PatternsTest {
 
     @Test
     void instance() throws Exception {
-        Capture<DemoSome<String>> x = Capture("x");
+        Capture<DemoSome<String>> x = capture("x");
         //noinspection Convert2MethodRef
         match(new DemoSome<>("Test"),
                 Instance(DemoNone.class, Any), () -> fail(),
@@ -86,8 +87,8 @@ class PatternsTest {
     @Test
     void pred() throws Exception {
         int result = match(-123,
-                Pred(v -> v > 0), () -> 1,
-                Pred(v -> v < 0), () -> 2);
+                Patterns.Is(v -> v > 0), () -> 1,
+                Patterns.Is(v -> v < 0), () -> 2);
         assertEquals(2, result);
     }
 
@@ -101,7 +102,7 @@ class PatternsTest {
 
     @Test
     void captureTwice() throws Exception {
-        Capture<String> x = Capture("x");
+        Capture<String> x = capture("x");
 
         assertThrows(RuntimeException.class,
                 () -> match(new String[] {"x","x"},
