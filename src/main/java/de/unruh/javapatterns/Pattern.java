@@ -4,6 +4,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+// DOCUMENT: Reference API doc of Pattern and Match, and Capture from README and from package object. Reference README from package object.
+
 /** A pattern that matches a value and assigns values to capture variables ({@link Capture}).
  *
  * When implementing a pattern, the central method is {@link #apply apply} which takes a value {@code value} (and a {@link MatchManager} @{code mgr}) and performs
@@ -14,9 +16,11 @@ import org.jetbrains.annotations.Nullable;
  * <li>It can invoke the {@link #apply apply} function of other patterns on the values obtained by analyzing {@code value}. (Typically, those would be given as arguments
  *     when constructing this pattern.) If any of the subpatterns fail, the this pattern fails, too (unless this is
  *     caught via a protected block (see below).</li>
- * <li>It can invoke {@code mgr}.{@link MatchManager#protectedBlock excursion} to execute a protected block of actions (see below).</li>
+ * <li>It can invoke {@code mgr}.{@link MatchManager#protectedBlock protectedBlock} to execute a protected block of actions (see below).</li>
  * </ul>
- * Some important notes:
+ * <p>
+ *
+ * <b>Some important notes:</b>
  * <ul>
  * <li>There is no explicit mechanism for assigning capture variables. However,
  *     capture variables are patterns themselves, and thus can be passed to a pattern as subpatterns.
@@ -27,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
  *     capture variables already and it would be undefined which capture variables would be assigned
  *     and which not. Instead, if we want to apply a subpattern but not fail if the subpattern fails,
  *     we need to execute the pattern in a protected block by invoking
- *     <code>mgr.{@link MatchManager#protectedBlock(PatternRunnable) excursion}}(...)</code>. This
+ *     <code>mgr.{@link MatchManager#protectedBlock(PatternRunnable) protectedBlock}}(...)</code>. This
  *     protected block then returns {@code false} if the subpattern(s) in {@code ...} fail.
  *     </li>
  * <li>When invoking patterns that were passed as arguments when constructing this pattern,
@@ -44,12 +48,72 @@ import org.jetbrains.annotations.Nullable;
  *     (Unless the subpattern has any additional side-effects besides assigning captures.)
  *     All captures that were assigned by this pattern or subpatterns will be reset upon failure.</li>
  * <li>Patterns should not have any side-effects.</li>
+ * <li>When taking subpatterns as arguments, those should have types of the form
+ * {@code Pattern<? super X>} for some type {@code X}, not {@code Pattern<X>}.
+ * (This means, {@code Pattern} should be treated as a contravariant type constructor.)</li>
  * </ul>
+ * <p>
+ *
+ * <b>Example 1:</b>
+ * As an example for designing a pattern, consider the following use case. Assume a class {@code Pair<X,Y>}
+ * with two members {@code X first} and {@code Y second}. We want to construct a pattern for this class. For this,
+ * we create a static method (by convention, of the same name as {@code Pair})
+ * that returns an anonymous subclass of {@code Pattern<Pair<X,Y>>}:
+ * <pre>
+ *{@code static <X, Y> Pattern<Pair<X, Y>> Pair(Pattern<? super X> firstPattern, Pattern<? super Y> secondPattern)} {
+ *    {@code return new Pattern<>()} {
+ *        {@code public void apply(MatchManager mgr, Pair<X, Y> value) throws PatternMatchReject} {
+ *             if (value == null) reject();
+ *             firstPattern.apply(mgr, value.first);
+ *             secondPattern.apply(mgr, value.second);
+ *         }
+ *
+ *         public String toString() {
+ *             return "Pair(" + firstPattern + "," + secondPattern + ")";
+ *         }
+ *     };
+ * }
+ * </pre>
+ * Most of this is boilerplate. The crucial part are the three lines in the definition of {@code apply}:
+ * {@code if (value == null) reject();} rejects the matched value if it is {@code null}.
+ * And {@code firstPattern.apply(mgr, value.first);} matches the first component of the matched
+ * value using the subpattern {@code subpattern}. And analogously for the next line and the second component. <p>
+ *
+ * The full example can be found in
+ * <a href="https://github.com/dominique-unruh/java-patterns/blob/911c12d0f5bd25f8271d705aa6c87377944336f2/src/test/java/de/unruh/javapatterns/test/PatternDocumentationTest.java#L40">PatternDocumentationTest.java</a>,
+ * test case {@code example1}. <p>
+ *
+ * <b>Example 2:</b> As an example for a pattern that does not correspond to an existing class such
+ * as {@code Pair}, we consider the following use case. We want a pattern that matches strings of
+ * the form "firstname lastname" (and allows us to apply further subpatterns to the first and last name).
+ * The following method achieves this:
+ * <pre>
+ *{@code static Pattern<String> FullName(Pattern<String> firstNamePattern, Pattern<String> lastNamePattern)} {
+ *    {@code return new Pattern<>()} {
+ *         public void apply(MatchManager mgr, String value) throws PatternMatchReject {
+ *             if (value == null) reject();
+ *             String[] parts = value.split(" ");
+ *             if (parts.length != 2) reject();
+ *             firstNamePattern.apply(mgr, parts[0]);
+ *             lastNamePattern.apply(mgr, parts[1]);
+ *         }
+ *
+ *         public String toString() {
+ *             return "FullName(" + firstNamePattern + "," + lastNamePattern + ")";
+ *         }
+ *     };
+ * }
+ * </pre>
+ * Here the {@code apply} method checks whether the matched value is non-null and consists of
+ * two words (we do not handle names with more than two components) and rejects otherwise.
+ * Then it applies the two subpatterns to the first and second word of the string, respectively. <p>
+ *
+ * The full example can be found in
+ * <a href="https://github.com/dominique-unruh/java-patterns/blob/911c12d0f5bd25f8271d705aa6c87377944336f2/src/test/java/de/unruh/javapatterns/test/PatternDocumentationTest.java#L72">PatternDocumentationTest.java</a>,
+ * test case {@code example2}.
  *
  * @param <T> The type of the value that is pattern-matched
  */
-// DOCUMENT: Mention that arguments should be Pattern<? super XXX>
-// DOCUMENT: Give example
 public abstract class Pattern<T> {
     /** Performs the pattern match. See the {@link Pattern class documentation}.<p>
      *
@@ -95,8 +159,8 @@ public abstract class Pattern<T> {
      * @param name Name of the capture. Used only for informative purposes
      *             (printing patterns, error messages). It is recommended
      *             that this is the name of the variable holds this capture.
+     * @return
      */
-    @NotNull
     @Contract(pure = true, value = "_ -> new")
     public static <T> Capture<T> capture(@NotNull String name) {
         return new Capture<T>(name);
