@@ -40,13 +40,8 @@ final public class Capture<T> extends Pattern<T> {
         return name;
     }
 
-    /** Creates a new capture variable.
-     * @param name Name of the capture. Used only for informative purposes
-     *             (printing patterns, error messages). It is recommended
-     *             that this is the name of the variable holds this capture.
-     */
     @Contract(pure = true)
-    public Capture(@NotNull String name) {
+    Capture(@NotNull String name) {
         this.name = name;
     }
 
@@ -70,7 +65,7 @@ final public class Capture<T> extends Pattern<T> {
     }
 
     @Override
-    protected void apply(@NotNull MatchManager mgr, @NotNull T value) {
+    protected void apply(@NotNull MatchManager mgr, @Nullable T value) {
         if (assigned)
             throw new InvalidPatternMatch("Re-assigned " + name + " in pattern match");
         mgr.assigned(this);

@@ -15,6 +15,18 @@ public final class Patterns {
     @Contract(pure = true)
     private Patterns() {}
 
+
+    /** Creates a new capture variable.
+     * @param name Name of the capture. Used only for informative purposes
+     *             (printing patterns, error messages). It is recommended
+     *             that this is the name of the variable holds this capture.
+     */
+    @NotNull
+    @Contract(pure = true, value = "_ -> new")
+    public static <T> Capture<T> Capture(@NotNull String name) {
+        return new Capture<T>(name);
+    }
+
     @NotNull
     @Contract(pure = true, value = "_ -> new")
     public static <T> Pattern<T> Is(@Nullable T expected) {

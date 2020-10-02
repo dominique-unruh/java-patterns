@@ -56,6 +56,9 @@ public final class Match {
      * @param <In> Type of the value to be pattern matched.
      * @param <Exn> Exceptions that the action might throw ({@link PatternMatchReject} does not need to be
      *             declared here even if {@link Pattern#reject()} is used.)
+     * @throws InvalidPatternMatch if a capture variable is assigned twice, or read while unassigned,
+     *         or some other invalid operation occurs in the pattern match (a match failure does not
+     *         count as an invalid operation).
      */
     @Contract(pure = true, value = "_, _ -> new")
     public static <In, Exn extends Throwable> Case <In, Void, Exn>
