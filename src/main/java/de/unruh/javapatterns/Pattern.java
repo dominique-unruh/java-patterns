@@ -49,7 +49,11 @@ import org.jetbrains.annotations.Nullable;
  * @param <T> The type of the value that is pattern-matched
  */
 public abstract class Pattern<T> {
-    /** Performs the pattern match. See the documentation of {@link Pattern this class}.
+    /** Performs the pattern match. See the {@link Pattern class documentation}.<p>
+     *
+     * Must only be invoked from withing an {@code apply}. (I.e.,
+     * a pattern may invoke {@code apply} on its subpatterns from within
+     * its own {@code apply} method.)
      *
      * @param mgr the {@link MatchManager} that manages the life-cycle of the captures in this
      *            pattern match. Must be passed to subpatterns and not be kept after the termination
@@ -58,7 +62,7 @@ public abstract class Pattern<T> {
      * @throws PatternMatchReject to indicate that value did not match the pattern.
      *         Should be thrown only by calling {@link #reject()}}.
      */
-    protected abstract void apply(@NotNull MatchManager mgr, @Nullable T value) throws PatternMatchReject;
+    public abstract void apply(@NotNull MatchManager mgr, @Nullable T value) throws PatternMatchReject;
 
 /*    @Contract(pure = true, value = "-> this")
     public final <U extends T> Pattern<U> contravariance() {

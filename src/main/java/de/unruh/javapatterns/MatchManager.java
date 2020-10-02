@@ -2,11 +2,9 @@ package de.unruh.javapatterns;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.function.Predicate;
 
 /** Manages the state of captured variables in a pattern match. <p>
  *

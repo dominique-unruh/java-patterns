@@ -1,6 +1,10 @@
-package de.unruh.javapatterns;
+package de.unruh.javapatterns.test;
 
+import de.unruh.javapatterns.Capture;
+import de.unruh.javapatterns.MatchException;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 import static de.unruh.javapatterns.Patterns.*;
 import static de.unruh.javapatterns.Match.*;
@@ -19,7 +23,7 @@ class PatternsTest {
 
     @Test
     void isCapture() throws Exception {
-        Capture<String> x = new Capture<>("x");
+        Capture<String> x = Capture("x");
 
         int result = match(new String[] { "1","1" },
                 Array(x,Is(x)), () -> 1,
@@ -47,8 +51,8 @@ class PatternsTest {
 
     @Test
     void and() throws Exception {
-        Capture<String> x = new Capture<>("x");
-        Capture<String> y = new Capture<>("y");
+        Capture<String> x = Capture("x");
+        Capture<String> y = Capture("y");
         String result = match("hello",
                 And(NotNull(x), y), () -> x.v()+y.v());
         assertEquals("hellohello", result);
@@ -57,19 +61,26 @@ class PatternsTest {
     @SuppressWarnings("Convert2MethodRef")
     @Test
     void or() throws Exception {
-        Capture<String> x = new Capture<>("x");
+        Capture<String> x = Capture("x");
         String result = match(null,
                 Or(NotNull(x), x), () -> x.v());
         assertNull(result);
     }
 
+    interface DemoOption<T> {}
+    static class DemoNone<T> implements DemoOption<T> {}
+    static class DemoSome<T> implements DemoOption<T> {
+        final T value;
+        DemoSome(T value) { this.value = value; } }
+
     @Test
     void instance() throws Exception {
-        Capture<PatternResultNone<String>> x = new Capture<>("x");
-        match(new PatternResultNone<String>(),
-                Instance(PatternResultSome.class, Any), () -> fail(),
-                new Instance<PatternResultNone<String>>(x) {}, () ->
-                        assertEquals(new PatternResultNone<>(), x.v()));
+        Capture<DemoSome<String>> x = Capture("x");
+        //noinspection Convert2MethodRef
+        match(new DemoSome<>("Test"),
+                Instance(DemoNone.class, Any), () -> fail(),
+                new Instance<DemoSome<String>>(x) {}, () ->
+                        assertEquals("Test", x.v().value));
     }
 
     @Test
@@ -90,7 +101,7 @@ class PatternsTest {
 
     @Test
     void captureTwice() throws Exception {
-        Capture<String> x = new Capture<>("x");
+        Capture<String> x = Capture("x");
 
         assertThrows(RuntimeException.class,
                 () -> match(new String[] {"x","x"},

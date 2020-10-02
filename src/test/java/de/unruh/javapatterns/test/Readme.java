@@ -1,5 +1,6 @@
-package de.unruh.javapatterns;
+package de.unruh.javapatterns.test;
 
+import de.unruh.javapatterns.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,8 @@ public class Readme {
 
     Pattern<Term> Plus(Pattern<? super Term> patternA, Pattern<? super Term> patternB) {
         return new Pattern<>() {
-            @Override protected void apply(@NotNull MatchManager mgr, @Nullable Term term) throws PatternMatchReject {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable Term term) throws PatternMatchReject {
                 if (!(term instanceof Plus)) reject();
                 patternA.apply(mgr, ((Plus)term).a);
                 patternB.apply(mgr, ((Plus)term).b);
@@ -64,7 +66,8 @@ public class Readme {
 
     Pattern<Term> Minus(Pattern<? super Term> patternA, Pattern<? super Term> patternB) {
         return new Pattern<>() {
-            @Override protected void apply(@NotNull MatchManager mgr, @Nullable Term term) throws PatternMatchReject {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable Term term) throws PatternMatchReject {
                 if (!(term instanceof Minus)) reject();
                 patternA.apply(mgr, ((Minus)term).a);
                 patternB.apply(mgr, ((Minus)term).b);
@@ -77,7 +80,8 @@ public class Readme {
 
     Pattern<Term> Times(Pattern<? super Term> patternA, Pattern<? super Term> patternB) {
         return new Pattern<>() {
-            @Override protected void apply(@NotNull MatchManager mgr, @Nullable Term term) throws PatternMatchReject {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable Term term) throws PatternMatchReject {
                 if (!(term instanceof Times)) reject();
                 patternA.apply(mgr, ((Times)term).a);
                 patternB.apply(mgr, ((Times)term).b);
@@ -90,7 +94,8 @@ public class Readme {
 
     Pattern<Term> Divide(Pattern<? super Term> patternA, Pattern<? super Term> patternB) {
         return new Pattern<>() {
-            @Override protected void apply(@NotNull MatchManager mgr, @Nullable Term term) throws PatternMatchReject {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable Term term) throws PatternMatchReject {
                 if (!(term instanceof Divide)) reject();
                 patternA.apply(mgr, ((Divide)term).a);
                 patternB.apply(mgr, ((Divide)term).b);
@@ -103,7 +108,8 @@ public class Readme {
 
     Pattern<Term> Variable(Pattern<? super String> pattern) {
         return new Pattern<>() {
-            @Override protected void apply(@NotNull MatchManager mgr, @Nullable Term term) throws PatternMatchReject {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable Term term) throws PatternMatchReject {
                 if (!(term instanceof Variable)) reject();
                 pattern.apply(mgr, ((Variable)term).name);
             }
@@ -115,7 +121,8 @@ public class Readme {
 
     Pattern<Term> Number(Pattern<? super Integer> pattern) {
         return new Pattern<>() {
-            @Override protected void apply(@NotNull MatchManager mgr, @Nullable Term term) throws PatternMatchReject {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable Term term) throws PatternMatchReject {
                 if (!(term instanceof Number)) reject();
                 pattern.apply(mgr, ((Number)term).value);
             }
@@ -126,14 +133,14 @@ public class Readme {
     }
 
     boolean equal(Term t1, Term t2) throws MatchException {
-        Capture<Term> a1 = new Capture<>("a1");
-        Capture<Term> a2 = new Capture<>("a2");
-        Capture<Term> b1 = new Capture<>("b1");
-        Capture<Term> b2 = new Capture<>("b2");
-        Capture<Integer> i1 = new Capture<>("i1");
-        Capture<Integer> i2 = new Capture<>("i2");
-        Capture<String> x1 = new Capture<>("x1");
-        Capture<String> x2 = new Capture<>("x2");
+        Capture<Term> a1 = Capture("a1");
+        Capture<Term> a2 = Capture("a2");
+        Capture<Term> b1 = Capture("b1");
+        Capture<Term> b2 = Capture("b2");
+        Capture<Integer> i1 = Capture("i1");
+        Capture<Integer> i2 = Capture("i2");
+        Capture<String> x1 = Capture("x1");
+        Capture<String> x2 = Capture("x2");
 
         return match(
                 new Term[] { t1, t2 },
@@ -155,12 +162,12 @@ public class Readme {
     };
 
     Term simplify1(Term t) throws MatchException {
-        Capture<Term> a = new Capture<>("a");
-        Capture<Term> b = new Capture<>("b");
-        Capture<Term> c = new Capture<>("c");
-        Capture<Integer> i = new Capture<>("i");
-        Capture<Integer> j = new Capture<>("j");
-        Capture<String> x = new Capture<>("x");
+        Capture<Term> a = Capture("a");
+        Capture<Term> b = Capture("b");
+        Capture<Term> c = Capture("c");
+        Capture<Integer> i = Capture("i");
+        Capture<Integer> j = Capture("j");
+        Capture<String> x = Capture("x");
 
         return match(t,
                 Plus(a, Number(Is(0))), () -> a.v(),
