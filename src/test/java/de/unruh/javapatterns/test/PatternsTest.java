@@ -148,7 +148,7 @@ class PatternsTest {
     @Test
     void instance2() throws MatchException {
         Capture<String> x = capture("x");
-        match(new DemoSome<>((Object)"Test"),
+        match((Object)"Test",
                 Instance(String.class, x), () ->
                         assertEquals("Test", x.v()));
     }
