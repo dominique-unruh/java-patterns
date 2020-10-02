@@ -139,7 +139,7 @@ And similar for `Minus(Term,Term)`, `Times(Term,Term)`, `Divide(Term,Term)`, `Va
 ```Java
 Pattern<Term> Plus(Pattern<? super Term> patternA, Pattern<? super Term> patternB) {
     return new Pattern<>() {
-        @Override public void apply(MatchManager mgr, Term term) throws PatternMatchReject {
+        @Override protected void apply(MatchManager mgr, Term term) throws PatternMatchReject {
             if (!(term instanceof Plus)) reject();
             patternA.apply(mgr, ((Plus)term).a);
             patternB.apply(mgr, ((Plus)term).b);

@@ -1,26 +1,28 @@
 package de.unruh.javapatterns;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
 interface PatternResult<T> {
-    // TODO implement isEmpty instead
-    @org.jetbrains.annotations.Contract(pure = true)
-    boolean nonEmpty();
-    @org.jetbrains.annotations.Contract(pure = true)
+    @Contract(pure = true)
+    boolean isEmpty();
+    @Contract(pure = true)
     T get();
 }
+
 final class PatternResultSome<T> implements PatternResult<T> {
     private final T value;
 
-    @org.jetbrains.annotations.Contract(pure = true)
+    @Contract(pure = true)
     public PatternResultSome(T value) {
         this.value = value;
     }
 
     @Override
-    public boolean nonEmpty() {
-        return true;
+    public boolean isEmpty() {
+        return false;
     }
 
     @Override
@@ -41,10 +43,11 @@ final class PatternResultSome<T> implements PatternResult<T> {
         return Objects.hash(value);
     }
 }
+
 final class PatternResultNone<T> implements PatternResult<T> {
     @Override
-    public boolean nonEmpty() {
-        return false;
+    public boolean isEmpty() {
+        return true;
     }
 
     @Override

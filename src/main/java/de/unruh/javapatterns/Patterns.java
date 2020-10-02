@@ -1,22 +1,46 @@
 package de.unruh.javapatterns;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
-// DOCUMENT, mention (somewhere): can access captures already in match, can fail match in action
-// TODO can we create a merged class for static import from Patterns and Match?
+/**
+ * This class contains static methods for constructing a number of different patterns. <p>
+ *
+ * (This class itself cannot be instantiated.)<p>
+ *
+ * Throughout the documentation of the patterns in this class, we refer to the value that
+ * is matched against the pattern simply the "matched value".
+ */
+// TODO Make a test case for each pattern
 public final class Patterns {
-    @org.jetbrains.annotations.Contract(pure = true)
+    @Contract(pure = true)
     private Patterns() {}
 
+    /** Pattern that matches if the matched value equals {@code expected}.<p>
+     *
+     * Equality is tested using {@link Objects#equals}.
+     * If a different equality test is required, use {@link #Is(Predicate)}.<p>
+     *
+     * Since {@code expected} is executed during pattern construction,
+     * {@code expected} cannot depend on the value of capture variables.
+     * Use {@link #Is(Supplier)} if delayed execution is desired. (Or {@link #Is(Capture)}
+     * to match a single captured value.)
+     *
+     * @param expected the value that the matched value is compared to
+     * @param <T> type of the matched value
+     * @return the pattern
+     */
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    @Contract(pure = true, value = "_ -> new")
     public static <T> Pattern<T> Is(@Nullable T expected) {
         return new Pattern<T>() {
             @Override
@@ -31,9 +55,18 @@ public final class Patterns {
         };
     }
 
+    /** Pattern that matches if the matched value equals the value computed by {@code expected}.<p>
+     *
+     * Equality is tested using {@link Objects#equals}.
+     * If a different equality test is required, use {@link #Is(Predicate)}.
+     *
+     * @param expected lambda expression computing the expected value
+     * @param <T> type of the matched value
+     * @return the pattern
+     */
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
-    public static <T> Pattern<T> Is(@NotNull PatternSupplier<T> expected) {
+    @Contract(pure = true, value = "_ -> new")
+    public static <T> Pattern<T> Is(@NotNull Supplier<T> expected) {
         return new Pattern<T>() {
             @Override
             public void apply(@NotNull MatchManager mgr, @Nullable T value) throws PatternMatchReject {
@@ -47,12 +80,45 @@ public final class Patterns {
         };
     }
 
+    /** Pattern that matches if the matched value equals the value in the captured variable
+     * {@code expected}.<p>
+     *
+     * Equality is tested using {@link Objects#equals}.
+     * If a different equality test is required, use {@link #Is(Predicate)}.
+     *
+     * @param expected lambda expression computing the expected value
+     * @param <T> type of the matched value
+     * @return the pattern
+     */
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    @Contract(pure = true, value = "_ -> new")
     public static <T> Pattern<T> Is(@NotNull Capture<T> expected) {
         return Is(expected::v);
     }
 
+    /** Pattern that matches if the matched value satisfies a predicate.
+     *
+     * @param predicate lambda expression testing whether the matched value should be accepted
+     * @param <T> type of the matched value
+     * @return the pattern
+     */
+    @NotNull
+    @Contract(pure = true, value = "_ -> new")
+    public static <T> Pattern<T> Is(@NotNull Predicate<? super T> predicate) {
+        return new Pattern<T>() {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable T value) throws PatternMatchReject {
+                if (!predicate.test(value)) reject();
+            }
+
+            @Override
+            public String toString() {
+                return "Pred(...)";
+            }
+        };
+    }
+
+    /** Pattern that matches everything (including {@code null}). */
     @NotNull
     public static final Pattern<Object> Any = new Pattern<Object>() {
         @Override
@@ -65,6 +131,7 @@ public final class Patterns {
         }
     };
 
+    /** Pattern that matches only {@code null}. */
     @NotNull
     public static final Pattern<Object> Null = new Pattern<Object>() {
         @Override
@@ -78,9 +145,22 @@ public final class Patterns {
         }
     };
 
+    /** Pattern that matches non-null values.<p>
+     *
+     * This pattern succeeds if the matched value is not {@code null},
+     * and the subpattern {@code pattern} matches the matched value.<p>
+     *
+     * Typical use cases would be <code>NotNull({@link #Any})</code> or <code>NotNull(x)</code>
+     * for a capture variable {@code x}. Both forms would match any non-null value, and the latter
+     * assigns it to the capture {@code x}.
+     *
+     * @param pattern the subpattern that also needs to match the matched value
+     * @param <T> type of the matched value
+     * @return the pattern that matched only non-null values
+     **/
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
-    public static <T> Pattern<T> NotNull(@NotNull Pattern<? super T> pattern) {
+    @Contract(pure = true, value = "_ -> new")
+    public static <T> Pattern<T> NotNull(@NotNull Pattern<@NotNull ? super T> pattern) {
         return new Pattern<T>() {
             @Override
             public void apply(@NotNull MatchManager mgr, @Nullable T value) throws PatternMatchReject {
@@ -95,8 +175,19 @@ public final class Patterns {
         };
     }
 
+    /** Pattern that combined several subpatterns that all need to be match.<p>
+     *
+     * This pattern matches if all subpatterns in {@code patterns} match the matched value.<p>
+     *
+     * All captures assigned by the subpatterns will be assigned by this pattern.
+     * Consequently, the subpatterns must not assign the same captures.
+     *
+     * @param patterns subpatterns that all should match
+     * @param <T> type of the matched value
+     * @return the combined pattern
+     */
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    @Contract(pure = true, value = "_ -> new")
     @SafeVarargs
     public static <T> Pattern<T> And(@NotNull Pattern<? super T>... patterns) {
         return new Pattern<T>() {
@@ -116,8 +207,19 @@ public final class Patterns {
         };
     }
 
+    /** Pattern that combined several subpatterns of which one needs to match.<p>
+     *
+     * This pattern matches if at least one subpattern in {@code patterns} matches the matched value.<p>
+     *
+     * Only the captures assigned by the first matching subpattern will be assigned by this pattern.
+     * Consequently, the subpatterns are allowed to assign the same values.
+     *
+     * @param patterns subpatterns that all should match
+     * @param <T> type of the matched value
+     * @return the combined pattern
+     */
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    @Contract(pure = true, value = "_ -> new")
     @SafeVarargs
     public static <T> Pattern<T> Or(@NotNull Pattern<? super T>... patterns) {
         return new Pattern<T>() {
@@ -126,7 +228,7 @@ public final class Patterns {
                 if (patterns.length == 0) reject();
                 for (int i=0; i<patterns.length-1; i++) {
                     Pattern<? super T> pattern = patterns[i];
-                    if (mgr.excursion(() -> pattern.apply(mgr, value))) return;
+                    if (mgr.protectedBlock(() -> pattern.apply(mgr, value))) return;
                 }
                 patterns[patterns.length-1].apply(mgr, value);
             }
@@ -141,8 +243,27 @@ public final class Patterns {
         };
     }
 
+    /** Pattern that matches if the matched value has a specific type {@code U}.<p>
+     *
+     * This pattern matches if the matched value has type {@code U} (runtime type check)
+     * and the subpattern {@code pattern} matches as well.<p>
+     *
+     * Example: <code>Instance(String.class, x)</code> will match a string and assign it to the capture {@code x}
+     * which can be of type <code>{@link Capture}&lt;String&gt;</code>.<p>
+     *
+     * If the type we want to check is a generic type, this pattern is somewhat problematic:
+     * For example, if we have a capture {@code x} of type <code>{@link Capture}&lt;{@link List}&lt;String&gt;&gt;</code>,
+     * then <code>Instance({@link List List}.class, x)</code> will not type check because it expects {@code x}
+     * to match values of raw type {@link List}, not of type {@link List}{@literal <String>}. See {@link Instance Instance}
+     * for a variant of this pattern suitable for that case.
+     *
+     * @param clazz class tag for type {@code U}
+     * @param pattern the subpattern that also need to match the matched value after being type cast
+     * @param <U> the type that the matched value should have
+     * @return the type checking pattern
+     */
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_, _ -> new")
+    @Contract(pure = true, value = "_, _ -> new")
     public static <U> Pattern<Object> Instance(@NotNull Class<U> clazz, @NotNull Pattern<? super U> pattern) {
         return new Pattern<Object>() {
             @Override
@@ -160,16 +281,42 @@ public final class Patterns {
         };
     }
 
+    /** Pattern that matches if the matched value has a specific type {@code U}.<p>
+     *
+     * This pattern matches if the matched value has type {@code U} (runtime type check)
+     * and the subpattern {@code pattern} matches as well.<p>
+     *
+     * Note: If {@code U} is a generic type, then only the raw type will be checked.
+     * (E.g., If {@code U} is <code>{@link Capture}&lt;{@link List}&lt;String&gt;&gt;</code>,
+     * then it will only be checked that the matched value is a {@link List}.
+     * However, the subpattern is allowed to have type parameter <code>{@link List}&lt;String&gt;</code>.
+     * This is analogous to how the Java type cast works (e.g., <code>({@link List}&lt;String&gt;)object</code>)).
+     * <p>
+     *
+     * For technical reasons, constructing this pattern has somewhat uncommon invocation syntax:
+     * {@code new Instance<U>(pattern) {}} where {@code pattern} is the subpattern.<p>
+     *
+     * Example: <code>new Instance&lt;{@link List}&lt;String&gt;&gt;(x) {}</code> will match any {@link List} and assign
+     * it to the capture {@code x}
+     * which can be of type <code>{@link Capture}&lt;{@link List}&lt;String&gt;&gt;</code>.
+     *
+     * @param <U> the type that the matched value should have
+     */
     public abstract static class Instance<U> extends Pattern<U> {
         private final Pattern<Object> instancePattern;
         private final Pattern<? super U> pattern;
         private final Type typeU;
+
+        /** See the {@linkplain Instance class description} for how to create this pattern.
+         * @param pattern the subpattern
+         */
         @SuppressWarnings("unchecked")
-        @org.jetbrains.annotations.Contract(pure = true)
-        public Instance(@NotNull Pattern<? super U> pattern) {
+        @Contract(pure = true)
+        protected Instance(@NotNull Pattern<? super U> pattern) {
             // Based on https://stackoverflow.com/a/64138964/2646248, https://www.baeldung.com/java-super-type-tokens
             if (getClass().getSuperclass() != Instance.class)
-                throw new InvalidPatternMatch("A subclass of a subclass of "+Instance.class+" was created. This is not the intended use.");
+                throw new InvalidPatternMatch("A subclass of a subclass of " + Instance.class +
+                        " was created. This is not the intended use.");
             Type superclass = getClass().getGenericSuperclass();
             typeU = ((ParameterizedType) superclass).getActualTypeArguments()[0];
             Class<U> clazz;
@@ -178,16 +325,19 @@ public final class Patterns {
             else if (typeU instanceof Class)
                 clazz = (Class<U>) typeU;
             else
-                throw new InvalidPatternMatch("Type parameter of "+Instance.class.getName()+" must be a class, not "+typeU+" "+typeU.getClass());
+                throw new InvalidPatternMatch("Type parameter of " + Instance.class.getName() +
+                        " must be a class, not " + typeU + " " + typeU.getClass());
             instancePattern = Instance(clazz, pattern);
             this.pattern = pattern;
         }
 
+        /** @hidden */
         @Override
         public void apply(@NotNull MatchManager mgr, @Nullable U value) throws PatternMatchReject {
             instancePattern.apply(mgr, value);
         }
 
+        /** @hidden */
         @Override
         public String toString() {
             return "("+pattern+" : "+typeU+")";
@@ -195,28 +345,12 @@ public final class Patterns {
     }
 
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
-    public static <T> Pattern<T> Pred(@NotNull Predicate<? super T> predicate) {
-        return new Pattern<T>() {
-            @Override
-            public void apply(@NotNull MatchManager mgr, @Nullable T value) throws PatternMatchReject {
-                if (!predicate.test(value)) reject();
-            }
-
-            @Override
-            public String toString() {
-                return "Pred(...)";
-            }
-        };
-    }
-
-    @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    @Contract(pure = true, value = "_ -> new")
     public static <T> Pattern<T> NoMatch(@NotNull Pattern<? super T> pattern) {
         return new Pattern<T>() {
             @Override
             public void apply(@NotNull MatchManager mgr, @Nullable T value) throws PatternMatchReject {
-                boolean matched = mgr.excursion(() -> pattern.apply(mgr, value));
+                boolean matched = mgr.protectedBlock(() -> pattern.apply(mgr, value));
                 if (matched) reject();
             }
 
@@ -227,13 +361,25 @@ public final class Patterns {
         };
     }
 
+    /** Pattern that matches an array. <p>
+     *
+     * The pattern matches if the matched value is an array of length {@code patterns.length},
+     * and the i-th element of the matched value matches the i-th pattern in {@code patterns}. <p>
+     *
+     * All captures assigned by the subpatterns {@code patterns} will be assigned by this pattern.
+     * Consequently, the subpatterns must assign distinct captures.
+     *
+     * @param patterns the patterns for the array elements
+     * @param <T> the element type of the array (i.e., the matched value has type {@code T[]})
+     * @return the array pattern
+     */
     @NotNull
-    @org.jetbrains.annotations.Contract(pure = true, value = "_ -> new")
+    @Contract(pure = true, value = "_ -> new")
     @SafeVarargs
     public static <T> Pattern<T[]> Array(@NotNull Pattern<? super T> ... patterns) {
         return new Pattern<T[]>() {
             @Override
-            public void apply(@NotNull MatchManager mgr, @Nullable T[] value) throws PatternMatchReject {
+            public void apply(@NotNull MatchManager mgr, @Nullable T @Nullable [] value) throws PatternMatchReject {
                 if (value == null) reject();
                 if (value.length != patterns.length) reject();
                 for (int i=0; i<patterns.length; i++)
