@@ -46,36 +46,61 @@ in Java, ~50 lines long even using `break`s, to implement a five line
 [`Scala` function](https://github.com/dominique-unruh/scala-isabelle/blob/14e3b85af0825359af82f559a6a59337a336363c/src/test/scala/de/unruh/isabelle/Example.scala#L32)).
 
 This library solves this problem. Using it, we can write the pattern match in Java as:
-TODO(add&explain the setup of x,y,z)
 ```Java
+Capture<Term> x = capture("x"), y = capture("y"), z = capture("z");
+
 match(term,
   Plus(Minus(x, y), z), () -> doSomething(x.v(), y.v(), z.v()),
   Any, () -> doSomethingElse())
 ``` 
-While there is still unnecessary syntactic noise (the `() ->`, for example)), the structure of the
+While there is still unnecessary syntactic noise (the `() ->`, and the explicit declaration of the capture
+variables `x`, `y`, `z`), the structure of the
 code is now the same as in Scala. (And the implementation of the abovementioned `replace` function
 can be [similarly improved](https://github.com/dominique-unruh/scala-isabelle/blob/f6fd2433444a0c2232baebb4a91d5e96c9d8f3a5/src/test/scala/de/unruh/isabelle/experiments/JavaPatterns.java#L68).)
 
 ## Notable features
 
-TODO
+* **Nested pattern matching:** Patterns can describe arbitrarily nested structures, in a syntax
+  which mirrors the structure of the term that is matched. This is very common in functional languages.
+* **User designed patterns:** It is easy to create own pattern matchers, e.g., for new datatypes,
+  or for derived properties (e.g., the API doc for Pattern (TODO: link) shows how to create a pattern
+  such that `FullName(first,last)` matches a string consisting of two names). This feature is also
+  available, e.g., in Scala. However, our approach gives patterns greater flexibility what to do 
+  with subpatterns (e.g., change how they are matched depending on other parts of the match / 
+  other arguments to the pattern).
+* **Late match failures:** When a pattern has matched and the corresponding action is executed,
+  that action can still declare the match as a failure and matching continues with the next available
+  pattern. E.g., 
+  ```Java
+  match(person,
+      Person(name, personId), () -> { 
+          PersonData data = lookup(personId.v());
+          if (data==null) reject();
+          dostuff(data); }
+      Person(name, Any), () -> reportUnknownPerson(name.v()))
+  ```
+* **Reading captured values during match:** If a pattern assigns a value to a capture variable `x`,
+  then other parts of the pattern can already depend on that value (i.e., `x.v()` may be used).
+  For example, `Array(x, Is(x))` matches arrays with two identical entries. (`Is(x)` compares the
+  matched value with `x.v()`.)
+* **And-patterns:** TODO 
+* **Or-patterns and backtracking:**: TODO
 
-Draft:
 
-Pros:
-* Late match failures
-* Reading captures inside pattern matches
-* Or-patterns and backtracking support
-* User designed patterns (arbitrary matcher functions)
-* User designed patterns can arguments in liberal ways
+**Some limitations:**
 
-
-Cons:
-* Need to declare all captured variables
-* Syntax not as clean as with compiler support
-* Some checks only at runtime (accessing a capture that was not bound)
+* All capture variables need to be explicitly declared (`Capture<T> x = capture("x")`), adding boilerplate.
+  At least, this can be done outside the pattern match itself so that the pattern match doesn't become less
+  readable.
+* Since there is no compiler support, the syntax for pattern matches is not as clean as one would like.
+  (E.g., like in Scala.)  
+* Certain checks are done only at runtime. E.g., `Array(x,x)` will fail because the same capture variable 
+  would be assigned twice. But this is not noticed at compile time.
 
 ## Comparison with other approaches
+
+**Caveat:** I have not worked with those approaches, my discussions of pros/cons is based only on
+reading their documentation. 
 
 ### Java 14 pattern matching
 
@@ -106,13 +131,29 @@ else
 
 ### Vavr
 
-http://blog.vavr.io/pattern-matching-essentials/
+TODO
 
 https://github.com/vavr-io/vavr-match
 
 https://www.vavr.io/vavr-docs/#_pattern_matching
 
+```Java
+Match(term).of(
+  Case( $Plus( $Minus($(),$()), $() ), 
+        (xy, z) -> doSomething(xy, z)),
+  Case( $(), 
+        () -> doSomethingElse())   
+)
+```
+Note about `xy`.
+
 TODO
+
+* Pros: User defined patterns
+* Pros: No need to declare capture variables
+* Cons: Pattern/name binding loose
+* Cons: requires annotation processor
+* Cons: cannot capture more deeply
 
 ## Prerequisites
 

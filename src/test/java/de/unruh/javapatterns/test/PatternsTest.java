@@ -54,6 +54,7 @@ class PatternsTest {
     void and() throws Exception {
         Capture<String> x = capture("x");
         Capture<String> y = capture("y");
+
         String result = match("hello",
                 And(NotNull(x), y), () -> x.v()+y.v());
         assertEquals("hellohello", result);
