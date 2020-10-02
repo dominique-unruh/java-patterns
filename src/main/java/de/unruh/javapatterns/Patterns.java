@@ -11,9 +11,15 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
 
-// DOCUMENT priority
-// DOCUMENT tell that "the matched value" refers to what is matched
-// TODO: check whether we want to rename anything before release
+/**
+ * This class contains static methods for constructing a number of different patterns. <p>
+ *
+ * (This class itself cannot be instantiated.)
+ *
+ * Throughout the documentation of the patterns in this class, we refer to the value that
+ * is matched against the pattern simply the "matched value".
+ */
+// TODO Make a test case for each pattern
 public final class Patterns {
     @Contract(pure = true)
     private Patterns() {}
@@ -237,9 +243,9 @@ public final class Patterns {
         };
     }
 
-    /** Pattern that matches if the matched value has a specific type.<p>
+    /** Pattern that matches if the matched value has a specific type {@code U}.<p>
      *
-     * This pattern matches if the matched value has type {@code clazz} (runtime type check)
+     * This pattern matches if the matched value has type {@code U} (runtime type check)
      * and the subpattern {@code pattern} matches as well.<p>
      *
      * Example: <code>Instance(String.class, x)</code> will match a string and assign it to the capture {@code x}
@@ -275,17 +281,42 @@ public final class Patterns {
         };
     }
 
-    // DOCUMENT
+    /** Pattern that matches if the matched value has a specific type {@code U}.<p>
+     *
+     * This pattern matches if the matched value has type {@code U} (runtime type check)
+     * and the subpattern {@code pattern} matches as well.<p>
+     *
+     * Note: If {@code U} is a generic type, then only the raw type will be checked.
+     * (E.g., If {@code U} is <code>{@link Capture}&lt;{@link List}&lt;String&gt;&gt;</code>,
+     * then it will only be checked that the matched value is a {@link List}.
+     * However, the subpattern is allowed to have type parameter <code>{@link List}&lt;String&gt;</code>.
+     * This is analogous to how the Java type cast works (e.g., <code>({@link List}&lt;String&gt;)object</code>)).
+     * <p>
+     *
+     * For technical reasons, constructing this pattern has somewhat uncommon invocation syntax:
+     * {@code new Instance<U>(pattern) {}} where {@code pattern} is the subpattern.<p>
+     *
+     * Example: <code>new Instance&lt;{@link List}&lt;String&gt;&gt;(x) {}</code> will match any {@link List} and assign
+     * it to the capture {@code x}
+     * which can be of type <code>{@link Capture}&lt;{@link List}&lt;String&gt;&gt;</code>.<p>
+     *
+     * @param <U> the type that the matched value should have
+     */
     public abstract static class Instance<U> extends Pattern<U> {
         private final Pattern<Object> instancePattern;
         private final Pattern<? super U> pattern;
         private final Type typeU;
         @SuppressWarnings("unchecked")
         @Contract(pure = true)
+        // TODO: make protected?
+        /** See the {@linkplain Instance class description} for how to create this pattern.
+         * @param pattern the subpattern
+         */
         public Instance(@NotNull Pattern<? super U> pattern) {
             // Based on https://stackoverflow.com/a/64138964/2646248, https://www.baeldung.com/java-super-type-tokens
             if (getClass().getSuperclass() != Instance.class)
-                throw new InvalidPatternMatch("A subclass of a subclass of "+Instance.class+" was created. This is not the intended use.");
+                throw new InvalidPatternMatch("A subclass of a subclass of " + Instance.class +
+                        " was created. This is not the intended use.");
             Type superclass = getClass().getGenericSuperclass();
             typeU = ((ParameterizedType) superclass).getActualTypeArguments()[0];
             Class<U> clazz;
@@ -294,23 +325,33 @@ public final class Patterns {
             else if (typeU instanceof Class)
                 clazz = (Class<U>) typeU;
             else
-                throw new InvalidPatternMatch("Type parameter of "+Instance.class.getName()+" must be a class, not "+typeU+" "+typeU.getClass());
+                throw new InvalidPatternMatch("Type parameter of " + Instance.class.getName() +
+                        " must be a class, not " + typeU + " " + typeU.getClass());
             instancePattern = Instance(clazz, pattern);
             this.pattern = pattern;
         };
 
+        /** @hidden */
         @Override
         public void apply(@NotNull MatchManager mgr, @Nullable U value) throws PatternMatchReject {
             instancePattern.apply(mgr, value);
         }
 
+        /** @hidden */
         @Override
         public String toString() {
             return "("+pattern+" : "+typeU+")";
         }
     }
 
-    // DOCUMENT
+    /** Pattern that matches iff the subpattern does not.
+     *
+     * This pattern never assigns any captures even if the subpattern does.
+     *
+     * @param pattern the subpattern that should not match
+     * @param <T> type of the assigned value
+     * @return the negated pattern
+     */
     @NotNull
     @Contract(pure = true, value = "_ -> new")
     public static <T> Pattern<T> NoMatch(@NotNull Pattern<? super T> pattern) {
@@ -328,7 +369,18 @@ public final class Patterns {
         };
     }
 
-    // DOCUMENT
+    /** Pattern that matches an array. <p>
+     *
+     * The pattern matches if the matched value is an array of length {@code patterns.length},
+     * and the i-th element of the matched value matches the i-th pattern in {@code patterns}. <p>
+     *
+     * All captures assigned by the subpatterns {@code patterns} will be assigned by this pattern.
+     * Consequently, the subpatterns must assign distinct captures.
+     *
+     * @param patterns the patterns for the array elements
+     * @param <T> the element type of the array (i.e., the matched value has type {@code T[]})
+     * @return the array pattern
+     */
     @NotNull
     @Contract(pure = true, value = "_ -> new")
     @SafeVarargs
