@@ -74,11 +74,11 @@ can be [similarly improved](https://github.com/dominique-unruh/scala-isabelle/bl
 * **Nested pattern matching:** Patterns can describe arbitrarily nested structures, in a syntax
   which mirrors the structure of the term that is matched. This is very common in functional languages.
 * **User designed patterns:** It is easy to create own pattern matchers, e.g., for new datatypes,
-  or for derived properties (e.g., the API doc for Pattern (TODO: link) shows how to create a pattern
+  or for derived properties (e.g., the API doc for Pattern shows an example how to create a pattern
   such that `FullName(first,last)` matches a string consisting of two names). This feature is also
   available, e.g., in Scala. However, our approach gives patterns greater flexibility what to do 
   with subpatterns (e.g., change how they are matched depending on other parts of the match / 
-  other arguments to the pattern).
+  other arguments to the pattern). See Pattern for instructions.
 * **Late match failures:** When a pattern has matched and the corresponding action is executed,
   that action can still declare the match as a failure and matching continues with the next available
   pattern. E.g., 
@@ -90,13 +90,21 @@ can be [similarly improved](https://github.com/dominique-unruh/scala-isabelle/bl
           dostuff(data); }
       Person(name, Any), () -> reportUnknownPerson(name.v()))
   ```
+  See Pattern.reject.
 * **Reading captured values during match:** If a pattern assigns a value to a capture variable `x`,
   then other parts of the pattern can already depend on that value (i.e., `x.v()` may be used).
   For example, `Array(x, Is(x))` matches arrays with two identical entries. (`Is(x)` compares the
   matched value with `x.v()`.)
-* **And-patterns:** TODO 
-* **Or-patterns and backtracking:**: TODO
+* **And-patterns:** And-patterns allow to require a value to match several patterns
+  simpultaneously. For example `And(x, Is(s -> s.length() <= 100))` would match a string of length
+  `<= 100` and assign it to `x`. See And.
+* **Or-patterns and backtracking:** Or-patterns allow to require that one out of several patterns
+  match. For example, `Or(Array(x), Array(x, Any))` would match an array with one or two elements, and
+  assign the first element to `x`. Due to the backtracking support, capture variables assigned during a 
+  subpattern that failed will not be considered assigned (which makes it possible to use `x` twice in the
+  above pattern). See Or. (And as Match.protectedBlock for how to use this feature in user-defined patterns.) 
 
+[//]: # (TODO Add links to API doc for all the features mentioned here)
 
 **Some limitations:**
 
@@ -168,11 +176,16 @@ TODO
 
 ## Prerequisites
 
-TODO
+Java 8+ is required during compile and runtime.
 
 ## Installation
 
-TODO
+The library is available on Maven Central as de.unruh.java-patterns.
+
+[//]: # (TODO Add links to Maven)
+
+[//]: # (TODO Add code how to include it with gradle)
+
 
 ## Example
 
@@ -292,3 +305,7 @@ out.println(term);
 out.println(simplify(term));
 // ==> Times(-2,x)
 ```
+
+## Further reading
+
+[//]: # (TODO)
