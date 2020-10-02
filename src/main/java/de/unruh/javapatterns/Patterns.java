@@ -174,6 +174,7 @@ public final class Patterns {
         };
     }
 
+
     /** Pattern that combined several subpatterns that all need to be match.<p>
      *
      * This pattern matches if all subpatterns in {@code patterns} match the matched value.<p>
