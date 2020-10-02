@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 /**
  * This class contains static methods for constructing a number of different patterns. <p>
  *
- * (This class itself cannot be instantiated.)
+ * (This class itself cannot be instantiated.)<p>
  *
  * Throughout the documentation of the patterns in this class, we refer to the value that
  * is matched against the pattern simply the "matched value".
@@ -58,7 +58,7 @@ public final class Patterns {
     /** Pattern that matches if the matched value equals the value computed by {@code expected}.<p>
      *
      * Equality is tested using {@link Objects#equals}.
-     * If a different equality test is required, use {@link #Is(Predicate)}.<p>
+     * If a different equality test is required, use {@link #Is(Predicate)}.
      *
      * @param expected lambda expression computing the expected value
      * @param <T> type of the matched value
@@ -84,7 +84,7 @@ public final class Patterns {
      * {@code expected}.<p>
      *
      * Equality is tested using {@link Objects#equals}.
-     * If a different equality test is required, use {@link #Is(Predicate)}.<p>
+     * If a different equality test is required, use {@link #Is(Predicate)}.
      *
      * @param expected lambda expression computing the expected value
      * @param <T> type of the matched value
@@ -96,7 +96,7 @@ public final class Patterns {
         return Is(expected::v);
     }
 
-    /** Pattern that matches if the matched value satisfies a predicate.<p>
+    /** Pattern that matches if the matched value satisfies a predicate.
      *
      * @param predicate lambda expression testing whether the matched value should be accepted
      * @param <T> type of the matched value
@@ -298,7 +298,7 @@ public final class Patterns {
      *
      * Example: <code>new Instance&lt;{@link List}&lt;String&gt;&gt;(x) {}</code> will match any {@link List} and assign
      * it to the capture {@code x}
-     * which can be of type <code>{@link Capture}&lt;{@link List}&lt;String&gt;&gt;</code>.<p>
+     * which can be of type <code>{@link Capture}&lt;{@link List}&lt;String&gt;&gt;</code>.
      *
      * @param <U> the type that the matched value should have
      */
@@ -344,9 +344,9 @@ public final class Patterns {
         }
     }
 
-    /** Pattern that matches iff the subpattern does not.
+    /** Pattern that matches iff the subpattern does not.<p>
      *
-     * This pattern never assigns any captures even if the subpattern does.
+     * This pattern never assigns any captures even if the subpattern does.<p>
      *
      * @param pattern the subpattern that should not match
      * @param <T> type of the assigned value
