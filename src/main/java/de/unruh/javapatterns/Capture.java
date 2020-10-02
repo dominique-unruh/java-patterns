@@ -46,8 +46,12 @@ final public class Capture<T> extends Pattern<T> {
     }
 
     private T value;
-    // TODO: Create public method for checking this
     private boolean assigned = false;
+
+    /** Returns whether this capture has been assigned. */
+    public boolean isAssigned() {
+        return assigned;
+    }
 
     void clear() {
 //        out.println("Resetting "+name+" "+value+" "+assigned);

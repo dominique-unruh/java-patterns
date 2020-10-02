@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * This class contains static methods for constructing a number of different patterns. <p>
@@ -31,7 +32,7 @@ public final class Patterns {
      *
      * Since {@code expected} is executed during pattern construction,
      * {@code expected} cannot depend on the value of capture variables.
-     * Use {@link #Is(PatternSupplier)} if delayed execution is desired. (Or {@link #Is(Capture)}
+     * Use {@link #Is(Supplier)} if delayed execution is desired. (Or {@link #Is(Capture)}
      * to match a single captured value.)
      *
      * @param expected the value that the matched value is compared to
@@ -65,8 +66,7 @@ public final class Patterns {
      */
     @NotNull
     @Contract(pure = true, value = "_ -> new")
-    // TODO Use Supplier instead of PatternSupplier
-    public static <T> Pattern<T> Is(@NotNull PatternSupplier<T> expected) {
+    public static <T> Pattern<T> Is(@NotNull Supplier<T> expected) {
         return new Pattern<>() {
             @Override
             public void apply(@NotNull MatchManager mgr, @Nullable T value) throws PatternMatchReject {
@@ -306,13 +306,13 @@ public final class Patterns {
         private final Pattern<Object> instancePattern;
         private final Pattern<? super U> pattern;
         private final Type typeU;
-        @SuppressWarnings("unchecked")
-        @Contract(pure = true)
-        // TODO: make protected?
+
         /** See the {@linkplain Instance class description} for how to create this pattern.
          * @param pattern the subpattern
          */
-        public Instance(@NotNull Pattern<? super U> pattern) {
+        @SuppressWarnings("unchecked")
+        @Contract(pure = true)
+        protected Instance(@NotNull Pattern<? super U> pattern) {
             // Based on https://stackoverflow.com/a/64138964/2646248, https://www.baeldung.com/java-super-type-tokens
             if (getClass().getSuperclass() != Instance.class)
                 throw new InvalidPatternMatch("A subclass of a subclass of " + Instance.class +
