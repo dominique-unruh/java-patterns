@@ -78,11 +78,14 @@ can be [similarly improved](https://github.com/dominique-unruh/scala-isabelle/bl
 * **Nested pattern matching:** Patterns can describe arbitrarily nested structures, in a syntax
   which mirrors the structure of the term that is matched. This is very common in functional languages.
 * **User designed patterns:** It is easy to create own pattern matchers, e.g., for new datatypes,
-  or for derived properties (e.g., the API doc for Pattern shows an example how to create a pattern
+  or for derived properties (e.g., the API doc for 
+  [Pattern](https://javadoc.io/doc/de.unruh/java-patterns/latest/de/unruh/javapatterns/Pattern.html)
+  shows an example how to create a pattern
   such that `FullName(first,last)` matches a string consisting of two names). This feature is also
   available, e.g., in Scala. However, our approach gives patterns greater flexibility what to do 
   with subpatterns (e.g., change how they are matched depending on other parts of the match / 
-  other arguments to the pattern). See Pattern for instructions.
+  other arguments to the pattern). See 
+  [Pattern](https://javadoc.io/doc/de.unruh/java-patterns/latest/de/unruh/javapatterns/Pattern.html) for instructions.
 * **Late match failures:** When a pattern has matched and the corresponding action is executed,
   that action can still declare the match as a failure and matching continues with the next available
   pattern. E.g., 
@@ -94,21 +97,24 @@ can be [similarly improved](https://github.com/dominique-unruh/scala-isabelle/bl
           dostuff(data); }
       Person(name, Any), () -> reportUnknownPerson(name.v()))
   ```
-  See Pattern.reject.
+  See [Pattern.reject](https://javadoc.io/doc/de.unruh/java-patterns/latest/de/unruh/javapatterns/Pattern.html#reject()).
 * **Reading captured values during match:** If a pattern assigns a value to a capture variable `x`,
   then other parts of the pattern can already depend on that value (i.e., `x.v()` may be used).
   For example, `Array(x, Is(x))` matches arrays with two identical entries. (`Is(x)` compares the
   matched value with `x.v()`.)
 * **And-patterns:** And-patterns allow to require a value to match several patterns
   simpultaneously. For example `And(x, Is(s -> s.length() <= 100))` would match a string of length
-  `<= 100` and assign it to `x`. See And.
+  `<= 100` and assign it to `x`. See
+  [And](https://javadoc.io/doc/de.unruh/java-patterns/latest/de/unruh/javapatterns/Patterns.html#And(de.unruh.javapatterns.Pattern...)).
 * **Or-patterns and backtracking:** Or-patterns allow to require that one out of several patterns
   match. For example, `Or(Array(x), Array(x, Any))` would match an array with one or two elements, and
   assign the first element to `x`. Due to the backtracking support, capture variables assigned during a 
   subpattern that failed will not be considered assigned (which makes it possible to use `x` twice in the
-  above pattern). See Or. (And as Match.protectedBlock for how to use this feature in user-defined patterns.) 
-
-[//]: # (TODO Add links to API doc for all the features mentioned here)
+  above pattern). See
+  [Or](https://javadoc.io/doc/de.unruh/java-patterns/latest/de/unruh/javapatterns/Patterns.html#Or(de.unruh.javapatterns.Pattern...)).
+  (And
+  [MatchManager.protectedBlock](https://javadoc.io/doc/de.unruh/java-patterns/latest/de/unruh/javapatterns/Patterns.html#protectedBlock(de.unruh.javapatterns.PatternRunnable))
+  for how to use this feature in user-defined patterns.) 
 
 **Some limitations:**
 
@@ -268,9 +274,8 @@ since the rejection is implemented via an exception.
 
 The next line does the analogous operation for the second argument of the plus-term.
 
-See the API doc for Pattern for more information how to define new patterns. 
-
-[//]: # (TODO link)
+See the API doc for [Pattern](https://javadoc.io/doc/de.unruh/java-patterns/latest/de/unruh/javapatterns/Pattern.html)
+for more information how to define new patterns. 
 
 We define similar patterns for `Minus`, `Times`, `Divide`, `Variable`, `Number`.
 We omit those definitions here, see the full source code.
@@ -429,8 +434,10 @@ out.println(simplify(term));
 
 ## Further reading
 
-For further information, see the API doc. See Match for instructions how to do pattern
-matches, Patterns for the predefined patterns, and Pattern for instructions how to define 
-own patterns.
-
-[//]: # (TODO add links)
+For further information, see the [API doc](https://javadoc.io/doc/de.unruh/java-patterns/latest/de/unruh/javapatterns).
+See [Match](https://javadoc.io/doc/de.unruh/java-patterns/latest/de/unruh/javapatterns/Match.html) 
+for instructions how to do pattern matches, 
+[Patterns](https://javadoc.io/doc/de.unruh/java-patterns/latest/de/unruh/javapatterns/Patterns.html)
+for the predefined patterns, and
+[Pattern](https://javadoc.io/doc/de.unruh/java-patterns/latest/de/unruh/javapatterns/Pattern.html)
+for instructions how to define own patterns.
