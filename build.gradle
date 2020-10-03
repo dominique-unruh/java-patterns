@@ -1,3 +1,5 @@
+// TODO: Fix Javadoc. (Doing search leads to undefined page.) https://stackoverflow.com/questions/52326318/maven-javadoc-search-redirects-to-undefined-url
+
 plugins {
     id 'java-library'
     id 'maven-publish'
@@ -87,7 +89,8 @@ publishing {
        javaPatterns(MavenPublication) {
            from components.java
            pom {
-               name = 'java-patterns'
+               artifactId = 'java-patterns'
+               name = 'Java Patterns'
                description = "Functional pattern matching in Java"
                url = "https://github.com/dominique-unruh/java-patterns"
                licenses {
@@ -123,5 +126,14 @@ nexusStaging {
 nexusPublishing {
     repositories {
         sonatype()
+    }
+}
+
+javadoc {
+    // Based on https://stackoverflow.com/a/56641766/2646248, workaround against broken links from Javadoc search
+    doLast {
+        // Append the fix to the file
+        def searchScript = new File(destinationDir.getAbsolutePath() + '/search.js')
+        searchScript.append 'getURLPrefix = function(ui) { return ""; };\n'
     }
 }
