@@ -5,6 +5,7 @@ plugins {
     id "com.github.blueboxware.tocme" version "1.2" // For TOC in README
     id 'io.codearte.nexus-staging' version '0.22.0' // For Sonatype publishing
     id "de.marcphilipp.nexus-publish" version "0.4.0" // For Sonatype publishing
+    id "com.github.ben-manes.versions" version "0.33.0" // For dependencyUpdates command
 }
 
 group 'de.unruh'
@@ -15,8 +16,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'org.jetbrains:annotations:19.0.0'
-    testImplementation 'org.jetbrains:annotations:19.0.0'
+    compileOnly 'org.jetbrains:annotations:20.1.0'
+    testImplementation 'org.jetbrains:annotations:20.1.0'
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.0"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.0"
 }
@@ -63,7 +64,7 @@ tocme {
  - git push
  - git checkout master
  - Cherry pick commit with edits to CHANGELOG.md and README.md
- - Check (a while later): https://mvnrepository.com/artifact/de.unruh/scala-isabelle
+ - Check (a while later): https://mvnrepository.com/artifact/de.unruh/java-patterns
 
 ===== Put this into ~/.gradle/gradle.properties for publishing to work: =====
 
@@ -80,9 +81,6 @@ cd ~/.gnupg/
 gpg --export-secret-keys -o secring.gpg
 
 */
-
-
-// Potentially useful: https://sasbury.github.io/notes/2019/gradle_travis_sonatype.html
 
 publishing {
     publications {
