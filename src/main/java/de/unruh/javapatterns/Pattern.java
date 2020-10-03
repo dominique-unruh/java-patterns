@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 /** A pattern that matches a value and assigns values to capture variables ({@link Capture}).
  *
- * When implementing a pattern, the central method is {@link #apply apply} which takes a value {@code value} (and a {@link MatchManager} @{code mgr}) and performs
+ * When implementing a pattern, the central method is {@link #apply apply} which takes a value {@code value} (and a {@link MatchManager} {@code mgr}) and performs
  * the actual pattern matching. Inside {@link #apply apply}, we can perform the following operations:
  * <ul>
  * <li>It can analyze and decompose {@code value} (or compute arbitrary derived values).</li>
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
  * <ul>
  * <li>There is no explicit mechanism for assigning capture variables. However,
  *     capture variables are patterns themselves, and thus can be passed to a pattern as subpatterns.
- *     If {@code x} is a capture, then <code>x.{@link #apply}(...)</code> will have the effect of
+ *     If {@code x} is a capture, then <code>x.{@link #apply apply}(...)</code> will have the effect of
  *     assigning that capture. </li>
  * <li>Failure is marked via an exception {@link PatternMatchReject} (thrown by {@link #reject()}}.
  *     This exception should never be caught because subpatterns might have assigned values to some

@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * The general pattern for executing a pattern match is:
  * <pre>
- * result = {@link #match}(value, {@link #withCase}(pattern1, action1), {@link #withCase}(pattern2, action2), ...)
+ * result = {@link #match match}(value, {@link #withCase withCase}(pattern1, action1), {@link #withCase withCase}(pattern2, action2), ...)
  * </pre>
  * Here {@code value} is the value to pattern match, and {@code pattern1, ...} are the patterns to try and apply.
  * For the first pattern that matches, the corresponding action is executed (with access to the values captured
