@@ -142,7 +142,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    implementation 'de.unruh:java-patterns:0.1.0-RC1'
+    implementation 'de.unruh:java-patterns:0.1.0'
 }
 ```
 And for the
