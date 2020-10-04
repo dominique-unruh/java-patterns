@@ -7,11 +7,11 @@
 <!-- toc -->
 - __[What is this library for?](#what-is-this-library-for)__
 - __[Notable features](#notable-features)__
+- __[Prerequisites](#prerequisites)__
+- __[Installation](#installation)__
 - __[Comparison with other approaches](#comparison-with-other-approaches)__
   - __[Java 14 pattern matching](#java-14-pattern-matching)__
   - __[Vavr](#vavr)__
-- __[Prerequisites](#prerequisites)__
-- __[Installation](#installation)__
 - __[Example](#example)__
   - __[Defining the datatype](#defining-the-datatype)__
   - __[Defining the patterns](#defining-the-patterns)__
@@ -126,6 +126,37 @@ can be [similarly improved](https://github.com/dominique-unruh/scala-isabelle/bl
 * Certain checks are done only at runtime. E.g., `Array(x,x)` will fail because the same capture variable 
   would be assigned twice. But this is not noticed at compile time.
 
+## Prerequisites
+
+Java 8+ is required during compile and runtime.
+
+Some build system such as [gradle](https://gradle.org/) is recommended.
+
+## Installation
+
+The library is available on Maven Central as [de.unruh/java-patterns](https://mvnrepository.com/artifact/de.unruh/java-patterns).
+
+For example, using gradle, you can include the library in your project like this:
+```groovy
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation 'de.unruh:java-patterns:0.1.0-RC1'
+}
+```
+And for the
+[development snapshot](https://oss.sonatype.org/content/repositories/snapshots/de/unruh/java-patterns/master-SNAPSHOT/),
+use:
+```groovy
+repositories {
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+}
+dependencies {
+    implementation 'de.unruh:java-patterns:master-SNAPSHOT'
+}
+```
+
 ## Comparison with other approaches
 
 **Caveat:** I have not worked with those approaches, my discussions of pros/cons is based only on
@@ -188,21 +219,6 @@ use vavr for nested terms.
 
 * Not possible to capture matched values that are deeply embedded in a pattern.
 * Requires to use a special annotation processor for defining new patterns.
-
-## Prerequisites
-
-Java 8+ is required during compile and runtime.
-
-Some build system like gradle is recommended.
-
-## Installation
-
-The library is available on Maven Central as de.unruh.java-patterns.
-
-[//]: # (TODO Add links to Maven)
-
-[//]: # (TODO Add code how to include it with gradle)
-
 
 ## Example
 
