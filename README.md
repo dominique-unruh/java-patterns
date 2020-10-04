@@ -71,7 +71,7 @@ match(term,
 While there is still unnecessary syntactic noise (the `() ->`, and the explicit declaration of the capture
 variables `x`, `y`, `z`), the structure of the
 code is now the same as in Scala. (And the implementation of the abovementioned `replace` function
-can be [similarly improved](https://github.com/dominique-unruh/scala-isabelle/blob/f6fd2433444a0c2232baebb4a91d5e96c9d8f3a5/src/test/scala/de/unruh/isabelle/experiments/JavaPatterns.java#L68).)
+can be [similarly improved](https://github.com/dominique-unruh/scala-isabelle/blob/4e8c1c8dbb69797e408be7076caa48cf863180af/src/test/scala/de/unruh/isabelle/JavaExample.java#L84).)
 
 ## Notable features
 
