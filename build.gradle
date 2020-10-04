@@ -38,6 +38,11 @@ compileTestJava {
 
 test {
     useJUnitPlatform()
+    testLogging {
+        events "failed"
+        exceptionFormat "full"
+        showStandardStreams true
+    }
 }
 
 tocme {
@@ -57,7 +62,7 @@ tocme {
  - Set version in version.sbt
  - git commit
  - ./gradlew clean
- - ./gradlew test
+ - ./gradlew check
  - ./gradlew publish closeAndReleaseRepository (errors might be found here: https://oss.sonatype.org/#stagingRepositories)
  - git tag vXXX (XXX is the version)
  - git push origin vXXX
