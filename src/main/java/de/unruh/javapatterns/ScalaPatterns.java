@@ -3,17 +3,77 @@ package de.unruh.javapatterns;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import scala.*;
+import scala.collection.Iterable;
+import scala.collection.Iterator;
+import scala.collection.JavaConverters;
+import scala.collection.Seq;
+
+import java.util.Arrays;
+import java.util.StringJoiner;
 
 // DOCUMENT
 // DOCUMENT that you need to import scala-library
 // DOCUMENT reference from README etc.
 
-// TODO: Patterns for: Seq
 // TODO: test cases for Tuple
 public final class ScalaPatterns {
     private ScalaPatterns() {}
 
-    public static <T> Pattern<Option<T>> Some(Pattern<? super T> pattern) {
+    @SafeVarargs
+    public static <T> @NotNull Pattern<Seq<T>> Seq(@NotNull Pattern<? super T> @NotNull ... patterns) {
+        return new Pattern<Seq<T>>() {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable Seq<T> value) throws PatternMatchReject {
+                if (value==null) reject();
+                if (value.lengthCompare(patterns.length) != 0) reject();
+                int idx = 0;
+                for (Iterator<T> it = value.iterator(); it.hasNext(); ) {
+                    patterns[idx].apply(mgr, it.next());
+                    idx ++;
+                }
+            }
+
+            @Override
+            public String toString() {
+                StringJoiner joiner = new StringJoiner(", ");
+                for (Pattern<?> pattern : patterns)
+                    joiner.add(pattern.toString());
+                return "Seq(" + joiner + ")";
+            }
+        };
+    }
+
+    // DOCUMENT
+    public static <T> Pattern<Seq<T>> Seq(@NotNull Pattern<? super T> @NotNull [] these,
+                                          @NotNull Pattern<? super Seq<T>> more) {
+        return new Pattern<Seq<T>>() {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable Seq<@Nullable T> value) throws PatternMatchReject {
+                if (value == null) reject();
+                if (value.lengthCompare(these.length) < 0) reject();
+                Tuple2<?, ?> split = value.splitAt(these.length); // Java is confused by precise type of splitAt
+                @SuppressWarnings("unchecked") Iterable<T> valueThese = (Iterable<T>)split._1;
+                @SuppressWarnings("unchecked") Iterable<T> valueMore = (Iterable<T>)split._2;
+                int idx = 0;
+                for (Iterator<T> it = valueThese.iterator(); it.hasNext(); ) {
+                    these[idx].apply(mgr, it.next());
+                    idx ++;
+                }
+                more.apply(mgr, valueMore.toSeq());
+            }
+
+            @Override
+            public String toString() {
+                StringJoiner joiner = new StringJoiner(", ");
+                for (Pattern<?> pattern : these)
+                    joiner.add(pattern.toString());
+                return "Seq(these(" + joiner + "), " + more + ")";
+            }
+        };
+
+    }
+
+        public static <T> @NotNull Pattern<Option<T>> Some(@NotNull Pattern<? super T> pattern) {
         return new Pattern<Option<T>>() {
             @Override
             public void apply(@NotNull MatchManager mgr, @Nullable Option<T> value) throws PatternMatchReject {
@@ -30,7 +90,7 @@ public final class ScalaPatterns {
         };
     }
 
-    public static Pattern<Option<Object>> None = new Pattern<Option<Object>>() {
+    public static @NotNull Pattern<Option<Object>> None = new Pattern<Option<Object>>() {
         @Override
         public void apply(@NotNull MatchManager mgr, @Nullable Option<Object> value) throws PatternMatchReject {
             if (value == null) reject();
@@ -42,7 +102,6 @@ public final class ScalaPatterns {
             return null;
         }
     };
-
 
     /** Pattern that matches a Scala 1-tuple.
      * (More precisely, a value of type {@link Product1}, of which {@link Tuple1} is a subclass.)
@@ -652,7 +711,6 @@ public final class ScalaPatterns {
         };
     }
 
-
     /** Pattern that matches a Scala 22-tuple.
      * (More precisely, a value of type {@link Product22}, of which {@link Tuple22} is a subclass.)
      **/
@@ -691,7 +749,4 @@ public final class ScalaPatterns {
             }
         };
     }
-
-
-
 }

@@ -169,4 +169,20 @@ class PatternsTest {
                 () -> match(new String[] {"x","x"},
                         Array(x,x), () -> 1));
     }
+
+    @Test
+    void arrayThese() throws MatchException {
+        Capture<String[]> arr = capture("arr");
+        Capture<String> x = capture("x"),
+                        y = capture("y");
+
+        match(new String[] { "this", "is", "a", "test" },
+                Array(these(x,y), arr),
+                () -> {
+                    assertEquals("this", x.v());
+                    assertEquals("is", y.v());
+                    assertArrayEquals(new String[] { "a", "test" },
+                            arr.v());
+                });
+    }
 }

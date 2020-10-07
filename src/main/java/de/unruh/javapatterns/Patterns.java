@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -376,7 +377,7 @@ public final class Patterns {
     @NotNull
     @Contract(pure = true, value = "_ -> new")
     @SafeVarargs
-    public static <T> Pattern<T[]> Array(@NotNull Pattern<? super T> ... patterns) {
+    public static <T> Pattern<T[]> Array(@NotNull Pattern<? super T> @NotNull ... patterns) {
         return new Pattern<T[]>() {
             @Override
             public void apply(@NotNull MatchManager mgr, @Nullable T @Nullable [] value) throws PatternMatchReject {
@@ -394,5 +395,36 @@ public final class Patterns {
                 return "Array(" + joiner + ")";
             }
         };
+    }
+
+    // DOCUMENT
+    public static <T> Pattern<T[]> Array(@NotNull Pattern<? super T> @NotNull [] these,
+                                         @NotNull Pattern<? super T[]> more) {
+        return new Pattern<T[]>() {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable T @Nullable [] value) throws PatternMatchReject {
+                if (value == null) reject();
+                if (value.length < these.length) reject();
+                for (int i=0; i<these.length; i++)
+                    these[i].apply(mgr, value[i]);
+                T[] rest = Arrays.copyOfRange(value, these.length, value.length);
+                more.apply(mgr, rest);
+            }
+
+            @Override
+            public String toString() {
+                StringJoiner joiner = new StringJoiner(", ");
+                for (Pattern<?> pattern : these)
+                    joiner.add(pattern.toString());
+                return "Array(these(" + joiner + "), " + more + ")";
+            }
+        };
+    }
+
+    // DOCUMENT
+    @SafeVarargs
+    public static <T> @NotNull Pattern<? super T> @NotNull []
+    these(@NotNull Pattern<? super T> @NotNull ... patterns) {
+        return patterns;
     }
 }
