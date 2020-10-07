@@ -1,0 +1,33 @@
+version 'master-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+// TODO: Could experiment: What happens if we include ScalaPatterns in the main library, but declare the scala-library dependency as compileOnly? What ends up in the POM? Can we use it with or without scala-lib then?
+dependencies {
+    // https://mvnrepository.com/artifact/org.scala-lang/scala-library
+    api 'org.scala-lang:scala-library:2.13.3'
+
+//    testCompile group: 'junit', name: 'junit', version: '4.12'
+    api project(":")
+}
+
+publishing {
+    publications {
+        scalaLib(MavenPublication) {
+            from components.java
+            pom pomDefaults
+            pom {
+                artifactId = 'java-patterns-scalalib'
+                name = 'Java Patterns – Scala standard library'
+                description = "Functional pattern matching in Java – Patterns for Scala standard library"
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.scalaLib
+}
+
