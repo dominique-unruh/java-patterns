@@ -138,6 +138,7 @@ nexusPublishing {
 
 javadoc {
     options {
+        addStringOption("Xdoclint:all,-missing", "-quiet")
         linksOffline('https://www.scala-lang.org/api/current/', 'misc/scala-library-package-list')
     }
     // Based on https://stackoverflow.com/a/56641766/2646248, workaround against broken links from Javadoc search
