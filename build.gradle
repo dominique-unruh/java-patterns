@@ -18,6 +18,10 @@ repositories {
 dependencies {
     compileOnly 'org.jetbrains:annotations:20.1.0'
     testImplementation 'org.jetbrains:annotations:20.1.0'
+
+    compileOnly 'org.scala-lang:scala-library:2.13.3'
+    testImplementation 'org.scala-lang:scala-library:2.13.3'
+
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.0"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.0"
 }
@@ -133,6 +137,9 @@ nexusPublishing {
 }
 
 javadoc {
+    options {
+        linksOffline('https://www.scala-lang.org/api/current/', 'misc/scala-library-package-list')
+    }
     // Based on https://stackoverflow.com/a/56641766/2646248, workaround against broken links from Javadoc search
     doLast {
         // Append the fix to the file
