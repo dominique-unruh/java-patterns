@@ -1,3 +1,0 @@
-de/unruh/javapatterns/ScalaPatterns.java
- de.unruh.javapatterns.ScalaPatterns
- de.unruh.javapatterns.ScalaPatterns$1
