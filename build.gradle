@@ -8,42 +8,75 @@ plugins {
     id "com.github.ben-manes.versions" version "0.33.0" // For dependencyUpdates command
 }
 
-group 'de.unruh'
-version 'master-SNAPSHOT'
+allprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+    apply plugin: 'signing'
 
-repositories {
-    mavenCentral()
-}
+    group 'de.unruh'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        compileOnly 'org.jetbrains:annotations:20.1.0'
+        testImplementation 'org.jetbrains:annotations:20.1.0'
+        testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.0"
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.0"
+    }
+    java {
+        withJavadocJar()
+        withSourcesJar()
+    }
 
-dependencies {
-    compileOnly 'org.jetbrains:annotations:20.1.0'
-    testImplementation 'org.jetbrains:annotations:20.1.0'
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.0"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.0"
-}
+    compileJava {
+        options.release = 8
+    }
 
-java {
-    withJavadocJar()
-    withSourcesJar()
+    compileTestJava {
+        options.release = 9
+    }
 
-}
+    test {
+        useJUnitPlatform()
+        testLogging {
+            events "failed"
+            exceptionFormat "full"
+            showStandardStreams true
+        }
+    }
 
-compileJava {
-    options.release = 8
-}
+    javadoc {
+        // Based on https://stackoverflow.com/a/56641766/2646248, workaround against broken links from Javadoc search
+        doLast {
+            // Append the fix to the file
+            def searchScript = new File(destinationDir.getAbsolutePath() + '/search.js')
+            searchScript.append 'getURLPrefix = function(ui) { return ""; };\n'
+        }
+    }
 
-compileTestJava {
-    options.release = 9
-}
-
-test {
-    useJUnitPlatform()
-    testLogging {
-        events "failed"
-        exceptionFormat "full"
-        showStandardStreams true
+    ext {
+        pomDefaults = {
+            url = "https://github.com/dominique-unruh/java-patterns"
+            licenses {
+                license {
+                    name = "MIT"
+                    url = "https://raw.githubusercontent.com/dominique-unruh/java-patterns/655c7cc5c71eb9ea0fcfee0ae797269e61845d8a/LICENSE"
+                }
+            }
+            developers {
+                developer {
+                    id = "unruh"
+                    name = "Dominique Unruh"
+                    email = "dominique@unruh.de"
+                    url = "https://www.ut.ee/~unruh/"
+                }
+            }
+            scm { url = "https://github.com/dominique-unruh/java-patterns" }
+        }
     }
 }
+
+version 'master-SNAPSHOT'
 
 tocme {
     doc(file("README.md"))
@@ -91,26 +124,10 @@ publishing {
     publications {
        javaPatterns(MavenPublication) {
            from components.java
+//           pom pomDefaults
            pom {
-               artifactId = 'java-patterns'
                name = 'Java Patterns'
                description = "Functional pattern matching in Java"
-               url = "https://github.com/dominique-unruh/java-patterns"
-               licenses {
-                   license {
-                       name = "MIT"
-                       url = "https://raw.githubusercontent.com/dominique-unruh/java-patterns/655c7cc5c71eb9ea0fcfee0ae797269e61845d8a/LICENSE"
-                   }
-               }
-               developers {
-                   developer {
-                       id = "unruh"
-                       name = "Dominique Unruh"
-                       email = "dominique@unruh.de"
-                       url = "https://www.ut.ee/~unruh/"
-                   }
-               }
-               scm { url = "https://github.com/dominique-unruh/java-patterns" }
            }
        }
     }
@@ -120,11 +137,6 @@ signing {
     sign publishing.publications.javaPatterns
 }
 
-nexusStaging {
-    packageGroup = group
-    username = "unruh"
-    password = project.properties.ossrhPassword
-}
 
 nexusPublishing {
     repositories {
@@ -132,11 +144,9 @@ nexusPublishing {
     }
 }
 
-javadoc {
-    // Based on https://stackoverflow.com/a/56641766/2646248, workaround against broken links from Javadoc search
-    doLast {
-        // Append the fix to the file
-        def searchScript = new File(destinationDir.getAbsolutePath() + '/search.js')
-        searchScript.append 'getURLPrefix = function(ui) { return ""; };\n'
-    }
+
+nexusStaging {
+    packageGroup = group
+    username = "unruh"
+    password = project.properties.ossrhPassword
 }
