@@ -397,7 +397,33 @@ public final class Patterns {
         };
     }
 
-    // DOCUMENT
+
+    /** Pattern that matches an array. <p>
+     *
+     * This function is invoked as
+     * <pre>
+     * Array({@link these these}(p1,...,pn),rest)
+     * </pre>
+     * where {@code p}1, …, {@code p}<i>n</i> are patterns
+     * matching values of type {@code T}
+     * and {@code rest} is a pattern matching values of type {@code T[]}.<p>
+     *
+     * The pattern matches if the matched value is an array of length ≥<i>n</i>,
+     * and the <i>i</i>-th element of the matched value matches {@code p}<i>i</i> for
+     * <i>i</i>=1,…,<i>n</i>, and the remaining elements of the array match {@code rest}.<p>
+     *
+     * Example: {@code Array(these(Is(1),Is(2)), x)} will match {@code {1,2,3,4,5}} and
+     * assign {@code {3,4,5}} to the capture `x`, but it will not match {@code {1,1,3,4,5}}
+     * nor {@code {1}}.<p>
+     *
+     * All captures assigned by the subpatterns {@code patterns} will be assigned by this pattern.
+     * Consequently, the subpatterns must assign distinct captures.
+     *
+     * @param these the patterns for the prefix of the matched array
+     * @param more the pattern for the rest of the matched array
+     * @param <T> the element type of the array (i.e., the matched value has type {@code T[]})
+     * @return the array pattern
+     */
     public static <T> Pattern<T[]> Array(@NotNull Pattern<? super T> @NotNull [] these,
                                          @NotNull Pattern<? super T[]> more) {
         return new Pattern<T[]>() {
@@ -421,7 +447,15 @@ public final class Patterns {
         };
     }
 
-    // DOCUMENT
+    /** Returns {@code patterns} as an array.<p>
+     *
+     * “{@code these(p1,…,pn)}” is equivalent to “{@code new Pattern<? super T>[] { p1,…,pn }}”.
+     * This function is intended for notational convenience in pattern-creating functions such as
+     * {@link #Array(Pattern[], Pattern) Array}.
+     *
+     * @param patterns The patterns to be wrapped in an array.
+     * @return {@code patterns} as an array
+     */
     @SafeVarargs
     public static <T> @NotNull Pattern<? super T> @NotNull []
     these(@NotNull Pattern<? super T> @NotNull ... patterns) {
