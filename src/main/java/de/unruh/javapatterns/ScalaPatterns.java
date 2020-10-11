@@ -7,6 +7,8 @@ import scala.collection.Iterable;
 import scala.collection.Iterator;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
+import scala.collection.immutable.LazyList;
+import scala.collection.immutable.List;
 
 import java.util.Arrays;
 import java.util.StringJoiner;
@@ -15,10 +17,25 @@ import java.util.StringJoiner;
 // DOCUMENT that you need to import scala-library
 // DOCUMENT reference from README etc.
 
-// TODO: test cases for Tuple
 public final class ScalaPatterns {
     private ScalaPatterns() {}
 
+
+    /** Pattern that matches a Scala sequence ({@link Seq}).
+     * This includes in particular lists ({@link List}).<p>
+     *
+     * The pattern matches if the matched value is a sequence of {@code patterns.length},
+     * and the i-th element of the matched value matches the i-th pattern in {@code patterns}. <p>
+     *
+     * All captures assigned by the subpatterns {@code patterns} will be assigned by this pattern.
+     * Consequently, the subpatterns must assign distinct captures.<p>
+     *
+     * Infinite sequences will be rejected. (But not lead to infinite loops.)
+     *
+     * @param patterns the patterns for the sequence elements
+     * @param <T> the element type of the sequence (i.e., the matched value has type {@code Seq<T>})
+     * @return the sequence pattern
+     */
     @SafeVarargs
     public static <T> @NotNull Pattern<Seq<T>> Seq(@NotNull Pattern<? super T> @NotNull ... patterns) {
         return new Pattern<Seq<T>>() {
@@ -43,7 +60,38 @@ public final class ScalaPatterns {
         };
     }
 
-    // DOCUMENT
+
+    /** Pattern that matches a Scala sequence ({@link Seq}).
+     * This includes in particular lists ({@link List}).<p>
+     *
+     * This function is invoked as
+     * <pre>
+     * Seq({@link Patterns#these these}(p1,...,pn),rest)
+     * </pre>
+     * where {@code p}1, …, {@code p}<i>n</i> are patterns
+     * matching values of type {@code T}
+     * and {@code rest} is a pattern matching values of type {@link Seq}{@code <T>}.<p>
+     *
+     * The pattern matches if the matched value is a sequence of length ≥<i>n</i>,
+     * and the <i>i</i>-th element of the matched value matches {@code p}<i>i</i> for
+     * <i>i</i>=1,…,<i>n</i>, and the remaining elements of the sequence match {@code rest}.<p>
+     *
+     * Infinite sequences are permitted. (In this case, {@code rest} will be applied to
+     * the infinite suffix of the matched value.)<p>
+     *
+     * Example: {@code Seq(these(Is(1),Is(2)), x)} will match {@code List(1,2,3,4,5)} and
+     * assign {@code List(3,4,5)} to the capture `x`, but it will not match {@code List(1,1,3,4,5)}
+     * nor {@code List(1)}. It will also match the infinite {@link LazyList#from(int) LazyList.from}{@code (1)},
+     * assigning the infinite sequence {@code 3,4,5,…} to {@code x}.<p>
+     *
+     * All captures assigned by the subpatterns {@code patterns} will be assigned by this pattern.
+     * Consequently, the subpatterns must assign distinct captures.
+     *
+     * @param these the patterns for the prefix of the matched sequence
+     * @param more the pattern for the rest of the matched sequence
+     * @param <T> the element type of the sequence (i.e., the matched value has type {@code Seq<T>})
+     * @return the sequence pattern
+     */
     public static <T> Pattern<Seq<T>> Seq(@NotNull Pattern<? super T> @NotNull [] these,
                                           @NotNull Pattern<? super Seq<T>> more) {
         return new Pattern<Seq<T>>() {

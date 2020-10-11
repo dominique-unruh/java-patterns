@@ -13,6 +13,14 @@ import java.util.StringJoiner;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+// TODO Map (or similar) pattern s.t. Map(f,p) makes p match f(x). Map is probably a bad name if we want to allow matching maps
+
+// TODO Java-Optional pattern
+
+// TODO Java-streams
+
+// TODO map types such as HashTables
+
 /**
  * This class contains static methods for constructing a number of different patterns. <p>
  *
