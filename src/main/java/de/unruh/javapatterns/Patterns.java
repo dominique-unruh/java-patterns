@@ -6,20 +6,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 // TODO Map (or similar) pattern s.t. Map(f,p) makes p match f(x). Map is probably a bad name if we want to allow matching maps
 
-// TODO Java-Optional pattern
-
 // TODO Java-streams
-
-// TODO map types such as HashTables
+// TODO Java-iterators
 
 /**
  * This class contains static methods for constructing a number of different patterns. <p>
@@ -469,4 +463,73 @@ public final class Patterns {
     these(@NotNull Pattern<? super T> @NotNull ... patterns) {
         return patterns;
     }
+
+
+    // DOCUMENT
+    // TODO test case
+    public static <T> @NotNull Pattern<Optional<@NotNull T>> Optional(@NotNull Pattern<@NotNull T> pattern) {
+        return new Pattern<Optional<T>>() {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable Optional<T> value) throws PatternMatchReject {
+                //noinspection OptionalAssignedToNull
+                if (value==null) reject();
+                if (!value.isPresent()) reject();
+                pattern.apply(mgr, value.get());
+            }
+
+            @Override
+            public String toString() {
+                return "Optional(" + pattern + ")";
+            }
+        };
+    }
+
+    // DOCUMENT
+    // TODO test case
+    public static <T> @NotNull Pattern<Optional<@NotNull T>> Optional() {
+        return new Pattern<Optional<T>>() {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable Optional<T> value) throws PatternMatchReject {
+                //noinspection OptionalAssignedToNull
+                if (value==null) reject();
+                if (value.isPresent()) reject();
+            }
+
+            @Override
+            public String toString() {
+                return "Optional.empty";
+            }
+        };
+    }
+
+    // DOCUMENT
+    // TODO test case
+    @SafeVarargs
+    public static <K,V> @NotNull Pattern<Map<K,V>> Map(@NotNull Map.Entry<K,Pattern<? super V>> ... patterns) {
+        return new Pattern<Map<K, V>>() {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable Map<K, V> map) throws PatternMatchReject {
+                if (map==null) reject();
+                for (Map.Entry<K, Pattern<? super V>> entry : patterns) {
+                    final K key = entry.getKey();
+                    if (!map.containsKey(key)) reject();
+                    final V val = map.get(key);
+                    final Pattern<? super V> pat = entry.getValue();
+                    pat.apply(mgr, val);
+                }
+            }
+
+            @Override
+            public String toString() {
+                StringJoiner joiner = new StringJoiner(", ");
+                for (Map.@NotNull Entry<K, Pattern<? super V>> entry : patterns)
+                    joiner.add(entry.getKey().toString())
+                            .add("=")
+                            .add(entry.getValue().toString());
+                return "Map(" + joiner + ")";
+            }
+        };
+    }
+
+
 }
