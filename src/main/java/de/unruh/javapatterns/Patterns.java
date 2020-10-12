@@ -564,7 +564,9 @@ public final class Patterns {
      * As iterators can only be read once, this pattern operates destructively on the iterator.
      * No guarantees are made about the state of the iterator after a successful or unsuccessful match.
      * In particular, the same iterator may not be passed to several subpatterns (e.g., {@code And(Iterator(x),Iterator(x))}
-     * and {@code Or(Iterator(x),Iterator(x,y))} are both invalid).
+     * and {@code Or(Iterator(x),Iterator(x,y))} are both invalid). And the same iterator cannot be matched against
+     * in several clauses of the same match statement. (That is {@code match(…, Iterator(…), () -> …, Iterator(…), () -> …)} is
+     * not OK, but {@code match(…, Iterator(…), () -> …, Any, () -> …)} is.
      *
      * Infinite iterators are allowed (but will never match).
      *
@@ -619,7 +621,10 @@ public final class Patterns {
      *
      * As iterators can only be read once, this pattern operates destructively on the iterator.
      * No guarantees are made about the state of the iterator after a successful or unsuccessful match.
-     * In particular, the same iterator may not be passed to several subpatterns.
+     * In particular, the same iterator may not be passed to several subpatterns (e.g., {@code And(Iterator(x),Iterator(x))}
+     * and {@code Or(Iterator(x),Iterator(x,y))} are both invalid). And the same iterator cannot be matched against
+     * in several clauses of the same match statement. (That is {@code match(…, Iterator(…), () -> …, Iterator(…), () -> …)} is
+     * not OK, but {@code match(…, Iterator(…), () -> …, Any, () -> …)} is.
      *
      * Infinite iterators are allowed.
      *
@@ -630,7 +635,7 @@ public final class Patterns {
      */
     // TODO test case
     @NotNull public static <T> Pattern<Iterator<T>> Iterator(@NotNull Pattern<? super T> @NotNull [] these,
-                                                             @NotNull Pattern<? super Iterator<? super T>> more) {
+                                                             @NotNull Pattern<? super Iterator<T>> more) {
         return new Pattern<Iterator<T>>() {
             @Override
             public void apply(@NotNull MatchManager mgr, @Nullable Iterator<@Nullable T> iterator) throws PatternMatchReject {

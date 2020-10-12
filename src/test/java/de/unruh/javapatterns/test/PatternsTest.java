@@ -4,7 +4,10 @@ import de.unruh.javapatterns.Capture;
 import de.unruh.javapatterns.MatchException;
 import org.junit.jupiter.api.Test;
 
-import java.util.Objects;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static de.unruh.javapatterns.Pattern.capture;
 import static de.unruh.javapatterns.Patterns.*;
@@ -35,23 +38,6 @@ class PatternsTest {
                 Array(x,Is(x)), () -> 1,
                 Any, () -> 2);
         assertEquals(2, result);
-    }
-
-    @Test
-    void array() throws MatchException {
-        Capture<Integer> x = capture("x");
-        Capture<Integer> y = capture("y");
-        Capture<Integer> z = capture("z");
-
-        int result = match(new Integer[] { 1,2 },
-
-                Array(x, y, z), () -> 99,
-                Array(x, y), () -> {
-                    assertEquals(1, x.v());
-                    assertEquals(2, y.v());
-                    return 100;
-                });
-        assertEquals(100, result);
     }
 
     @Test
@@ -171,6 +157,23 @@ class PatternsTest {
     }
 
     @Test
+    void array() throws MatchException {
+        Capture<Integer> x = capture("x");
+        Capture<Integer> y = capture("y");
+        Capture<Integer> z = capture("z");
+
+        int result = match(new Integer[] { 1,2 },
+
+                Array(x, y, z), () -> 99,
+                Array(x, y), () -> {
+                    assertEquals(1, x.v());
+                    assertEquals(2, y.v());
+                    return 100;
+                });
+        assertEquals(100, result);
+    }
+
+    @Test
     void arrayThese() throws MatchException {
         Capture<String[]> arr = capture("arr");
         Capture<String> x = capture("x"),
@@ -185,4 +188,46 @@ class PatternsTest {
                             arr.v());
                 });
     }
+
+
+    @Test
+    void iterator() throws MatchException {
+        Capture<Integer> x = capture("x");
+        Capture<Integer> y = capture("y");
+        Capture<Integer> z = capture("z");
+
+        int result = match(Stream.of(1,2).iterator(),
+
+                Iterator(x, y), () -> {
+                    assertEquals(1, x.v());
+                    assertEquals(2, y.v());
+                    return 100;
+                });
+        assertEquals(100, result);
+
+        result = match(Stream.of(1,2).iterator(),
+
+                Iterator(x, y, z), () -> 99,
+                Any, () -> 100);
+        assertEquals(100, result);
+
+    }
+
+    @Test
+    void iteratorThese() throws MatchException {
+        Capture<Iterator<String>> arr = capture("arr");
+        Capture<String> x = capture("x"),
+                y = capture("y");
+
+        match(Stream.of("this", "is", "a", "test").iterator(),
+                Iterator(these(x,y), arr),
+                () -> {
+                    assertEquals("this", x.v());
+                    assertEquals("is", y.v());
+                    assertEquals(arr.v().next(), "a");
+                    assertEquals(arr.v().next(), "test");
+                    assertFalse(arr.v().hasNext());
+                });
+    }
+
 }

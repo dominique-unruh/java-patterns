@@ -125,6 +125,7 @@ can be [similarly improved](https://github.com/dominique-unruh/scala-isabelle/bl
   (E.g., like in Scala.)  
 * Certain checks are done only at runtime. E.g., `Array(x,x)` will fail because the same capture variable 
   would be assigned twice. But this is not noticed at compile time.
+* Cannot detect at compile time whether a match is exhaustive.
 
 ## Prerequisites
 
@@ -188,6 +189,7 @@ else
 * The pattern match is restricted to dynamic type checks. This works fine for the datatype in 
   our example but will fail if the patterns do not follow the inheritance structure. (E.g.,
   if we want a pattern `BinaryOp(x,y)` that should match both `Plus` and `Minus`.)
+* Cannot detect at compile time whether a match is exhaustive. (As far as we know.)
 
 ### Vavr
 
@@ -219,6 +221,7 @@ use vavr for nested terms.
 
 * Not possible to capture matched values that are deeply embedded in a pattern.
 * Requires to use a special annotation processor for defining new patterns.
+* Cannot detect at compile time whether a match is exhaustive.
 
 ## Example
 
