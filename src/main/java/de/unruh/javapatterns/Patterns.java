@@ -7,13 +7,11 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-// TODO Map (or similar) pattern s.t. Map(f,p) makes p match f(x). Map is probably a bad name if we want to allow matching maps
-
 // TODO Java-streams
-// TODO Java-iterators
 
 /**
  * This class contains static methods for constructing a number of different patterns. <p>
@@ -404,7 +402,7 @@ public final class Patterns {
      *
      * This function is invoked as
      * <pre>
-     * Array({@link these these}(p1,...,pn),rest)
+     * Array({@link #these these}(p1,...,pn),rest)
      * </pre>
      * where {@code p}1, …, {@code p}<i>n</i> are patterns
      * matching values of type {@code T}
@@ -532,4 +530,126 @@ public final class Patterns {
     }
 
 
+    // DOCUMENT (also: exceptions are thrown, only NullPointerException in function leads to rejection)
+    // TODO test case
+    @NotNull public static <T,U> Pattern<T> After(@NotNull Function<T,U> function, @NotNull Pattern<? super U> pattern) {
+        return new Pattern<T>() {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable T value) throws PatternMatchReject {
+                U newValue = null;
+                try {
+                    newValue = function.apply(value);
+                } catch (NullPointerException e) {
+                    reject();
+                }
+                pattern.apply(mgr, newValue);
+            }
+
+            @Override
+            public String toString() {
+                return "After(…," + pattern + ")";
+            }
+        };
+    }
+
+
+    /** Pattern that matches an iterator ({@link Iterator}). <p>
+     *
+     * The pattern matches if the matched value is an iterator that contains {@code patterns.length} elements,
+     * and the i-th element of the matched value matches the i-th pattern in {@code patterns}. <p>
+     *
+     * All captures assigned by the subpatterns {@code patterns} will be assigned by this pattern.
+     * Consequently, the subpatterns must assign distinct captures.
+     *
+     * As iterators can only be read once, this pattern operates destructively on the iterator.
+     * No guarantees are made about the state of the iterator after a successful or unsuccessful match.
+     * In particular, the same iterator may not be passed to several subpatterns (e.g., {@code And(Iterator(x),Iterator(x))}
+     * and {@code Or(Iterator(x),Iterator(x,y))} are both invalid).
+     *
+     * Infinite iterators are allowed (but will never match).
+     *
+     * @param patterns the patterns for the iterator elements
+     * @param <T> the element type of the iterator (i.e., the matched value has type {@link Iterator}{@code <T>})
+     * @return the iterator-matching pattern
+     */
+    // TODO test case
+    @NotNull
+    @Contract(pure = true, value = "_ -> new")
+    @SafeVarargs
+    public static <T> Pattern<Iterator<T>> Iterator(@NotNull Pattern<? super T> @NotNull ... patterns) {
+        return new Pattern<Iterator<T>>() {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable Iterator<@Nullable T> iterator) throws PatternMatchReject {
+                if (iterator == null) reject();
+                for (Pattern<? super T> pattern : patterns) {
+                    if (!iterator.hasNext()) reject();
+                    T value = iterator.next();
+                    pattern.apply(mgr, value);
+                }
+                if (iterator.hasNext()) reject();
+            }
+
+            @Override
+            public String toString() {
+                StringJoiner joiner = new StringJoiner(", ");
+                for (Pattern<?> pattern : patterns)
+                    joiner.add(pattern.toString());
+                return "Iterator(" + joiner + ")";
+            }
+        };
+    }
+
+
+    /** Pattern that matches an iterator ({@link Iterator}). <p>
+     *
+     * This function is invoked as
+     * <pre>
+     * Iterator({@link #these these}(p1,...,pn),rest)
+     * </pre>
+     * where {@code p}1, …, {@code p}<i>n</i> are patterns
+     * matching values of type {@code T}
+     * and {@code rest} is a pattern matching values of type {@code Iterator<T>}.<p>
+     *
+     * The pattern matches if the matched value is an iterator containing ≥<i>n</i> elements,
+     * and the <i>i</i>-th element of the matched value matches {@code p}<i>i</i> for
+     * <i>i</i>=1,…,<i>n</i>, and the iterator containing the remaining elements matches {@code rest}.<p>
+     *
+     * All captures assigned by the subpatterns {@code patterns} will be assigned by this pattern.
+     * Consequently, the subpatterns must assign distinct captures.
+     *
+     * As iterators can only be read once, this pattern operates destructively on the iterator.
+     * No guarantees are made about the state of the iterator after a successful or unsuccessful match.
+     * In particular, the same iterator may not be passed to several subpatterns.
+     *
+     * Infinite iterators are allowed.
+     *
+     * @param these the patterns for the prefix of the matched iterator
+     * @param more the pattern for the rest of the matched iterator
+     * @param <T> the element type of the iterator (i.e., the matched value has type {@link Iterator}{@code <T>})
+     * @return the iterator-matching pattern
+     */
+    // TODO test case
+    @NotNull public static <T> Pattern<Iterator<T>> Iterator(@NotNull Pattern<? super T> @NotNull [] these,
+                                                             @NotNull Pattern<? super Iterator<? super T>> more) {
+        return new Pattern<Iterator<T>>() {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable Iterator<@Nullable T> iterator) throws PatternMatchReject {
+                if (iterator == null) reject();
+                for (Pattern<? super T> pattern : these) {
+                    if (!iterator.hasNext()) reject();
+                    T value = iterator.next();
+                    pattern.apply(mgr, value);
+                }
+                more.apply(mgr, iterator);
+            }
+
+            @Override
+            public String toString() {
+                StringJoiner joiner = new StringJoiner(", ");
+                for (Pattern<?> pattern : these)
+                    joiner.add(pattern.toString());
+                return "Iterator(these(" + joiner + "), " + more + ")";
+            }
+        };
+    }
 }
