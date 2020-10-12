@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 // TODO Java-streams
 
@@ -552,7 +553,6 @@ public final class Patterns {
         };
     }
 
-
     /** Pattern that matches an iterator ({@link Iterator}). <p>
      *
      * The pattern matches if the matched value is an iterator that contains {@code patterns.length} elements,
@@ -574,7 +574,7 @@ public final class Patterns {
      * @param <T> the element type of the iterator (i.e., the matched value has type {@link Iterator}{@code <T>})
      * @return the iterator-matching pattern
      */
-    // TODO test case
+    // TODO use CloneableIterator
     @NotNull
     @Contract(pure = true, value = "_ -> new")
     @SafeVarargs
@@ -633,7 +633,7 @@ public final class Patterns {
      * @param <T> the element type of the iterator (i.e., the matched value has type {@link Iterator}{@code <T>})
      * @return the iterator-matching pattern
      */
-    // TODO test case
+    // TODO do some reusable iterator magic
     @NotNull public static <T> Pattern<Iterator<T>> Iterator(@NotNull Pattern<? super T> @NotNull [] these,
                                                              @NotNull Pattern<? super Iterator<T>> more) {
         return new Pattern<Iterator<T>>() {
