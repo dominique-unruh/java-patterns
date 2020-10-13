@@ -1,55 +1,45 @@
 package de.unruh.javapatterns;
 
+import com.google.common.collect.MapMaker;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 // DOCUMENT
 public class StatelessIterator<T> {
-    // TODO: Use a WeakHashMap based on reference equality!
-    private final static WeakHashMap<Object, StatelessIterator<?>> iterators =
-            new WeakHashMap<Object, StatelessIterator<?>>();
+    @NotNull private final static ConcurrentMap<Object, StatelessIterator<?>> iterators =
+            new MapMaker().weakKeys().concurrencyLevel(1).makeMap();
 
     // DOCUMENT
     @NotNull public static <T> StatelessIterator<T> from(@NotNull Iterator<T> iterator) {
-        if (iterator instanceof StatelessIterator) //noinspection unchecked
-            return (StatelessIterator<T>) iterator;
-        synchronized (iterators) {
-            final StatelessIterator<?> existingInstance = iterators.get(iterator);
-            if (existingInstance == null) {
-                StatelessIterator<T> instance = new StatelessIterator<>(iterator);
-                iterators.put(iterator, instance);
-                return instance;
-            } else
-                //noinspection unchecked
-                return (StatelessIterator<T>) existingInstance;
-        }
+        if (iterator instanceof CloneableIterator)
+            return ((CloneableIterator<T>)iterator).getStatelessIterator();
+        //noinspection unchecked
+        return (StatelessIterator<T>) iterators.computeIfAbsent(iterator, i -> new StatelessIterator<>(iterator));
     }
 
-    private static enum State { uninitialized, empty, nonEmpty }
+    private enum State { uninitialized, empty, nonEmpty }
 
-    private State state = State.uninitialized;
+    private volatile State state = State.uninitialized;
     private Iterator<T> iterator;
     private T head = null;
     private StatelessIterator<T> tail = null;
 
-    private StatelessIterator(Iterator<T> iterator) {
+    private StatelessIterator(@NotNull Iterator<T> iterator) {
         this.iterator = iterator;
     }
 
-    private void initialize() {
-        synchronized (this) {
-            if (state==State.uninitialized) {
-                if (iterator.hasNext()) {
-                    state = State.empty;
-                    iterator = null;
-                } else {
-                    state = State.nonEmpty;
-                    head = iterator.next();
-                    tail = new StatelessIterator<>(iterator);
-                }
+    private synchronized void initialize() {
+        if (state==State.uninitialized) {
+            if (iterator.hasNext()) {
+                head = iterator.next();
+                tail = new StatelessIterator<>(iterator);
+                state = State.nonEmpty;
+            } else {
+                iterator = null;
+                state = State.empty;
             }
         }
     }

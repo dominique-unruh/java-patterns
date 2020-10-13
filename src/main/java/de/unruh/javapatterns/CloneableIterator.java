@@ -1,31 +1,37 @@
 package de.unruh.javapatterns;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Iterator;
 
 // DOCUMENT
 public class CloneableIterator<T> implements Iterator<T>, Cloneable {
-    private StatelessIterator<T> statelessIterator;
+    @NotNull private StatelessIterator<T> statelessIterator;
 
     // DOCUMENT
-    @Override
-    protected CloneableIterator<T> clone() throws CloneNotSupportedException {
-        //noinspection unchecked
-        return (CloneableIterator<T>) super.clone();
+    @NotNull public StatelessIterator<T> getStatelessIterator() {
+        return statelessIterator;
     }
 
     // DOCUMENT
-    public CloneableIterator(StatelessIterator<T> statelessIterator) {
+    @SuppressWarnings("MethodDoesntCallSuperMethod")
+    @Override
+    public CloneableIterator<T> clone() {
+        return new CloneableIterator<>(statelessIterator);
+    }
+
+    private CloneableIterator(@NotNull StatelessIterator<T> statelessIterator) {
         this.statelessIterator = statelessIterator;
     }
 
     // DOCUMENT
-    public CloneableIterator(CloneableIterator<T> cloneableIterator) {
-        this.statelessIterator = cloneableIterator.statelessIterator;
+    @NotNull public static <T> CloneableIterator<T> from(@NotNull StatelessIterator<T> iterator) {
+        return new CloneableIterator<>(iterator);
     }
 
     // DOCUMENT
-    public CloneableIterator(Iterator<T> iterator) {
-        statelessIterator = StatelessIterator.from(iterator);
+    @NotNull public static <T> CloneableIterator<T> from(Iterator<T> iterator) {
+        return new CloneableIterator<>(StatelessIterator.from(iterator));
     }
 
     @Override

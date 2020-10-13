@@ -214,6 +214,23 @@ class PatternsTest {
     }
 
     @Test
+    void iteratorReuse() throws MatchException {
+        Capture<Integer> x = capture("x");
+        Capture<Integer> y = capture("y");
+        Capture<Integer> z = capture("z");
+
+        int result = match(Stream.of(1,2).iterator(),
+
+                Iterator(x, y, z), () -> 99,
+                Iterator(x, y), () -> {
+                    assertEquals(1, x.v());
+                    assertEquals(2, y.v());
+                    return 100;
+                });
+        assertEquals(100, result);
+    }
+
+    @Test
     void iteratorThese() throws MatchException {
         Capture<Iterator<String>> arr = capture("arr");
         Capture<String> x = capture("x"),

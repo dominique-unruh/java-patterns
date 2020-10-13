@@ -20,7 +20,8 @@ import java.util.stream.Stream;
  * (This class itself cannot be instantiated.)<p>
  *
  * Throughout the documentation of the patterns in this class, we refer to the value that
- * is matched against the pattern simply the "matched value".
+ * is matched against the pattern simply the "matched value". (Or "matched array", "matched collection",
+ * "matched iterator", etc. if we want to highlight its type.)
  */
 public final class Patterns {
     @Contract(pure = true)
@@ -559,14 +560,19 @@ public final class Patterns {
      * and the i-th element of the matched value matches the i-th pattern in {@code patterns}. <p>
      *
      * All captures assigned by the subpatterns {@code patterns} will be assigned by this pattern.
-     * Consequently, the subpatterns must assign distinct captures.
+     * Consequently, the subpatterns must assign distinct captures.<p>
      *
-     * As iterators can only be read once, this pattern operates destructively on the iterator.
-     * No guarantees are made about the state of the iterator after a successful or unsuccessful match.
-     * In particular, the same iterator may not be passed to several subpatterns (e.g., {@code And(Iterator(x),Iterator(x))}
-     * and {@code Or(Iterator(x),Iterator(x,y))} are both invalid). And the same iterator cannot be matched against
-     * in several clauses of the same match statement. (That is {@code match(…, Iterator(…), () -> …, Iterator(…), () -> …)} is
-     * not OK, but {@code match(…, Iterator(…), () -> …, Any, () -> …)} is.
+     * As iterators can only be traversed once, this pattern clones the matched value using a {@link CloneableIterator}.
+     * This leads to the following rules:
+     * <ul>
+     * <li>The same iterator can be matched (or rejected) in several subpatterns.</li>
+     * <li>All subpatterns will effectively use the original content of the iterator.</li>
+     * <li>The original matched iterator must not be used any more after the matching (it is in an undefined state)
+     * whether the match failed or not.</li>
+     * <li>The original matched iterator can, however, be used as an argument to
+     * {@link CloneableIterator#from(Iterator) CloneableIterator.from} or {@link StatelessIterator#from(Iterator) StatelessIterator.from}
+     * in which case the resulting cloneable/stateless iterator will contain the original content of the matched iterator.</li>
+     * </ul><p>
      *
      * Infinite iterators are allowed (but will never match).
      *
@@ -574,7 +580,6 @@ public final class Patterns {
      * @param <T> the element type of the iterator (i.e., the matched value has type {@link Iterator}{@code <T>})
      * @return the iterator-matching pattern
      */
-    // TODO use CloneableIterator
     @NotNull
     @Contract(pure = true, value = "_ -> new")
     @SafeVarargs
@@ -583,6 +588,7 @@ public final class Patterns {
             @Override
             public void apply(@NotNull MatchManager mgr, @Nullable Iterator<@Nullable T> iterator) throws PatternMatchReject {
                 if (iterator == null) reject();
+                iterator = CloneableIterator.from(iterator);
                 for (Pattern<? super T> pattern : patterns) {
                     if (!iterator.hasNext()) reject();
                     T value = iterator.next();
@@ -617,14 +623,19 @@ public final class Patterns {
      * <i>i</i>=1,…,<i>n</i>, and the iterator containing the remaining elements matches {@code rest}.<p>
      *
      * All captures assigned by the subpatterns {@code patterns} will be assigned by this pattern.
-     * Consequently, the subpatterns must assign distinct captures.
+     * Consequently, the subpatterns must assign distinct captures.<p>
      *
-     * As iterators can only be read once, this pattern operates destructively on the iterator.
-     * No guarantees are made about the state of the iterator after a successful or unsuccessful match.
-     * In particular, the same iterator may not be passed to several subpatterns (e.g., {@code And(Iterator(x),Iterator(x))}
-     * and {@code Or(Iterator(x),Iterator(x,y))} are both invalid). And the same iterator cannot be matched against
-     * in several clauses of the same match statement. (That is {@code match(…, Iterator(…), () -> …, Iterator(…), () -> …)} is
-     * not OK, but {@code match(…, Iterator(…), () -> …, Any, () -> …)} is.
+     * As iterators can only be traversed once, this pattern clones the matched iterator using a {@link CloneableIterator}.
+     * This leads to the following rules:
+     * <ul>
+     * <li>The same iterator can be matched (or rejected) in several subpatterns.</li>
+     * <li>All subpatterns will effectively use the original content of the iterator.</li>
+     * <li>The original matched iterator must not be used any more after the matching (it is in an undefined state)
+     * whether the match failed or not.</li>
+     * <li>The original matched iterator can, however, be used as an argument to
+     * {@link CloneableIterator#from(Iterator) CloneableIterator.from} or {@link StatelessIterator#from(Iterator) StatelessIterator.from}
+     * in which case the resulting cloneable/stateless iterator will contain the original content of the matched iterator.</li>
+     * </ul><p>
      *
      * Infinite iterators are allowed.
      *
@@ -633,13 +644,13 @@ public final class Patterns {
      * @param <T> the element type of the iterator (i.e., the matched value has type {@link Iterator}{@code <T>})
      * @return the iterator-matching pattern
      */
-    // TODO do some reusable iterator magic
     @NotNull public static <T> Pattern<Iterator<T>> Iterator(@NotNull Pattern<? super T> @NotNull [] these,
                                                              @NotNull Pattern<? super Iterator<T>> more) {
         return new Pattern<Iterator<T>>() {
             @Override
             public void apply(@NotNull MatchManager mgr, @Nullable Iterator<@Nullable T> iterator) throws PatternMatchReject {
                 if (iterator == null) reject();
+                iterator = CloneableIterator.from(iterator);
                 for (Pattern<? super T> pattern : these) {
                     if (!iterator.hasNext()) reject();
                     T value = iterator.next();
