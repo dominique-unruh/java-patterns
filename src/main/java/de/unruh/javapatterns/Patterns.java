@@ -570,7 +570,8 @@ public final class Patterns {
      * <li>The original matched iterator must not be used any more after the matching (it is in an undefined state)
      * whether the match failed or not.</li>
      * <li>The original matched iterator can, however, be used as an argument to
-     * {@link CloneableIterator#from(Iterator) CloneableIterator.from} or {@link StatelessIterator#from(Iterator) StatelessIterator.from}
+     * {@link CloneableIterator#from(Iterator) CloneableIterator.from}/{@link CloneableIterator#fromShared fromShared} or
+     * {@link StatelessIterator#from(Iterator) StatelessIterator.from}/{@link CloneableIterator#fromShared fromShared}
      * in which case the resulting cloneable/stateless iterator will contain the original content of the matched iterator.</li>
      * </ul><p>
      *
@@ -588,7 +589,7 @@ public final class Patterns {
             @Override
             public void apply(@NotNull MatchManager mgr, @Nullable Iterator<@Nullable T> iterator) throws PatternMatchReject {
                 if (iterator == null) reject();
-                iterator = CloneableIterator.from(iterator);
+                iterator = CloneableIterator.fromShared(iterator);
                 for (Pattern<? super T> pattern : patterns) {
                     if (!iterator.hasNext()) reject();
                     T value = iterator.next();
@@ -626,16 +627,7 @@ public final class Patterns {
      * Consequently, the subpatterns must assign distinct captures.<p>
      *
      * As iterators can only be traversed once, this pattern clones the matched iterator using a {@link CloneableIterator}.
-     * This leads to the following rules:
-     * <ul>
-     * <li>The same iterator can be matched (or rejected) in several subpatterns.</li>
-     * <li>All subpatterns will effectively use the original content of the iterator.</li>
-     * <li>The original matched iterator must not be used any more after the matching (it is in an undefined state)
-     * whether the match failed or not.</li>
-     * <li>The original matched iterator can, however, be used as an argument to
-     * {@link CloneableIterator#from(Iterator) CloneableIterator.from} or {@link StatelessIterator#from(Iterator) StatelessIterator.from}
-     * in which case the resulting cloneable/stateless iterator will contain the original content of the matched iterator.</li>
-     * </ul><p>
+     * The same rules as described in {@link #Iterator(Pattern[])} apply.
      *
      * Infinite iterators are allowed.
      *
@@ -650,7 +642,7 @@ public final class Patterns {
             @Override
             public void apply(@NotNull MatchManager mgr, @Nullable Iterator<@Nullable T> iterator) throws PatternMatchReject {
                 if (iterator == null) reject();
-                iterator = CloneableIterator.from(iterator);
+                iterator = CloneableIterator.fromShared(iterator);
                 for (Pattern<? super T> pattern : these) {
                     if (!iterator.hasNext()) reject();
                     T value = iterator.next();

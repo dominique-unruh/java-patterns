@@ -34,6 +34,11 @@ public class CloneableIterator<T> implements Iterator<T>, Cloneable {
         return new CloneableIterator<>(StatelessIterator.from(iterator));
     }
 
+    // DOCUMENT
+    @NotNull public static <T> CloneableIterator<T> fromShared(Iterator<T> iterator) {
+        return new CloneableIterator<>(StatelessIterator.fromShared(iterator));
+    }
+
     @Override
     public boolean hasNext() {
         return statelessIterator.nonEmpty();
