@@ -23,6 +23,7 @@ import java.util.stream.Stream;
  * is matched against the pattern simply the "matched value". (Or "matched array", "matched collection",
  * "matched iterator", etc. if we want to highlight its type.)
  */
+// TODO reference ScalaPatterns
 public final class Patterns {
     @Contract(pure = true)
     private Patterns() {}
@@ -637,18 +638,18 @@ public final class Patterns {
      * @return the iterator-matching pattern
      */
     @NotNull public static <T> Pattern<Iterator<T>> Iterator(@NotNull Pattern<? super T> @NotNull [] these,
-                                                             @NotNull Pattern<? super Iterator<T>> more) {
+                                                             @NotNull Pattern<? super CloneableIterator<T>> more) {
         return new Pattern<Iterator<T>>() {
             @Override
             public void apply(@NotNull MatchManager mgr, @Nullable Iterator<@Nullable T> iterator) throws PatternMatchReject {
                 if (iterator == null) reject();
-                iterator = CloneableIterator.fromShared(iterator);
+                CloneableIterator<T> cloneableIterator = CloneableIterator.fromShared(iterator);
                 for (Pattern<? super T> pattern : these) {
-                    if (!iterator.hasNext()) reject();
-                    T value = iterator.next();
+                    if (!cloneableIterator.hasNext()) reject();
+                    T value = cloneableIterator.next();
                     pattern.apply(mgr, value);
                 }
-                more.apply(mgr, iterator);
+                more.apply(mgr, cloneableIterator);
             }
 
             @Override
