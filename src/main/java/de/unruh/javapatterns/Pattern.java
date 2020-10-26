@@ -144,12 +144,18 @@ public abstract class Pattern<T> {
      *
      * Can also be invoked inside a match action (the code that is executed if a pattern did
      * match) to declare the match as failed. If that happens, the pattern match (via {@link Match#match})
-     * will continue with the next pattern.
+     * will continue with the next pattern.<p>
+     *
+     * {@code reject()} always returns an exception but the compiler does not know that
+     * and does not know that the code after {@code reject()} is unreachable. In that case,
+     * the idiom {@code return reject();} may be used which is equivalent to {@code reject();}
+     * <p>
      *
      * @throws PatternMatchReject always thrown
+     * @param <T> declared return type but no value is actually ever returned
      */
     @Contract(pure = true, value = "-> fail")
-    public static void reject() throws PatternMatchReject {
+    public static <T> T reject() throws PatternMatchReject {
         throw new PatternMatchReject();
     }
 
