@@ -19,7 +19,7 @@ dependencies {
     compileOnly 'org.jetbrains:annotations:20.1.0'
     testImplementation 'org.jetbrains:annotations:20.1.0'
 
-    implementation 'com.google.guava:guava:29.0-jre'
+    implementation 'com.google.guava:guava:30.0-jre'
 
     compileOnly 'org.scala-lang:scala-library:2.13.3'
     testImplementation 'org.scala-lang:scala-library:2.13.3'
