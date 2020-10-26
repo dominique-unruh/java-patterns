@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentMap;
 
+// DOCUMENT Update doc to distinguish CloneableIterator and DefaultCloneableIterator
 /** Iterator with effectively stateless access (wrapping a stateful iterator). <p>
  *
  * Given an {@link Iterator} {@code it}, we can construct a stateless iterator as {@code slit = StatelessIterator.from(it)}.
@@ -75,8 +76,8 @@ public class StatelessIterator<T> {
 
     // DOCUMENT
     @NotNull public static <T> StatelessIterator<T> fromShared(@NotNull Iterator<T> iterator) {
-        if (iterator instanceof CloneableIterator)
-            return ((CloneableIterator<T>)iterator).getStatelessIterator();
+        if (iterator instanceof DefaultCloneableIterator)
+            return ((DefaultCloneableIterator<T>)iterator).getStatelessIterator();
         //noinspection unchecked
         return (StatelessIterator<T>) iterators.computeIfAbsent(iterator, i -> new StatelessIterator<>(iterator));
     }
@@ -88,8 +89,8 @@ public class StatelessIterator<T> {
 
     // DOCUMENT
     @NotNull public static <T> StatelessIterator<T> from(@NotNull Iterator<T> iterator) {
-        if (iterator instanceof CloneableIterator)
-            return ((CloneableIterator<T>)iterator).getStatelessIterator();
+        if (iterator instanceof DefaultCloneableIterator)
+            return ((DefaultCloneableIterator<T>)iterator).getStatelessIterator();
         return new StatelessIterator<>(iterator);
     }
 

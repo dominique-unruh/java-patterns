@@ -5,49 +5,22 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Iterator;
 
 // DOCUMENT
-public class CloneableIterator<T> implements Iterator<T>, Cloneable {
-    @NotNull private StatelessIterator<T> statelessIterator;
+public interface CloneableIterator<T> extends Iterator<T>, Cloneable {
+    CloneableIterator<T> clone();
 
     // DOCUMENT
-    @NotNull public StatelessIterator<T> getStatelessIterator() {
-        return statelessIterator;
-    }
-
-    // DOCUMENT
-    @SuppressWarnings("MethodDoesntCallSuperMethod")
-    @Override
-    public CloneableIterator<T> clone() {
-        return new CloneableIterator<>(statelessIterator);
-    }
-
-    private CloneableIterator(@NotNull StatelessIterator<T> statelessIterator) {
-        this.statelessIterator = statelessIterator;
+    @NotNull
+    static <T> CloneableIterator<T> from(Iterator<T> iterator) {
+        if (iterator instanceof CloneableIterator)
+            return ((CloneableIterator<T>) iterator).clone();
+        return DefaultCloneableIterator.from(iterator);
     }
 
     // DOCUMENT
-    @NotNull public static <T> CloneableIterator<T> from(@NotNull StatelessIterator<T> iterator) {
-        return new CloneableIterator<>(iterator);
-    }
-
-    // DOCUMENT
-    @NotNull public static <T> CloneableIterator<T> from(Iterator<T> iterator) {
-        return new CloneableIterator<>(StatelessIterator.from(iterator));
-    }
-
-    // DOCUMENT
-    @NotNull public static <T> CloneableIterator<T> fromShared(Iterator<T> iterator) {
-        return new CloneableIterator<>(StatelessIterator.fromShared(iterator));
-    }
-
-    @Override
-    public boolean hasNext() {
-        return statelessIterator.nonEmpty();
-    }
-
-    @Override
-    public T next() {
-        T value = statelessIterator.getHead();
-        statelessIterator = statelessIterator.getTail();
-        return value;
+    @NotNull
+    static <T> CloneableIterator<T> fromShared(Iterator<T> iterator) {
+        if (iterator instanceof CloneableIterator)
+            return ((CloneableIterator<T>) iterator).clone();
+        return DefaultCloneableIterator.fromShared(iterator);
     }
 }
