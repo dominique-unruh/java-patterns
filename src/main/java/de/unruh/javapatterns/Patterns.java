@@ -12,8 +12,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-// TODO Java-streams
-
 /**
  * This class contains static methods for constructing a number of different patterns. <p>
  *
@@ -21,9 +19,13 @@ import java.util.stream.Stream;
  *
  * Throughout the documentation of the patterns in this class, we refer to the value that
  * is matched against the pattern simply the "matched value". (Or "matched array", "matched collection",
- * "matched iterator", etc. if we want to highlight its type.)
+ * "matched iterator", etc. if we want to highlight its type.)<p>
+ *
+ * <b>See also:</b>
+ * <ul>
+ * <li>{@link ScalaPatterns} – Additional patterns for matching Scala classes
+ * </ul>
  */
-// TODO reference ScalaPatterns
 public final class Patterns {
     @Contract(pure = true)
     private Patterns() {}
@@ -590,13 +592,7 @@ public final class Patterns {
             @Override
             public void apply(@NotNull MatchManager mgr, @Nullable Iterator<@Nullable T> iterator) throws PatternMatchReject {
                 if (iterator == null) reject();
-                iterator = CloneableIterator.fromShared(iterator);
-                for (Pattern<? super T> pattern : patterns) {
-                    if (!iterator.hasNext()) reject();
-                    T value = iterator.next();
-                    pattern.apply(mgr, value);
-                }
-                if (iterator.hasNext()) reject();
+                iteratorApply(patterns, mgr, CloneableIterator.fromShared(iterator));
             }
 
             @Override
@@ -641,15 +637,10 @@ public final class Patterns {
                                                              @NotNull Pattern<? super CloneableIterator<T>> more) {
         return new Pattern<Iterator<T>>() {
             @Override
-            public void apply(@NotNull MatchManager mgr, @Nullable Iterator<@Nullable T> iterator) throws PatternMatchReject {
+            public void apply (@NotNull MatchManager mgr, @Nullable Iterator < @Nullable T > iterator) throws
+            PatternMatchReject {
                 if (iterator == null) reject();
-                CloneableIterator<T> cloneableIterator = CloneableIterator.fromShared(iterator);
-                for (Pattern<? super T> pattern : these) {
-                    if (!cloneableIterator.hasNext()) reject();
-                    T value = cloneableIterator.next();
-                    pattern.apply(mgr, value);
-                }
-                more.apply(mgr, cloneableIterator);
+                iteratorApply(these, more, mgr, CloneableIterator.fromShared(iterator));
             }
 
             @Override
@@ -661,4 +652,74 @@ public final class Patterns {
             }
         };
     }
+
+    private static <T> void iteratorApply(
+            @NotNull Pattern<? super T> @NotNull [] these,
+            @NotNull Pattern<? super CloneableIterator<T>> more,
+            @NotNull MatchManager mgr, @NotNull CloneableIterator<@Nullable T> iterator) throws PatternMatchReject {
+        for (Pattern<? super T> pattern : these) {
+            if (!iterator.hasNext()) Pattern.reject();
+            T value = iterator.next();
+            pattern.apply(mgr, value);
+        }
+        more.apply(mgr, iterator);
+    }
+
+    private static <T> void iteratorApply(
+            @NotNull Pattern<? super T> @NotNull [] patterns,
+            @NotNull MatchManager mgr, @NotNull CloneableIterator<@Nullable T> iterator) throws PatternMatchReject {
+        for (Pattern<? super T> pattern : patterns) {
+            if (!iterator.hasNext()) Pattern.reject();
+            T value = iterator.next();
+            pattern.apply(mgr, value);
+        }
+        if (iterator.hasNext()) Pattern.reject();
+    }
+
+
+    // DOCUMENT
+    // TODO test case
+    @NotNull
+    @Contract(pure = true, value = "_ -> new")
+    @SafeVarargs
+    public static <T> Pattern<Stream<T>> Stream(@NotNull Pattern<? super T> @NotNull ... patterns) {
+        return new Pattern<Stream<T>>() {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable Stream<@Nullable T> stream) throws PatternMatchReject {
+                if (stream == null) reject();
+                iteratorApply(patterns, mgr, CloneableIterator.fromShared(stream));
+            }
+
+            @Override
+            public String toString() {
+                StringJoiner joiner = new StringJoiner(", ");
+                for (Pattern<?> pattern : patterns)
+                    joiner.add(pattern.toString());
+                return "Stream(" + joiner + ")";
+            }
+        };
+    }
+
+    // DOCUMENT
+    // TODO test case
+    @NotNull public static <T> Pattern<Stream<T>> Stream(@NotNull Pattern<? super T> @NotNull [] these,
+                                                         @NotNull Pattern<? super CloneableIterator<T>> more) {
+        return new Pattern<Stream<T>>() {
+            @Override
+            public void apply (@NotNull MatchManager mgr, @Nullable Stream<@Nullable T> stream) throws
+                    PatternMatchReject {
+                if (stream == null) reject();
+                iteratorApply(these, more, mgr, CloneableIterator.fromShared(stream));
+            }
+
+            @Override
+            public String toString() {
+                StringJoiner joiner = new StringJoiner(", ");
+                for (Pattern<?> pattern : these)
+                    joiner.add(pattern.toString());
+                return "Stream(these(" + joiner + "), " + more + ")";
+            }
+        };
+    }
+
 }

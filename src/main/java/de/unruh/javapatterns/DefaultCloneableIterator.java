@@ -3,6 +3,7 @@ package de.unruh.javapatterns;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 public class DefaultCloneableIterator<T> implements CloneableIterator<T> {
     @NotNull
@@ -35,8 +36,18 @@ public class DefaultCloneableIterator<T> implements CloneableIterator<T> {
     }
 
     // DOCUMENT
+    @NotNull public static <T> DefaultCloneableIterator<T> from(Stream<T> stream) {
+        return new DefaultCloneableIterator<>(StatelessIterator.from(stream));
+    }
+
+    // DOCUMENT
     @NotNull public static <T> DefaultCloneableIterator<T> fromShared(Iterator<T> iterator) {
         return new DefaultCloneableIterator<>(StatelessIterator.fromShared(iterator));
+    }
+
+    // DOCUMENT
+    @NotNull public static <T> DefaultCloneableIterator<T> fromShared(Stream<T> stream) {
+        return new DefaultCloneableIterator<>(StatelessIterator.fromShared(stream));
     }
 
     @Override
