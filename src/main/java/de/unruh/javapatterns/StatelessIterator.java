@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.BaseStream;
 
 // DOCUMENT Update doc to distinguish CloneableIterator and DefaultCloneableIterator
 /** Iterator with effectively stateless access (wrapping a stateful iterator). <p>
@@ -70,6 +71,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 // DOCUMENT not a subclass of Iterator
 // DOCUMENT can also reuse in CloneableIterator
+    // DOCUMENT: rules for GC for streams
 public class StatelessIterator<T> {
     @NotNull private final static ConcurrentMap<Object, StatelessIterator<?>> iterators =
             new MapMaker().weakKeys().concurrencyLevel(1).makeMap();
@@ -83,7 +85,20 @@ public class StatelessIterator<T> {
     }
 
     // DOCUMENT
-    public static <T> void forget(@NotNull Iterator<T> iterator) {
+    @NotNull public static <T> StatelessIterator<T> fromShared(@NotNull BaseStream<T,?> stream) {
+        if (stream instanceof DefaultCloneableStream)
+            return ((DefaultCloneableStream<T>)stream).getStatelessIterator();
+        //noinspection unchecked
+        return (StatelessIterator<T>) iterators.computeIfAbsent(stream, s -> new StatelessIterator<>(stream.iterator()));
+    }
+
+    // DOCUMENT
+    public static void forget(@NotNull Iterator<?> iterator) {
+        iterators.remove(iterator);
+    }
+
+    // DOCUMENT
+    public static void forget(@NotNull BaseStream<?,?> iterator) {
         iterators.remove(iterator);
     }
 
@@ -92,6 +107,19 @@ public class StatelessIterator<T> {
         if (iterator instanceof DefaultCloneableIterator)
             return ((DefaultCloneableIterator<T>)iterator).getStatelessIterator();
         return new StatelessIterator<>(iterator);
+    }
+
+    // DOCUMENT
+    @NotNull public static <T> StatelessIterator<T> from(@NotNull BaseStream<T,?> stream) {
+        if (stream instanceof DefaultCloneableStream)
+            //noinspection unchecked
+            return ((DefaultCloneableStream<T>)stream).getStatelessIterator();
+        return new StatelessIterator<>(stream.iterator());
+    }
+
+    // DOCUMENT
+    public static <T> StatelessIterator<T> empty() {
+        return new StatelessIterator<>();
     }
 
     private enum State { uninitialized, empty, nonEmpty }
@@ -103,6 +131,9 @@ public class StatelessIterator<T> {
 
     private StatelessIterator(@NotNull Iterator<T> iterator) {
         this.iterator = iterator;
+    }
+    private StatelessIterator() {
+        this.state = State.empty;
     }
 
     private synchronized void initialize() {
