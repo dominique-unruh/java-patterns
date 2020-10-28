@@ -121,7 +121,15 @@ public final class ScalaPatterns {
 
     }
 
-        public static <T> @NotNull Pattern<Option<T>> Some(@NotNull Pattern<? super T> pattern) {
+
+    /** Pattern that matches a nonempty {@link scala.Option}.
+     * Accepts if the matched value is of the form {@link scala.Some}`(x)` and `x` matches the subpattern `pattern`.
+     *
+     * @param pattern the pattern for the content of the matched option
+     * @param <T> the type of the content of the option (i.e., the matched value has type {@code Option<T>})
+     * @return the option pattern
+     */
+    public static <T> @NotNull Pattern<Option<T>> Some(@NotNull Pattern<? super T> pattern) {
         return new Pattern<Option<T>>() {
             @Override
             public void apply(@NotNull MatchManager mgr, @Nullable Option<T> value) throws PatternMatchReject {
@@ -138,18 +146,22 @@ public final class ScalaPatterns {
         };
     }
 
-    public static @NotNull Pattern<Option<Object>> None = new Pattern<Option<Object>>() {
-        @Override
-        public void apply(@NotNull MatchManager mgr, @Nullable Option<Object> value) throws PatternMatchReject {
-            if (value == null) reject();
-            if (value.nonEmpty()) reject();
-        }
+    // DOCUMENT
+    // TODO: Should not have a "Object" here otherwise it cannot be used (check in test case!) because Java does not understand covariance
+    public static <T> @NotNull Pattern<Option<T>> None() {
+        return new Pattern<Option<T>>() {
+            @Override
+            public void apply(@NotNull MatchManager mgr, @Nullable Option<T> value) throws PatternMatchReject {
+                if (value == null) reject();
+                if (value.nonEmpty()) reject();
+            }
 
-        @Override
-        public String toString() {
-            return null;
-        }
-    };
+            @Override
+            public String toString() {
+                return "None";
+            }
+        };
+    }
 
     /** Pattern that matches a Scala 1-tuple.
      * (More precisely, a value of type {@link Product1}, of which {@link Tuple1} is a subclass.)

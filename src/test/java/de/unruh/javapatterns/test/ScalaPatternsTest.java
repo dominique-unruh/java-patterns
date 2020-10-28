@@ -2,6 +2,7 @@ package de.unruh.javapatterns.test;
 
 import de.unruh.javapatterns.Capture;
 import de.unruh.javapatterns.MatchException;
+import de.unruh.javapatterns.ScalaPatterns;
 import org.junit.jupiter.api.Test;
 import scala.*;
 import scala.collection.JavaConverters;
@@ -39,15 +40,15 @@ class ScalaPatternsTest {
     @SuppressWarnings("Convert2MethodRef")
     @Test
     void none() throws MatchException {
-        match (Some.apply(123),
+        match (Some.<Integer>apply(123),
 
-                None, () -> fail(),
+                None(), () -> fail(),
                 Any, () -> {}
         );
 
         match (scala.Option.empty(),
 
-                None, () -> {},
+                None(), () -> {},
                 Any, () -> fail()
         );
     }
