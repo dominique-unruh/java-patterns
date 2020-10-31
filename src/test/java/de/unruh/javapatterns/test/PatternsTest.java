@@ -2,18 +2,24 @@ package de.unruh.javapatterns.test;
 
 import de.unruh.javapatterns.Capture;
 import de.unruh.javapatterns.MatchException;
+import de.unruh.javapatterns.Patterns;
+import de.unruh.javapatterns.ScalaPatterns;
 import org.junit.jupiter.api.Test;
+import scala.Some;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static de.unruh.javapatterns.Pattern.capture;
 import static de.unruh.javapatterns.Patterns.*;
 import static de.unruh.javapatterns.Match.*;
+import static de.unruh.javapatterns.ScalaPatterns.None;
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("Convert2MethodRef")
 class PatternsTest {
 
     @Test
@@ -106,7 +112,6 @@ class PatternsTest {
         assertEquals("hellohello", result);
     }
 
-    @SuppressWarnings("Convert2MethodRef")
     @Test
     void or() throws MatchException {
         Capture<String> x = capture("x");
@@ -124,7 +129,6 @@ class PatternsTest {
     @Test
     void instance() throws MatchException {
         Capture<DemoSome<String>> x = capture("x");
-        //noinspection Convert2MethodRef
         match(new DemoSome<>("Test"),
                 Instance(DemoNone.class, Any), () -> fail(),
                 new Instance<DemoSome<String>>(x) {}, () ->
@@ -245,6 +249,57 @@ class PatternsTest {
                     assertEquals(arr.v().next(), "test");
                     assertFalse(arr.v().hasNext());
                 });
+    }
+
+
+    @Test
+    void optionalSome() throws MatchException {
+        Capture<Integer> x = capture("x");
+
+        match (Optional.<Integer>of(123),
+
+                Patterns.Optional(x), () -> assertEquals(123, x.v()),
+                Any, () -> fail()
+        );
+
+        match (Optional.<Integer>empty(),
+
+                Patterns.Optional(x), () -> fail(),
+                Any, () -> {}
+        );
+    }
+
+    @Test
+    void optionalEmpty() throws MatchException {
+        match (Optional.<Integer>of(123),
+
+                Patterns.Optional(), () -> fail(),
+                Any, () -> {}
+        );
+
+        match (Optional.<Integer>empty(),
+
+                Patterns.Optional(), () -> {},
+                Any, () -> fail()
+        );
+    }
+
+    @Test
+    void after() throws MatchException {
+        match (-2,
+
+                After(x -> x*x, Is(4)), () -> {},
+                Any, () -> fail()
+                );
+    }
+
+    @Test
+    void afterNull() throws MatchException {
+        match ((DemoOption<Integer>)null,
+
+                After(x -> x.toString(), Any), () -> fail(),
+                Any, () -> {}
+        );
     }
 
 }

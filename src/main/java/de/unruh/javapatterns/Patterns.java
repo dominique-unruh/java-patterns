@@ -469,7 +469,7 @@ public final class Patterns {
 
 
     // DOCUMENT
-    // TODO test case
+    // TODO Rename (otherwise cannot be used without "Pattern."
     public static <T> @NotNull Pattern<Optional<@NotNull T>> Optional(@NotNull Pattern<@NotNull T> pattern) {
         return new Pattern<Optional<T>>() {
             @Override
@@ -488,7 +488,7 @@ public final class Patterns {
     }
 
     // DOCUMENT
-    // TODO test case
+    // TODO Rename (otherwise cannot be used without "Pattern."
     public static <T> @NotNull Pattern<Optional<@NotNull T>> Optional() {
         return new Pattern<Optional<T>>() {
             @Override
@@ -536,7 +536,6 @@ public final class Patterns {
 
 
     // DOCUMENT (also: exceptions are thrown, only NullPointerException in function leads to rejection)
-    // TODO test case
     @NotNull public static <T,U> Pattern<T> After(@NotNull Function<T,U> function, @NotNull Pattern<? super U> pattern) {
         return new Pattern<T>() {
             @Override
