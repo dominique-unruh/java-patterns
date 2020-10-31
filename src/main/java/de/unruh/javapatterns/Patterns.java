@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -429,8 +430,9 @@ public final class Patterns {
      * @param <T> the element type of the array (i.e., the matched value has type {@code T[]})
      * @return the array pattern
      */
-    public static <T> Pattern<T[]> Array(@NotNull Pattern<? super T> @NotNull [] these,
-                                         @NotNull Pattern<? super T[]> more) {
+    @Contract(value = "_, _ -> new", pure = true)
+    public static <T> @NotNull Pattern<T[]> Array(@NotNull Pattern<? super T> @NotNull [] these,
+                                                  @NotNull Pattern<? super T[]> more) {
         return new Pattern<T[]>() {
             @Override
             public void apply(@NotNull MatchManager mgr, @Nullable T @Nullable [] value) throws PatternMatchReject {
@@ -461,6 +463,7 @@ public final class Patterns {
      * @param patterns The patterns to be wrapped in an array.
      * @return {@code patterns} as an array
      */
+    @Contract(value = "_ -> param1", pure = true)
     @SafeVarargs
     public static <T> @NotNull Pattern<? super T> @NotNull []
     these(@NotNull Pattern<? super T> @NotNull ... patterns) {
@@ -469,7 +472,6 @@ public final class Patterns {
 
 
     // DOCUMENT
-    // TODO Rename (otherwise cannot be used without "Pattern."
     public static <T> @NotNull Pattern<Optional<@NotNull T>> Optional(@NotNull Pattern<@NotNull T> pattern) {
         return new Pattern<Optional<T>>() {
             @Override
@@ -488,7 +490,7 @@ public final class Patterns {
     }
 
     // DOCUMENT
-    // TODO Rename (otherwise cannot be used without "Pattern."
+    @Contract(value = " -> new", pure = true)
     public static <T> @NotNull Pattern<Optional<@NotNull T>> Optional() {
         return new Pattern<Optional<T>>() {
             @Override
@@ -505,8 +507,31 @@ public final class Patterns {
         };
     }
 
-    // DOCUMENT
-    // TODO test case
+    /** Pattern that matches a {@link Map}.<p>
+     *
+     * When invoked as
+     * {@code Map(Map.entry(key1, pattern1), Map.entry(key2, pattern2), ...)},
+     * the resulting pattern matches a map {@code m} if:
+     * the map contains the keys {@code key1, key2, ...},
+     * and {@code m}{@link Map#get .get}{@code (keyi)} matches the subpattern {@code patterni} for all {@code i}.
+     * (The matched value is allowed to contain additional keys.)<p>
+     *
+     * Example:
+     * <pre>
+     * Map&lt;String,Integer&gt; map = ...;
+     * match (map,
+     *        Map(Map.entry("one", Is(1)), Map.entry("two", Is(2))),
+     *        () -> doStuff());
+     * </pre>
+     * Here {@code doStuff()} will be executed if {@code map} contains entries {@code "one" -> 1} and {@code "two" -> 2}
+     * (and possibly other entries).
+     *
+     * @param patterns the patterns for individual map entries
+     * @param <K> key type
+     * @param <V> value type
+     * @return a pattern matching a {@link Map}
+     */
+    @Contract(value = "_ -> new", pure = true)
     @SafeVarargs
     public static <K,V> @NotNull Pattern<Map<K,V>> Map(@NotNull Map.Entry<K,Pattern<? super V>> ... patterns) {
         return new Pattern<Map<K, V>>() {
@@ -536,19 +561,25 @@ public final class Patterns {
 
     /** Pattern that applies a transformation to the matched value before applying a pattern.
      * More precisely, the matched value {@code m} matches {@code After(function,pattern)}
-     * if {@code function(m)} matches {@code pattern}.
+     * if {@code function(m)} matches {@code pattern}.<p>
      *
-     * DOCUMENT finish
+     * If {@code function} throws an exception, the exception is passed through (i.e., the whole pattern match aborts
+     * with an exceptions). Except: If {@code function} throws a {@link NullPointerException} or a {@link PatternMatchReject}
+     * (the latter by invocation of {@link Pattern.reject()}), then the pattern rejects (but pattern matching continues).<p>
      *
-     * DOCUMENT example
+     * Example: If {@code path} is a {@link Path}, the following match executes {@code doStuff()} if the
+     * filename part of {@code path} is "diary.txt":
+     * <pre>
+     * match (path,
+     *        After(p -> p.getFileName().toString(), Is("diary.txt")),
+     *        () -> doStuff())
+     * </pre>
      *
-     * @param function
-     * @param pattern
-     * @param <T>
-     * @param <U>
-     * @return
+     * @param function function to apply to the matched value before matching against {@code pattern}
+     * @param pattern pattern to match against after applying {@code function}
+     * @return the resulting pattern
      */
-    // DOCUMENT (also: exceptions are thrown, only NullPointerException in function leads to rejection)
+    @Contract(value = "_, _ -> new", pure = true)
     @NotNull public static <T,U> Pattern<T> After(@NotNull Function<T,U> function, @NotNull Pattern<? super U> pattern) {
         return new Pattern<T>() {
             @Override
@@ -645,6 +676,7 @@ public final class Patterns {
      * @param <T> the element type of the iterator (i.e., the matched value has type {@link Iterator}{@code <T>})
      * @return the iterator-matching pattern
      */
+    @Contract(value = "_, _ -> new", pure = true)
     @NotNull public static <T> Pattern<Iterator<T>> Iterator(@NotNull Pattern<? super T> @NotNull [] these,
                                                              @NotNull Pattern<? super CloneableIterator<T>> more) {
         return new Pattern<Iterator<T>>() {

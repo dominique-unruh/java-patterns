@@ -3,20 +3,17 @@ package de.unruh.javapatterns.test;
 import de.unruh.javapatterns.Capture;
 import de.unruh.javapatterns.MatchException;
 import de.unruh.javapatterns.Patterns;
-import de.unruh.javapatterns.ScalaPatterns;
 import org.junit.jupiter.api.Test;
-import scala.Some;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Optional;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static de.unruh.javapatterns.Pattern.capture;
 import static de.unruh.javapatterns.Patterns.*;
 import static de.unruh.javapatterns.Match.*;
-import static de.unruh.javapatterns.ScalaPatterns.None;
+import static java.lang.System.out;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("Convert2MethodRef")
@@ -258,13 +255,13 @@ class PatternsTest {
 
         match (Optional.<Integer>of(123),
 
-                Patterns.Optional(x), () -> assertEquals(123, x.v()),
+                Optional(x), () -> assertEquals(123, x.v()),
                 Any, () -> fail()
         );
 
         match (Optional.<Integer>empty(),
 
-                Patterns.Optional(x), () -> fail(),
+                Optional(x), () -> fail(),
                 Any, () -> {}
         );
     }
@@ -273,13 +270,13 @@ class PatternsTest {
     void optionalEmpty() throws MatchException {
         match (Optional.<Integer>of(123),
 
-                Patterns.Optional(), () -> fail(),
+                Optional(), () -> fail(),
                 Any, () -> {}
         );
 
         match (Optional.<Integer>empty(),
 
-                Patterns.Optional(), () -> {},
+                Optional(), () -> {},
                 Any, () -> fail()
         );
     }
@@ -302,4 +299,32 @@ class PatternsTest {
         );
     }
 
+    @Test
+    void afterPath() throws MatchException {
+        Path path = Paths.get("diary.txt").toAbsolutePath();
+        match (path,
+
+                After(p -> p.getFileName().toString(),
+                        Is("diary.txt")), () -> out.println("success"),
+
+                Any, () -> fail()
+        );
+    }
+
+    @Test
+    void map() throws MatchException {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("one", 1);
+        map.put("two", 2);
+        map.put("three", 3);
+
+        match (map,
+                Map(Map.entry("one", Is(1)), Map.entry("two", Is(2))),
+                () -> {});
+
+        match (map,
+                Map(Map.entry("one", Is(1)), Map.entry("three", Is(2))),
+                () -> fail(),
+                Any, () -> {});
+    }
 }

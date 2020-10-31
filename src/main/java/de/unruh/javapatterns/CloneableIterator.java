@@ -35,11 +35,11 @@ public interface CloneableIterator<T> extends Iterator<T>, Cloneable {
     /** Like {@link #from(Iterator)}, except that the same iterator can be passed to several invocations of
      * {@code fromShared}. Furthermore, an iterator passed to {@code fromShared} can also be passed afterwards to
      * {@link #from(Iterator)} (but only once). But the original iterator may not be accessed any more after the
-     * first {@code fromShared} invocation.
+     * first {@code fromShared} invocation.<p>
      *
      * All {@code fromShared} and @{code from} invocations return {@link CloneableIterator}s that return the elements
      * the original iterator contained at the time of the first invocation of {@code fromShared} / @{code from}.
-     * (I.e., access to the cloneable iterators does not influence newly create cloneable iterators.)
+     * (I.e., access to the cloneable iterators does not influence newly created cloneable iterators.)<p>
      *
      * For example, the following are valid sequences of operations:
      * <ul>
@@ -49,7 +49,7 @@ public interface CloneableIterator<T> extends Iterator<T>, Cloneable {
      * but not necessarily in the same order.)
      * <li><pre>it1 = fromShared(it); e1 = it1.next(); it1 = from(it); e2 = it2.next();</pre>
      * Same situation as in the previous example.
-     * </ul>
+     * </ul><p>
      *
      * Examples of invalid sequences of operations are:
      * <ul>
@@ -67,13 +67,42 @@ public interface CloneableIterator<T> extends Iterator<T>, Cloneable {
     }
 
 
-    // DOCUMENT
+    /** Creates a cloneable iterator from a {@code stream}.
+     * But after invoking {@code from(stream)}, {@code stream} must not be accessed any more.
+     *
+     * @param stream the stream to be converted to an iterator.
+     * @return a cloneable iterator that iterates over the elements of the stream
+     */
     @NotNull
     static <T> CloneableIterator<T> from(Stream<T> stream) {
         return DefaultCloneableIterator.from(stream);
     }
 
-    // DOCUMENT
+    /** Like {@link #from(Stream)}, except that the same stream can be passed to several invocations of
+     * {@code fromShared}. Furthermore, an stream passed to {@code fromShared} can also be passed afterwards to
+     * {@link #from(Stream)} (but only once). But the original stream may not be accessed any more after the
+     * first {@code fromShared} invocation.<p>
+     *
+     * All {@code fromShared} and @{code from} invocations return {@link CloneableIterator}s that return the elements
+     * the original stream contained at the time of the first invocation of {@code fromShared} / @{code from}.
+     * (I.e., access to the cloneable iterators does not influence newly created cloneable iterators.)<p>
+     *
+     * For example, the following are valid sequences of operations:
+     * <ul>
+     * <li><pre>it1 = fromShared(stream); e1 = it1.next(); it1 = fromShared(stream); e2 = it2.next();</pre>
+     * Then {@code e1} and {@code e2} will contain the same element.
+     * <li><pre>it1 = fromShared(stream); e1 = it1.next(); it1 = from(stream); e2 = it2.next();</pre>
+     * Same situation as in the previous example.
+     * </ul><p>
+     *
+     * Examples of invalid sequences of operations are:
+     * <ul>
+     * <li><pre>from(stream); fromShared(stream);</pre>
+     * <li><pre>fromShared(stream); fromShared(stream); stream.findFirst()</pre>
+     * </ul>
+     * @param stream the original stream
+     * @return the cloneable iterator containing the same elements as {@code stream}.
+     */
     @NotNull
     static <T> CloneableIterator<T> fromShared(Stream<T> stream) {
         return DefaultCloneableIterator.fromShared(stream);
