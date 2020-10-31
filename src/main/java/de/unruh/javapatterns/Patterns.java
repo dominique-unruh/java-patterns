@@ -534,7 +534,20 @@ public final class Patterns {
         };
     }
 
-
+    /** Pattern that applies a transformation to the matched value before applying a pattern.
+     * More precisely, the matched value {@code m} matches {@code After(function,pattern)}
+     * if {@code function(m)} matches {@code pattern}.
+     *
+     * DOCUMENT finish
+     *
+     * DOCUMENT example
+     *
+     * @param function
+     * @param pattern
+     * @param <T>
+     * @param <U>
+     * @return
+     */
     // DOCUMENT (also: exceptions are thrown, only NullPointerException in function leads to rejection)
     @NotNull public static <T,U> Pattern<T> After(@NotNull Function<T,U> function, @NotNull Pattern<? super U> pattern) {
         return new Pattern<T>() {

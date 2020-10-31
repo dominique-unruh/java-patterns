@@ -13,10 +13,23 @@ import scala.collection.immutable.List;
 import java.util.Arrays;
 import java.util.StringJoiner;
 
-// DOCUMENT
-// DOCUMENT that you need to import scala-library
-// DOCUMENT reference from README etc.
-
+/** This class contains patterns for Scala interoperability.<p>
+ *
+ * (This class itself cannot be instantiated, all methods are static.)<p>
+ *
+ * More specifically, it contains patterns for matching classes from the Scala standard library.
+ * (Such as scala tuples, {@link Option}, {@link List}.)<p>
+ *
+ * Note: To use the patterns in this class, the Scala standard library needs to be on the class path.
+ * But we do not list the Scala standard library as a dependency for java-patterns.
+ * This is because it is a large dependency that would be used only in specific situations,
+ * and also because this would fix the choice to either the 2.12 or 2.13 Scala standard library.
+ * Thus, when using this class, you need to include the Scala standard library as a dependency.
+ * E.g., in Gradle:
+ * <pre>
+ * dependencies { implementation 'org.scala-lang:scala-library:2.13.3' }
+ * </pre>
+ */
 public final class ScalaPatterns {
     private ScalaPatterns() {}
 
@@ -146,8 +159,12 @@ public final class ScalaPatterns {
         };
     }
 
-    // DOCUMENT
-    // TODO: Should not have a "Object" here otherwise it cannot be used (check in test case!) because Java does not understand covariance
+    /** Pattern that matches an empty {@link scala.Option}.
+     * I.e., it accepts if the matched value is {@link scala.None}.
+     *
+     * @param <T> the type of the content of the option (i.e., the matched value has type {@code Option<T>})
+     * @return the option pattern
+     */
     public static <T> @NotNull Pattern<Option<T>> None() {
         return new Pattern<Option<T>>() {
             @Override
