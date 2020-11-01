@@ -21,7 +21,7 @@ public interface CloneableIterator<T> extends Iterator<T>, Cloneable {
      *
      * @param iterator the iterator to be transformed into a {@link CloneableIterator}. Must not be accessed any
      *                 more after invoking {@code from}.
-     * @return a {@link CloneableIterator} that iterates over the same elements that {@code iterator would
+     * @return a {@link CloneableIterator} that iterates over the same elements that {@code iterator} would
      *         have iterated over.
      */
     // DOCUMENT reference GC issues

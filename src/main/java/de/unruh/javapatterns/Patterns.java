@@ -471,7 +471,13 @@ public final class Patterns {
     }
 
 
-    // DOCUMENT
+    /** Pattern that matches a nonempty {@link Optional}.
+     * Accepts if the matched value is of the form {@link Optional}`(x)` and `x` matches the subpattern `pattern`.
+     *
+     * @param pattern the pattern for the content of the matched option
+     * @param <T> the type of the content of the optional (i.e., the matched value has type {@code Optional<T>})
+     * @return the option pattern
+     */
     public static <T> @NotNull Pattern<Optional<@NotNull T>> Optional(@NotNull Pattern<@NotNull T> pattern) {
         return new Pattern<Optional<T>>() {
             @Override
@@ -489,7 +495,12 @@ public final class Patterns {
         };
     }
 
-    // DOCUMENT
+    /** Pattern that matches an empty {@link Optional}.
+     * I.e., it accepts if the matched value is {@link Optional}{@code ()}.
+     *
+     * @param <T> the type of the content of the option (i.e., the matched value has type {@code Optional<T>})
+     * @return the option pattern
+     */
     @Contract(value = " -> new", pure = true)
     public static <T> @NotNull Pattern<Optional<@NotNull T>> Optional() {
         return new Pattern<Optional<T>>() {
@@ -521,7 +532,7 @@ public final class Patterns {
      * Map&lt;String,Integer&gt; map = ...;
      * match (map,
      *        Map(Map.entry("one", Is(1)), Map.entry("two", Is(2))),
-     *        () -> doStuff());
+     *        () -&gt; doStuff());
      * </pre>
      * Here {@code doStuff()} will be executed if {@code map} contains entries {@code "one" -> 1} and {@code "two" -> 2}
      * (and possibly other entries).
@@ -565,14 +576,14 @@ public final class Patterns {
      *
      * If {@code function} throws an exception, the exception is passed through (i.e., the whole pattern match aborts
      * with an exceptions). Except: If {@code function} throws a {@link NullPointerException} or a {@link PatternMatchReject}
-     * (the latter by invocation of {@link Pattern.reject()}), then the pattern rejects (but pattern matching continues).<p>
+     * (the latter by invocation of {@link Pattern#reject()}), then the pattern rejects (but pattern matching continues).<p>
      *
      * Example: If {@code path} is a {@link Path}, the following match executes {@code doStuff()} if the
      * filename part of {@code path} is "diary.txt":
      * <pre>
      * match (path,
-     *        After(p -> p.getFileName().toString(), Is("diary.txt")),
-     *        () -> doStuff())
+     *        After(p -&gt; p.getFileName().toString(), Is("diary.txt")),
+     *        () -&gt; doStuff())
      * </pre>
      *
      * @param function function to apply to the matched value before matching against {@code pattern}
@@ -721,7 +732,17 @@ public final class Patterns {
     }
 
 
-    // DOCUMENT
+    /** Pattern that matches a stream ({@link Stream}). <p>
+     *
+     * The pattern matches if the matched value is a stream that contains {@code patterns.length} elements,
+     * and the i-th element of the matched value matches the i-th pattern in {@code patterns}. <p>
+     *
+     * The explanations from {@link #Iterator(Pattern[])} apply here as well.
+     *
+     * @param patterns the patterns for the stream elements
+     * @param <T> the element type of the stream (i.e., the matched value has type {@link Stream}{@code <T>})
+     * @return the stream-matching pattern
+     **/
     // TODO test case
     @NotNull
     @Contract(pure = true, value = "_ -> new")
@@ -744,7 +765,27 @@ public final class Patterns {
         };
     }
 
-    // DOCUMENT
+    /** Pattern that matches an stream ({@link Stream}). <p>
+     *
+     * This function is invoked as
+     * <pre>
+     * Stream({@link #these these}(p1,...,pn),rest)
+     * </pre>
+     * where {@code p}1, …, {@code p}<i>n</i> are patterns
+     * matching values of type {@code T}
+     * and {@code rest} is a pattern matching an iterator (not a stream!).<p>
+     *
+     * The pattern matches if the matched value is a stream containing ≥<i>n</i> elements,
+     * and the <i>i</i>-th element of the matched value matches {@code p}<i>i</i> for
+     * <i>i</i>=1,…,<i>n</i>, and the iterator containing the remaining elements matches {@code rest}.<p>
+     *
+     * The explanations from {@link #Iterator(Pattern[], Pattern)} apply here as well.
+     *
+     * @param these the patterns for the prefix of the matched stream
+     * @param more the pattern for the rest of the matched stream
+     * @param <T> the element type of the stream (i.e., the matched value has type {@link Stream}{@code <T>})
+     * @return the stream-matching pattern
+     */
     // TODO test case
     @NotNull public static <T> Pattern<Stream<T>> Stream(@NotNull Pattern<? super T> @NotNull [] these,
                                                          @NotNull Pattern<? super CloneableIterator<T>> more) {
