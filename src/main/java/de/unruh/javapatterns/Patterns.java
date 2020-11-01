@@ -743,7 +743,6 @@ public final class Patterns {
      * @param <T> the element type of the stream (i.e., the matched value has type {@link Stream}{@code <T>})
      * @return the stream-matching pattern
      **/
-    // TODO test case
     @NotNull
     @Contract(pure = true, value = "_ -> new")
     @SafeVarargs
@@ -786,7 +785,6 @@ public final class Patterns {
      * @param <T> the element type of the stream (i.e., the matched value has type {@link Stream}{@code <T>})
      * @return the stream-matching pattern
      */
-    // TODO test case
     @NotNull public static <T> Pattern<Stream<T>> Stream(@NotNull Pattern<? super T> @NotNull [] these,
                                                          @NotNull Pattern<? super CloneableIterator<T>> more) {
         return new Pattern<Stream<T>>() {

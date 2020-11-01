@@ -5,6 +5,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+/** An implementation of a {@link CloneableIterator} that wraps a {@link StatelessIterator}.
+ * A {@link StatelessIterator} can be constructed from any {@link Iterator},
+ * thus this class allows to make arbitrary iterators cloneable.
+ *
+ * @param <T>
+ */
+// DOCUMENT GC rules
+// DOCUMENT from/fromShared
 public class DefaultCloneableIterator<T> implements CloneableIterator<T> {
     @NotNull
     private StatelessIterator<T> statelessIterator;

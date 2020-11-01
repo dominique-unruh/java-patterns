@@ -192,6 +192,64 @@ class PatternsTest {
 
 
     @Test
+    void stream() throws MatchException {
+        Capture<Integer> x = capture("x");
+        Capture<Integer> y = capture("y");
+        Capture<Integer> z = capture("z");
+
+        int result = match(Stream.of(1,2),
+
+                Stream(x, y), () -> {
+                    assertEquals(1, x.v());
+                    assertEquals(2, y.v());
+                    return 100;
+                });
+        assertEquals(100, result);
+
+        result = match(Stream.of(1,2),
+
+                Stream(x, y, z), () -> 99,
+                Any, () -> 100);
+        assertEquals(100, result);
+
+    }
+
+    @Test
+    void streamReuse() throws MatchException {
+        Capture<Integer> x = capture("x");
+        Capture<Integer> y = capture("y");
+        Capture<Integer> z = capture("z");
+
+        int result = match(Stream.of(1,2),
+
+                Stream(x, y, z), () -> 99,
+                Stream(x, y), () -> {
+                    assertEquals(1, x.v());
+                    assertEquals(2, y.v());
+                    return 100;
+                });
+        assertEquals(100, result);
+    }
+
+    @Test
+    void streamThese() throws MatchException {
+        Capture<Iterator<String>> arr = capture("arr");
+        Capture<String> x = capture("x"),
+                y = capture("y");
+
+        match(Stream.of("this", "is", "a", "test"),
+                Stream(these(x,y), arr),
+                () -> {
+                    assertEquals("this", x.v());
+                    assertEquals("is", y.v());
+                    assertEquals(arr.v().next(), "a");
+                    assertEquals(arr.v().next(), "test");
+                    assertFalse(arr.v().hasNext());
+                });
+    }
+
+
+    @Test
     void iterator() throws MatchException {
         Capture<Integer> x = capture("x");
         Capture<Integer> y = capture("y");
@@ -247,7 +305,6 @@ class PatternsTest {
                     assertFalse(arr.v().hasNext());
                 });
     }
-
 
     @Test
     void optionalSome() throws MatchException {
