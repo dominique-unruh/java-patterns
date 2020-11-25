@@ -34,38 +34,55 @@ import java.util.stream.Stream;
  * it is possible to do so as long as all functions/threads apply {@link #fromShared} to the iterator and only operate on
  * the result.) <p>
  *
- * About garbage collection: If an iterator {@code it} is converted into a stateless iterator {@code slit}, then {@code slit}
- * will have to cache the values from {@code it} if they are needed again. With iterators that iterate over a large
+ * DOCUMENT: all the above works also with {@link Stream}s.<p>
+ *
+ * DOCUMENT: in links above, don't show the argument types<p>
+ *
+ * <b>About garbage collection:</b> If an iterator or stream {@code it} is converted into a stateless iterator {@code slit}, then {@code slit}
+ * will have to cache the values from {@code it} if they are needed again. With iterators or streams that iterate over a large
  * number of elements, this can potentially result in a large number of elements that cannot be garbage collected.
  * The following rules establish which elements cannot be garbage collected:
  * <ul>
- * <li>Consider all <i>still-referenced</i> stateless iterators that were derived from {@code it} (via {@link #from}, {@link #fromShared}, and
+ * <li>Consider all <i>still-referenced</i> stateless iterators that were derived from {@code it} (via
+ * {@link #from from(it)}, {@link #fromShared fromShared(it)}, and
  * iterated applications of {@link #getTail()}).
  * Each of these refers to some element of the iterator (that element would be returned by {@link #getHead()}).
  * Let {@code low} denote the first of these (in the order in which they are originally contained in {@code it}).
  * <li>Consider all (not necessarily stil-referenced) stateless iterators derived from {@code it}.
  * Each of these refers to some element of the iterator.
  * Let {@code high} denote the last of these. Let {@code start} denote the first element in {@code it}.
+ * <li>If {@code it} is an {@link Iterator}, or if {@code it} is a {@link Stream} but {@code it.iterator()}
+ * returns {@code it} (i.e., {@code it.iterator()} is just implemented as a type case), we call {@code it}
+ * "direct". Otherwise, we call {@code it} "indirect".
  * <li>If one of the stateless iterators derived from {@code it} returned {@code false} on a {@link #nonEmpty()} call,
  * we say {@code it} is "drained".</li>
- * <li>If {@code it} was converted into a stateless iterator using {@link #from} and some of the stateless iterators
+ * <li>If {@code it} was converted into a stateless iterator using {@link #from from} and some of the stateless iterators
  * are still referenced: Then {@code low},...,{@code high}
  * cannot be reclaimed. And {@code it} cannot be collected unless it was drained.
- * <li>If {@code it} was converted into a stateless iterator using {@link #from} and none of the stateless iterators
+ * <li>If {@code it} was converted into a stateless iterator using {@link #from from} and none of the stateless iterators
  * are still referenced: All cached values and {@code it} can be reclaimed.
- * <li>If {@code it} was converted into a stateless iterator using {@link #fromShared} and
- * {@link #forget}{@code (it)} was not invoked, and {@code it} <i>or</i> one of the stateless iterators are
+ * <li>If {@code it} is direct and was converted into a stateless iterator using {@link #fromShared fromShared} and
+ * {@link #forget forget}{@code (it)} was not invoked, and {@code it} <i>or</i> one of the stateless iterators are
  * still referenced: Then {@code start},...,{@code high} cannot be reclaimed. And {@code it} cannot be reclaimed.
- * <li>If {@code it} was converted into a stateless iterator using {@link #fromShared} and
- * {@link #forget}{@code (it)} was not invoked, and {@code it} <i>and</i> are not referenced any more:
+ * <li>If {@code it} is indirect and was converted into a stateless iterator using {@link #fromShared fromShared} and
+ * {@link #forget forget}{@code (it)} was not invoked, and {@code it} is
+ * still referenced: Then {@code start},...,{@code high} cannot be reclaimed. And {@code it} cannot be reclaimed.
+ * <li>If {@code it} is direct and was converted into a stateless iterator using {@link #fromShared fromShared} and
+ * {@link #forget forget}{@code (it)} was not invoked, and {@code it} <i>and</i> the stateless iterators are not
+ * referenced any more:
  * Then all cached values and {@code it} can be reclaimed.
- * <li> If {@code it} was converted into a stateless iterator using {@link #fromShared} and
- * {@link #forget}{@code (it)} was invoked: The same rules apply as if {@code it} was converted using {@link #from}
+ * <li>If {@code it} is indirect and was converted into a stateless iterator using {@link #fromShared fromShared} and
+ * {@link #forget forget}{@code (it)} was not invoked, and {@code it} is not
+ * referenced any more:
+ * Then all cached values and {@code it} can be reclaimed.
+ * <li> If {@code it} was converted into a stateless iterator using {@link #fromShared fromShared} and
+ * {@link #forget forget}{@code (it)} was invoked: The same rules apply as if {@code it} was converted using {@link #from from}
  * (see above).
  * </ul>
- * The rule of thumb from these rules: Given an iterator {@code it} that produces a lot of elements, if possible
+ * The <b>rule of thumb</b> from these rules: Given an iterator {@code it} that produces a lot of elements, if possible
  * use {@link #from} and not {@link #fromShared}. (Or if that is not possible, apply {@link #forget} as soon as possible.)
- * And avoid keeping references to the original iterator.<p>
+ * And avoid keeping references to the original iterator. Given a stream {@code it} that produces a lot of elements,
+ * avoid keeping references to the original stream.<p>
  *
  * Notes:
  * <ul>
@@ -75,7 +92,6 @@ import java.util.stream.Stream;
  *
  * @param <T> type of the iterator elements
  */
-// DOCUMENT GC rules for Streams
 public class StatelessIterator<T> implements Iterable<T> {
     @NotNull private final static ConcurrentMap<Object, StatelessIterator<?>> iterators =
             new MapMaker().weakKeys().concurrencyLevel(1).makeMap();
