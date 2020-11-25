@@ -36,6 +36,7 @@ java {
 
 compileJava {
     options.release = 8
+    options.compilerArgs << '-Xlint:unchecked'
 }
 
 compileTestJava {

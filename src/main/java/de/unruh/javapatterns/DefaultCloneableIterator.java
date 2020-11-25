@@ -9,7 +9,7 @@ import java.util.stream.Stream;
  * A {@link StatelessIterator} can be constructed from any {@link Iterator},
  * thus this class allows to make arbitrary iterators cloneable.
  *
- * @param <T>
+ * @param <T> the type of the elements in the iterator
  */
 // DOCUMENT GC rules
 // DOCUMENT from/fromShared

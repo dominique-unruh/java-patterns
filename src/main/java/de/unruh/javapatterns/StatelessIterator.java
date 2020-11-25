@@ -1,6 +1,7 @@
 package de.unruh.javapatterns;
 
 import com.google.common.collect.MapMaker;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -8,7 +9,6 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Stream;
 
-// DOCUMENT Update doc to distinguish CloneableIterator and DefaultCloneableIterator
 /** Iterator with effectively stateless access (wrapping a stateful iterator). <p>
  *
  * Given an {@link Iterator} {@code it}, we can construct a stateless iterator as {@code slit = StatelessIterator.from(it)}.
@@ -67,12 +67,16 @@ import java.util.stream.Stream;
  * use {@link #from} and not {@link #fromShared}. (Or if that is not possible, apply {@link #forget} as soon as possible.)
  * And avoid keeping references to the original iterator.<p>
  *
+ * Notes:
+ * <ul>
+ * <li>Despite its name, a {@code StatelessIterator} is not a subclass of {@link Iterator} since the {@link Iterator}
+ * interface is inherently stateful. However, one can get an {@link Iterator} from it via {@link #iterator()}
+ * </ul>
+ *
  * @param <T> type of the iterator elements
  */
-// DOCUMENT not a subclass of Iterator
-// DOCUMENT can also reuse in CloneableIterator
 // DOCUMENT GC rules for Streams
-public class StatelessIterator<T> {
+public class StatelessIterator<T> implements Iterable<T> {
     @NotNull private final static ConcurrentMap<Object, StatelessIterator<?>> iterators =
             new MapMaker().weakKeys().concurrencyLevel(1).makeMap();
 
@@ -159,5 +163,12 @@ public class StatelessIterator<T> {
         if (state==State.uninitialized)
             initialize();
         return state == State.nonEmpty;
+    }
+
+    // DOCUMENT
+    @Override
+    @Contract(pure = true, value = "-> new")
+    public @NotNull DefaultCloneableIterator<T> iterator() {
+        return DefaultCloneableIterator.from(this);
     }
 }

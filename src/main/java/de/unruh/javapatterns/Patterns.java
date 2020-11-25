@@ -274,9 +274,9 @@ public final class Patterns {
     public static <U> Pattern<Object> Instance(@NotNull Class<U> clazz, @NotNull Pattern<? super U> pattern) {
         return new Pattern<Object>() {
             @Override
+            @SuppressWarnings("unchecked")
             public void apply(@NotNull MatchManager mgr, @Nullable Object value) throws PatternMatchReject {
                 if (!clazz.isInstance(value)) reject();
-                //noinspection unchecked
                 pattern.apply(mgr, (U)value);
                 // we could use Class.cast(value) instead of (U)value, but that probably just duplicates the dynamic type check
             }
