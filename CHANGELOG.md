@@ -13,6 +13,19 @@
 
 [//]: # (TODO sort sensibly)
 
+* 
+
+Added ScalaPatterns (depends on scala-library, but not included in POM)
+    API CHANGE: Added Array pattern with varargs.
+    API CHANGE: Added ScalaPatterns.Seq pattern (with and without varargs)
+
+    Added patterns for Optional, Map
+    
+Added patterns: After, Iterator, Stream
+  Created StatelessIterator, CloneableIterator
+     
+     
+     
 ### Changed
 
 [//]: # (TODO)
