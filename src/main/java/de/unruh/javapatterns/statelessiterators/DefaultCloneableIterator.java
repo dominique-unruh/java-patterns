@@ -1,4 +1,4 @@
-package de.unruh.javapatterns;
+package de.unruh.javapatterns.statelessiterators;
 
 import org.jetbrains.annotations.NotNull;
 

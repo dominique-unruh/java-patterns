@@ -1,5 +1,7 @@
 package de.unruh.javapatterns;
 
+import de.unruh.javapatterns.statelessiterators.CloneableIterator;
+import de.unruh.javapatterns.statelessiterators.StatelessIterator;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

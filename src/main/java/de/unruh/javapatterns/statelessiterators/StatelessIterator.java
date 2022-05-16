@@ -1,4 +1,4 @@
-package de.unruh.javapatterns;
+package de.unruh.javapatterns.statelessiterators;
 
 import com.google.common.collect.MapMaker;
 import org.jetbrains.annotations.Contract;

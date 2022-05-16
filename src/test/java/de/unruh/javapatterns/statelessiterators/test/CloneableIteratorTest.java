@@ -1,5 +1,6 @@
-package de.unruh.javapatterns;
+package de.unruh.javapatterns.statelessiterators.test;
 
+import de.unruh.javapatterns.statelessiterators.CloneableIterator;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
